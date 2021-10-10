@@ -1,11 +1,12 @@
 <div class="describtion text-bg">
-	<div class="row"> {{ route.describtion }} </div>
+	<div class="row"> {{ container.describtion }} </div>
 </div>
 
 <div class="entries">
 	<div class="entry" 
-		*ngFor="let entry of route.entries"
-		[ngClass]="{'text-bg': !entry.active}">
+		*ngFor="let entry of container.entries"
+		[ngClass]="{'selected': entry.active, 'text-bg': !entry.active}"
+		[routerLink]="entry.destination">
 
 		<div class="row">
 			<div class="entry-icon align-self-center">

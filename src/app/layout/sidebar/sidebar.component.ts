@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { SidebarEntriesContainer, SidebarEntry } from './sidebar-entries/sidebar-entries.model';
 
-const NAVIGATION_ROUTE: SidebarEntriesContainer = new SidebarEntriesContainer('NAVIGATION', [
-  new SidebarEntry('Dashboard', 'bi bi-house', 'test')])
-const SETTINGS_ROUTE: SidebarEntriesContainer = new SidebarEntriesContainer('SETTINGS', [
-  new SidebarEntry('Settings', 'bi bi-gear', 'test'),
-  new SidebarEntry('Appearance', 'bi bi-brush', 'test')])
+const NAVIGATION_CONTAINER: SidebarEntriesContainer = new SidebarEntriesContainer('NAVIGATION', [
+  new SidebarEntry('Dashboard', 'bi bi-house', '/dashboard')])
+const SETTINGS_CONTAINER: SidebarEntriesContainer = new SidebarEntriesContainer('SETTINGS', [
+  new SidebarEntry('Settings', 'bi bi-gear', '/settings'),
+  new SidebarEntry('Appearance', 'bi bi-brush', '/appearance')])
   
 
 @Component({
@@ -16,24 +16,23 @@ const SETTINGS_ROUTE: SidebarEntriesContainer = new SidebarEntriesContainer('SET
 
 export class SidebarComponent implements OnInit {
 
-  public routes: SidebarEntriesContainer[] = [];
+  public containers: SidebarEntriesContainer[] = [];
 
   constructor() {
-    this.routes.push(NAVIGATION_ROUTE);
-    this.routes.push(this.getRooms());
-    this.routes.push(this.getDevices());
-    this.routes.push(SETTINGS_ROUTE);
+    this.containers.push(NAVIGATION_CONTAINER);
+    this.containers.push(this.getRooms());
+    this.containers.push(this.getDevices());
+    this.containers.push(SETTINGS_CONTAINER);
   }
 
   private getRooms(): SidebarEntriesContainer {
-    return new SidebarEntriesContainer('ROOMS', [new SidebarEntry('Room Overview', 'bi bi-door-closed', '')])
+    return new SidebarEntriesContainer('ROOMS', [new SidebarEntry('Room Overview', 'bi bi-door-closed', '/rooms')])
   }
 
   private getDevices(): SidebarEntriesContainer {
-    return new SidebarEntriesContainer('DEVICES', [new SidebarEntry('Device Overview', 'bi bi-cpu', '')])
+    return new SidebarEntriesContainer('DEVICES', [new SidebarEntry('Device Overview', 'bi bi-cpu', '/devices')])
   }
 
   ngOnInit(): void {
   }
-
 }
