@@ -1,1 +1,19 @@
-<p>room-overview works!</p>
+<button mat-button (click)="onButtonClick()">
+	Basic
+</button>
+
+<div class="container">
+	<div class="row header">
+		all Rooms
+	</div>
+	<hr>
+	<div class="row content">
+		<div class="row" *ngFor="let room of rooms">
+			{{ room.name }}
+		</div>
+	</div>
+	<hr>
+	<div class="row footer justify-content-center">
+		1 of 1
+	</div>
+</div>

@@ -1,8 +1,104 @@
-.header {
-	margin: 48px;
-	font-size: 24px;
+.nav-item {
+	display: flex;
+	flex-wrap: nowrap;
+	margin: 24px;
 }
 
-.routes {
+.nav-item:hover {
+	color: #83d8ae;
+	cursor: pointer;
+}
+
+.nav-btn {
+	display: flex;
+	flex-wrap: nowrap;
 	margin: 24px;
+}
+
+.nav-btn:hover {
+	color: #83d8ae;
+	cursor: pointer;
+}
+
+.nav-icon {
+	width: 36px;
+	margin-left: 8px;
+	margin-right: 8px;
+	font-size: 22px;
+}
+
+.nav-text {
+	margin-left: 8px;
+	margin-right: 8px;
+	font-size: 18px;
+}
+
+.select-indicator {
+	position: absolute;
+	width: 4px;
+	height: 36px;
+	right: 0px;
+	border-radius: 2px;
+	background-color: #83d8ae;
+}
+
+.header {
+	display: flex;
+	flex-wrap: nowrap;
+	margin: 24px;
+	margin-top: 48px;
+}
+
+.header-logo {
+	width: 36px;
+	margin-left: 8px;
+	margin-right: 8px;
+}
+
+.header-text {
+	margin-left: 8px;
+	margin-right: 24px;
+	font-size: 22px;
+	color: #83d8ae;
+}
+
+.header-btn {
+	margin-left: 24px;
+	margin-right: 8px;
+	font-size: 22px;
+}
+
+img {
+	height: 32px;
+	width: 32px;
+	background-color: #83d8ae;
+	opacity: 50%;
+	border-radius: 8px;
+}
+
+hr {
+	background-color: #9a9cab;
+	margin-left: 24px;
+	margin-right: 24px;
+}
+
+.row {
+	flex-wrap: nowrap;
+}
+
+.container {
+	padding: 0px;
+	overflow: hidden;
+}
+
+.expand-btn {
+	position: absolute;
+	left: calc(50% - 11px);
+	font-size: 22px;
+	bottom: 24px;
+}
+
+.expand-btn:hover {
+	color: #83d8ae;
+	cursor: pointer;
 }

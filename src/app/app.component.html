@@ -1,8 +1,19 @@
-<mat-sidenav-container>
-  <mat-sidenav mode="side" opened>
+<mat-sidenav-container autosize class="sidebar-container" *ngIf="screenAspect=='Landscape' && screenSize!='Small'; else navbar">
+  <mat-sidenav class="sidebar" mode="side" opened>
     <app-sidebar></app-sidebar>
   </mat-sidenav>
-  <mat-sidenav-content>
+  <mat-sidenav-content class="sidebar-content">
     <app-content></app-content>
   </mat-sidenav-content>
 </mat-sidenav-container>
+
+<ng-template class="navbar-container" #navbar>
+  <div class="navbar">
+    <app-navbar></app-navbar>
+  </div>
+  <div class="navbar-content">
+    <app-content></app-content>
+  </div>
+</ng-template>
+
+<app-popup-host></app-popup-host>

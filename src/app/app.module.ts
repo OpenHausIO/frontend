@@ -11,26 +11,36 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
-import { SidebarEntriesComponent } from './layout/sidebar/sidebar-entries/sidebar-entries.component';
+import { HttpClientModule } from '@angular/common/http';
 import { ContentComponent } from './layout/content/content.component';
 import { DashboardComponent } from './layout/content/dashboard/dashboard.component';
-import { Routes } from '@angular/router';
 import { RoomOverviewComponent } from './layout/content/room-overview/room-overview.component';
 import { DeviceOverviewComponent } from './layout/content/device-overview/device-overview.component';
 import { SettingsComponent } from './layout/content/settings/settings.component';
 import { AppearanceComponent } from './layout/content/appearance/appearance.component';
+import { RoomComponent } from './layout/content/room/room.component';
+import { PopupHostComponent } from './layout/popup-host/popup-host.component';
+import { AddDevicePopupComponent } from './layout/popup-host/popups/add-device-popup/add-device-popup.component';
+import { AddRoomPopupComponent } from './layout/popup-host/popups/add-room-popup/add-room-popup.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { NavbarComponent } from './layout/navbar/navbar.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 
 @NgModule({
   declarations: [
     AppComponent,
     SidebarComponent,
-    SidebarEntriesComponent,
     ContentComponent,
     DashboardComponent,
     RoomOverviewComponent,
     DeviceOverviewComponent,
     SettingsComponent,
-    AppearanceComponent
+    AppearanceComponent,
+    RoomComponent,
+    PopupHostComponent,
+    AddDevicePopupComponent,
+    AddRoomPopupComponent,
+    NavbarComponent
   ],
   imports: [
     BrowserModule,
@@ -40,8 +50,11 @@ import { AppearanceComponent } from './layout/content/appearance/appearance.comp
     MatSidenavModule,
     MatButtonModule,
     MatIconModule,
+    MatDialogModule,
     MatDividerModule,
-    NgbModule
+    NgbModule,
+    HttpClientModule,
+    FontAwesomeModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,0 +1,49 @@
+<div class="navbar-small" *ngIf="screenSize==='Small'">
+	<div class="row navrow-fluid align-items-center">
+		<div class="col d-flex align-items-center justify-content-center" *ngFor="let route of routes">
+			<div class="nav-icon text-bg" [routerLink]="route.destination" [ngStyle]="route.active ? { 'color': '#83d8ae' } : {}">
+				<fa-icon [icon]="route.icon"></fa-icon>
+			</div>
+		</div>
+		<div class="col d-flex align-items-center justify-content-center">
+			<div class="nav-btn">
+				login
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="navbar-medium" *ngIf="screenSize==='Medium'">
+	<div class="row navrow-fluid">
+		<div class="col d-flex align-items-center justify-content-center" *ngFor="let route of routes">
+			<div class="nav-item text-bg" [routerLink]="route.destination" [ngStyle]="route.active ? { 'color': 'white' } : {}">
+				{{ route.name }}
+			</div>
+			<div class="select-indicator" [ngStyle]="{'width': route.active ? '100%' : '0px' }"></div>
+		</div>
+		<div class="col d-flex align-items-center justify-content-center">
+			<div class="nav-btn">
+				login
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="navbar-large" *ngIf="screenSize==='Large'" align="right">
+	<div class="logo">
+		<img src="https://www.leanscope.io/wp-content/uploads/2020/05/placeholder-1.png">
+	</div>
+	<div class="row navrow-static justify-content-end">
+		<div class="col d-flex align-items-center justify-content-center" *ngFor="let route of routes">
+			<div class="nav-item text-bg" [routerLink]="route.destination" [ngStyle]="route.active ? { 'color': 'white' } : {}">
+				{{ route.name }}
+			</div>
+			<div class="select-indicator" [ngStyle]="{'width': route.active ? '100%' : '0px' }"></div>
+		</div>
+		<div class="col d-flex align-items-center justify-content-center" align="center">
+			<div class="nav-btn">
+				login
+			</div>
+		</div>
+	</div>
+</div>

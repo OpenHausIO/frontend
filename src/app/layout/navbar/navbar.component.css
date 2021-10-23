@@ -1,0 +1,98 @@
+.navbar-small {
+	width: 100vw;
+	height: 70px;
+}
+
+.navbar-medium {
+	width: 100vw;
+	height: 70px;
+}
+
+.navbar-large {
+	width: 100vw;
+	height: 70px;
+}
+
+.row {
+	width: 100%;
+}
+
+.col {
+	height: 100%;
+	padding: 0px;
+}
+
+.nav-item {
+	width: fit-content;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	padding-left: 10px;
+	padding-right: 10px;
+	border-radius: 22px;
+	font-size: 16px;
+}
+
+.nav-item:hover {
+	background-color: #83d8ae;
+	color: white;
+	cursor: pointer;
+}
+
+.nav-btn {
+	width: fit-content;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	padding-left: 10px;
+	padding-right: 10px;
+	border-radius: 22px;
+	outline: 2px solid;
+	outline-color: #83d8ae;
+	font-size: 16px;
+	color: #83d8ae;
+}
+
+.nav-btn:hover {
+	background-color: #83d8ae;
+	color: white;
+	cursor: pointer;
+}
+
+.nav-icon {
+	font-size: 24px;
+}
+
+.nav-icon:hover {
+	cursor: pointer;
+	color: white;
+}
+
+.navrow-fluid {
+	width: 100%;
+	margin: 0px;
+	height: 70px;
+}
+
+.navrow-static {
+	width: 720px;
+	height: 70px;
+	margin: 0px;
+}
+
+.select-indicator {
+	background-color: #83d8ae;
+	position: absolute;
+	top: 66px;
+	height: 4px;
+	border-radius: 2px;
+}
+
+.logo {
+	position: absolute;
+	top: 10px;
+	left: 15px;
+}
+
+img {
+	max-width: auto;
+	height: 50px;
+}

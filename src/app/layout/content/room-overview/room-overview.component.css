@@ -1,0 +1,12 @@
+.container {
+	margin-bottom: 48px;
+	margin-top: 48px;
+	padding: 24px;
+	background-color: white;
+	border-radius: 4px;
+	box-shadow: 0px 10px 20px 0px black;
+}
+
+.row {
+	margin: 0px;
+}

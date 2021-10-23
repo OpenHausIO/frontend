@@ -1,12 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { SidebarEntriesContainer, SidebarEntry } from './sidebar-entries/sidebar-entries.model';
-
-const NAVIGATION_CONTAINER: SidebarEntriesContainer = new SidebarEntriesContainer('NAVIGATION', [
-  new SidebarEntry('Dashboard', 'bi bi-house', '/dashboard')])
-const SETTINGS_CONTAINER: SidebarEntriesContainer = new SidebarEntriesContainer('SETTINGS', [
-  new SidebarEntry('Settings', 'bi bi-gear', '/settings'),
-  new SidebarEntry('Appearance', 'bi bi-brush', '/appearance')])
-  
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { faAngleDoubleLeft, faAngleDoubleRight, faUser } from '@fortawesome/free-solid-svg-icons';
+import { NavigationService } from 'src/app/services/navigation.service';
+import { Route } from 'src/app/shared/route.model';
 
 @Component({
   selector: 'app-sidebar',
@@ -14,25 +9,24 @@ const SETTINGS_CONTAINER: SidebarEntriesContainer = new SidebarEntriesContainer(
   styleUrls: ['./sidebar.component.css']
 })
 
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, OnDestroy {
 
-  public containers: SidebarEntriesContainer[] = [];
+  public collapsed: boolean = false;
+  public routes: Route[] = [];
+  public expandIcon = faAngleDoubleLeft;
+  public userIcon = faUser;
 
-  constructor() {
-    this.containers.push(NAVIGATION_CONTAINER);
-    this.containers.push(this.getRooms());
-    this.containers.push(this.getDevices());
-    this.containers.push(SETTINGS_CONTAINER);
-  }
-
-  private getRooms(): SidebarEntriesContainer {
-    return new SidebarEntriesContainer('ROOMS', [new SidebarEntry('Room Overview', 'bi bi-door-closed', '/rooms')])
-  }
-
-  private getDevices(): SidebarEntriesContainer {
-    return new SidebarEntriesContainer('DEVICES', [new SidebarEntry('Device Overview', 'bi bi-cpu', '/devices')])
-  }
+  constructor(private navigationService: NavigationService) { }
 
   ngOnInit(): void {
+    this.routes = this.navigationService.getRoutes();
+  }
+
+  ngOnDestroy(): void {
+  }
+
+  onCollapse(): void {
+    this.collapsed = !this.collapsed;
+    this.expandIcon = this.collapsed ? faAngleDoubleRight : faAngleDoubleLeft;
   }
 }

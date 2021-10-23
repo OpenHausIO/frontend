@@ -1,11 +1,22 @@
-mat-sidenav-container {
-	height: 100vh;
+.sidebar-container {
+	height: 100%;
 }
 
-mat-sidenav {
+.sidebar {
 	background-color: #1f1f2b;
 }
 
-mat-sidenav-content {
+.sidebar-content {
 	background-color: #181821;
+}
+
+.navbar {
+	height: 70px;
+	background-color: #1f1f2b;
+	padding: 0px;
+}
+
+.navbar-content {
+	background-color: #181821;
+	height: calc(100% - 70px);
 }

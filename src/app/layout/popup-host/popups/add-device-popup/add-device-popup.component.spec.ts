@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SidebarRouteComponent } from './sidebar-route.component';
+import { AddDevicePopupComponent } from './add-device-popup.component';
 
-describe('SidebarRouteComponent', () => {
-  let component: SidebarRouteComponent;
-  let fixture: ComponentFixture<SidebarRouteComponent>;
+describe('AddDevicePopupComponent', () => {
+  let component: AddDevicePopupComponent;
+  let fixture: ComponentFixture<AddDevicePopupComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SidebarRouteComponent ]
+      declarations: [ AddDevicePopupComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SidebarRouteComponent);
+    fixture = TestBed.createComponent(AddDevicePopupComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

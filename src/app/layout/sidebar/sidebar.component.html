@@ -1,11 +1,72 @@
-<div class="container">
-	<div class="header text-fg">
-		<div class="row justify-content-center">OpenHaus</div>
+<div class="sidebar-expanded" *ngIf="!collapsed">
+	<div class="container">
+		<div class="row">
+			<div class="header text-bg align-items-center">
+				<div class="header-logo">
+					<img src="https://www.leanscope.io/wp-content/uploads/2020/05/placeholder-1.png">
+				</div>
+				<div class="header-text">
+					OpenHaus
+				</div>
+			</div>
+		</div>
+		<hr>
+		<div class="row" *ngFor="let route of routes">
+			<div class="nav-item text-bg align-items-center" [routerLink]="route.destination" [ngStyle]="route.active ? { 'color': '#83d8ae' } : {}">
+				<div class="nav-icon" align="center">
+					<fa-icon [icon]="route.icon"></fa-icon>
+				</div>
+				<div class="nav-text">
+					{{ route.name }}
+				</div>
+				<div class="select-indicator" [ngStyle]="{'width': route.active ? '4px' : '0px' }"></div>
+			</div>
+		</div>
+		<hr>
+		<div class="row">
+			<div class="nav-btn text-bg align-items-center">
+				<div class="nav-icon" align="center">
+					<fa-icon [icon]="userIcon"></fa-icon>
+				</div>
+				<div class="nav-text">
+					Login
+				</div>
+			</div>
+		</div>
+		<div class="expand-btn text-bg" (click)="onCollapse()">
+			<fa-icon [icon]="expandIcon"></fa-icon>
+		</div>
 	</div>
-	<div class="routes">
-		<app-sidebar-entries 
-			*ngFor="let container of containers"
-			[container]="container">
-		</app-sidebar-entries>
+</div>
+
+<div class="sidebar-collapsed" *ngIf="collapsed">
+	<div class="container">
+		<div class="row">
+			<div class="header text-bg align-items-center">
+				<div class="header-logo">
+					<img src="https://www.leanscope.io/wp-content/uploads/2020/05/placeholder-1.png">
+				</div>
+			</div>
+		</div>
+		<hr>
+		<div class="row" *ngFor="let route of routes">
+			<div class="nav-item text-bg align-items-center" [routerLink]="route.destination" [ngStyle]="route.active ? { 'color': '#83d8ae' } : {}">
+				<div class="nav-icon" align="center">
+					<fa-icon [icon]="route.icon"></fa-icon>
+				</div>
+				<div class="select-indicator" [ngStyle]="{'width': route.active ? '4px' : '0px' }"></div>
+			</div>
+		</div>
+		<hr>
+		<div class="row">
+			<div class="nav-btn text-bg align-items-center">
+				<div class="nav-icon" align="center">
+					<fa-icon [icon]="userIcon"></fa-icon>
+				</div>
+			</div>
+		</div>
+		<div class="expand-btn text-bg" (click)="onCollapse()">
+			<fa-icon [icon]="expandIcon"></fa-icon>
+		</div>
 	</div>
 </div>
