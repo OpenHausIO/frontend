@@ -24,7 +24,8 @@ import { AddDevicePopupComponent } from './layout/popup-host/popups/add-device-p
 import { AddRoomPopupComponent } from './layout/popup-host/popups/add-room-popup/add-room-popup.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { NavbarComponent } from './layout/navbar/navbar.component';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { IconContainerComponent } from './shared/icon-container/icon-container.component'
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
     PopupHostComponent,
     AddDevicePopupComponent,
     AddRoomPopupComponent,
-    NavbarComponent
+    NavbarComponent,
+    IconContainerComponent
   ],
   imports: [
     BrowserModule,
