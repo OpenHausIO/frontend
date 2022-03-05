@@ -41,6 +41,10 @@ Rooms are grouped by floor, they are on.
 
 ![Roooms ungrouped](./docs/img/rooms-ungrouped.png)
 Rooms ungrouped.
+<br /><br />
+
+![Rooom](./docs/img/room.png)
+Endpoints in a room after clicking on a room tile
 
 ---
 
@@ -51,6 +55,19 @@ Endoints are grouped by room they are in.,
 
 ![Endpoints ungrouped](./docs/img/endpoints-ungrouped.png)
 Endpoints appear as they are, ungrouped.
+<br /><br />
+
+![Endpoints Commands](./docs/img/endpoint.png)
+Commands a endpoint has/provide.
+<br /><br />
+
+![Endpoints Commands with parameter](./docs/img/endpoint-parameters-button.png)
+Commands with parameters (button/enum)
+<br /><br />
+
+![Endpoints Commands with parameter](./docs/img/endpoint-parameters-range.png)
+Commands with parameters (range)
+
 
 ---
 
@@ -59,4 +76,5 @@ Endpoints appear as they are, ungrouped.
 Phsyical devices, if you click on it, you see all endpoints the devices provides
 <br /><br />
 
-![Endpoints grouped](./docs/img/devices-endpoints.png)
+![Endpoints un-grouped](./docs/img/devices-endpoints.png)
+Available endpoints without grouping them. Room name is added to tile.
