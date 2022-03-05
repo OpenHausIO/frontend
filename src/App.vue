@@ -7,6 +7,11 @@ import "bootstrap";
 
 <script>
 export default {
+  data() {
+    return {
+      overlay: false,
+    };
+  },
   methods: {
     subIsActive(input) {
       const paths = Array.isArray(input) ? input : [input];
@@ -20,6 +25,15 @@ export default {
 
 
 <template>
+  <!-- OVERLAY -->
+  <div v-if="overlay" id="overlay" class="text-center">
+    <div id="inner">
+      <h1>Loading...</h1>
+    </div>
+  </div>
+  <!-- OVERLAY -->
+
+  <!-- NAVIGATION -->
   <nav
     class="
       navbar navbar-expand-lg navbar-dark
@@ -128,8 +142,11 @@ export default {
       </div>
     </div>
   </nav>
+  <!-- NAVIGATION -->
 
+  <!-- VIEW -->
   <RouterView class="mt-4" />
+  <!-- VIEW -->
 </template>
 
 <style>
@@ -140,5 +157,22 @@ html,
 body {
   min-height: 100%;
   min-width: 100%;
+}
+
+#overlay {
+  position: fixed; /* Sit on top of the page content */
+  min-width: 100%; /* Full width (cover the whole page) */
+  min-height: 100%; /* Full height (cover the whole page) */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.9); /* Black background with opacity */
+  z-index: 9999; /* Specify a stack order in case you're using a different order for other elements */
+}
+
+#inner {
+  margin: 0 auto;
+  top: calc(100% - 50px);
 }
 </style>

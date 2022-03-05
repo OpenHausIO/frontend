@@ -67,6 +67,8 @@ function request(url, options, cb) {
         method: "GET"
     }, options);
 
+    console.log(`[REQUEST] ${options.method}: ${url}`)
+
     return promisfy((done) => {
 
         let controller = new AbortController();
@@ -87,6 +89,45 @@ function request(url, options, cb) {
 
 }
 
+function debounce(func, wait, immediate = false) {
+
+    let timeout = null;
+
+    return function (...args) {
+
+        console.log("Debounce child claled")
+
+        let later = () => {
+
+            timeout = null;
+
+            if (!immediate) {
+                func.apply(this, args);
+            }
+
+        };
+
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+
+        if (immediate && !timeout) {
+            func.apply(this, args);
+        }
+
+    };
+
+}
+
+
+// fix for vue components
+// vue components dont find if 
+// not explicitly assign to window object
+Object.assign(window, {
+    promisfy,
+    request,
+    debounce
+});
+
 
 
 Promise.all([
@@ -102,6 +143,7 @@ Promise.all([
         });
     }),
 
+    // websocket connection to <host>/api/events 
     new Promise((resolve, reject) => {
 
         console.log(window.location.host)
@@ -133,10 +175,13 @@ Promise.all([
             return ws.send(JSON.stringify(data));
         };
 
-        ws.onmessage = (data) => {
-            data = JSON.parse(data);
+        ws.onmessage = (msg) => {
+
+            let data = JSON.parse(msg.data);
+
             console.log("[EVENT]", data);
-            app.$emit("event", data);
+            //app.$emit("event", data);
+
         };
 
         window.events = ws;
@@ -170,7 +215,7 @@ Promise.all([
 
 ]).then(() => {
 
-    console.log("Preshit done, mount vue app", window.store);
+    console.log("Preshit done, mount vue app");
 
     app.use(router);
     app.mount("#app");

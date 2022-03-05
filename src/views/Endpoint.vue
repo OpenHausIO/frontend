@@ -1,11 +1,11 @@
 <script setup>
 import Tile from "@/components/Tile.vue";
-import { useRoute } from "vue-router";
+import { useRoute, RouterLink } from "vue-router";
 </script>
 
 <script>
 export default {
-  components: { Tile },
+  components: { Tile, RouterLink },
   data() {
     return {
       data: {},
@@ -30,6 +30,31 @@ export default {
 
       return room.name;
     },
+    popup(...args) {
+      window.alert.apply(window, args);
+    },
+    trigger(_id) {
+      let command = this.data.commands.find((obj) => {
+        return obj._id === _id;
+      });
+
+      if (!command) {
+        console.warn("Could not find command with _id: ", _id);
+        return;
+      }
+
+      let url = `/api/endpoints/${this.data._id}/commands/${_id}`;
+
+      window.request(
+        url,
+        {
+          method: "POST",
+        },
+        (err, result) => {
+          console.log(err, result);
+        }
+      );
+    },
   },
 };
 </script>
@@ -51,7 +76,30 @@ export default {
         v-bind:key="command._id"
         v-for="command in data.commands"
       >
-        <Tile class="bg-dark border-secondary">
+        <RouterLink
+          custom
+          :to="{
+            name: '/endpoints/:_id/commands/:_command',
+            params: {
+              _id: $route.params._id,
+              _command: command._id,
+            },
+          }"
+          v-slot="{ href, navigate }"
+          v-if="command.params?.length > 0"
+        >
+          <Tile class="bg-dark border-secondary" :href="href" @click="navigate">
+            <template #title>
+              <i :class="command.icon"></i>
+            </template>
+            {{ command.name }}
+          </Tile>
+        </RouterLink>
+        <Tile
+          v-else
+          class="bg-dark border-secondary"
+          @click="trigger(command._id)"
+        >
           <template #title>
             <i :class="command.icon"></i>
           </template>
