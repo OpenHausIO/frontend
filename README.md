@@ -1,27 +1,62 @@
-# OpenHausIoFrontend
+# vue-project
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.4.
+This template should help get you started developing with Vue 3 in Vite.
 
-## Development server
+## Recommended IDE Setup
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.vscode-typescript-vue-plugin).
 
-## Code scaffolding
+## Customize configuration
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+See [Vite Configuration Reference](https://vitejs.dev/config/).
 
-## Build
+## Project Setup
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+> NOTE: You need to run the [backend](https://github.com/OpenHausIO/backend) to develop the frontend
+> E.g. as [Docker Container](https://github.com/OpenHausIO/backend/blob/main/docs/DOCKER.md) or application on the host machine
 
-## Running unit tests
+```sh
+npm install
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+### Compile and Hot-Reload for Development
 
-## Running end-to-end tests
+```sh
+npm run dev
+```
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+### Compile and Minify for Production
 
-## Further help
+```sh
+npm run build
+```
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+## Screenshots
+
+### Rooms
+![Roooms grouped](./docs/img/rooms-grouped.png)
+Rooms are grouped by floor, they are on.
+<br /><br />
+
+![Roooms ungrouped](./docs/img/rooms-ungrouped.png)
+Rooms ungrouped.
+
+---
+
+### Endpoints
+![Endpoints grouped](./docs/img/endpoints-grouped.png)
+Endoints are grouped by room they are in.,
+<br /><br />
+
+![Endpoints ungrouped](./docs/img/endpoints-ungrouped.png)
+Endpoints appear as they are, ungrouped.
+
+---
+
+### Devices
+![Endpoints grouped](./docs/img/devices.png)
+Phsyical devices, if you click on it, you see all endpoints the devices provides
+<br /><br />
+
+![Endpoints grouped](./docs/img/devices-endpoints.png)

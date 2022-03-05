@@ -1,0 +1,23 @@
+body{
+    /*
+    background-color: #101418;
+    background-image: radial-gradient(circle,#23282e 0,rgba(35,40,46,.5) 15%,#101418 95%);
+    background-repeat: no-repeat;
+    background-size: cover;
+    */
+
+    
+    background-color: #2e3236;
+    
+    background-image: radial-gradient(circle,#4e505298 0,rgba(35,40,46,.5) 15%,#101418 95%);
+    
+    /*background-image: url("https://i.pinimg.com/originals/1a/87/a7/1a87a779a6d1e1764b57ac907f628ac6.jpg");*/
+    /*background-image: url("https://lh6.googleusercontent.com/proxy/zwTqZUcG2XYGjMQOXJNo8dNfGkn8sJyNxsns4b1wSSTtGl-7j1ie0Fw8dpMgpqqV1Lh_esnFlWyg62kwjjIBjTF7UA5mQK_8HhZK");*/
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+
+    /*color: #efefef;*/
+    color: rgb(230, 230, 230);
+    overflow-y: scroll;
+}
