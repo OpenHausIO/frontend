@@ -1,13 +1,9 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
+import { store } from "./store";
+import { request } from "./helper.js";
 
-
-window.store = {
-    rooms: new Set(),
-    endpoints: new Set(),
-    devices: new Set()
-};
 
 // monkey patch ws
 window.events = null;
@@ -16,118 +12,6 @@ window.events = null;
 
 // create vue app
 const app = createApp(App);
-
-
-function promisfy(worker, cb) {
-
-    let wrapper = new Promise((resolve, reject) => {
-        worker((err, ...args) => {
-            if (err) {
-                reject(err);
-            } else {
-
-                // NOTE: GOOD PRACTICE?!
-                if (args.length === 1 && !cb) {
-                    resolve(args[0]);
-                } else {
-                    resolve(args);
-                }
-
-            }
-        });
-    });
-
-    if (cb) {
-
-        wrapper.then((args) => {
-            cb(null, ...args);
-        }).catch((err) => {
-            cb(err);
-        });
-
-        //return undefined;
-
-    } else {
-
-        return wrapper;
-
-    }
-
-}
-
-
-function request(url, options, cb) {
-
-    if (!cb && options instanceof Function) {
-        cb = options;
-        options = null;
-    }
-
-    options = Object.assign({
-        method: "GET"
-    }, options);
-
-    console.log(`[REQUEST] ${options.method}: ${url}`)
-
-    return promisfy((done) => {
-
-        let controller = new AbortController();
-        let id = setTimeout(() => controller.abort(), 1000);
-
-        fetch(url, {
-            ...options,
-            signal: controller.signal
-        }).then((response) => {
-            return response.json();
-        }).then((data) => {
-            done(null, data);
-        }).catch(done);
-
-        clearTimeout(id);
-
-    }, cb);
-
-}
-
-function debounce(func, wait, immediate = false) {
-
-    let timeout = null;
-
-    return function (...args) {
-
-        console.log("Debounce child claled")
-
-        let later = () => {
-
-            timeout = null;
-
-            if (!immediate) {
-                func.apply(this, args);
-            }
-
-        };
-
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-
-        if (immediate && !timeout) {
-            func.apply(this, args);
-        }
-
-    };
-
-}
-
-
-// fix for vue components
-// vue components dont find if 
-// not explicitly assign to window object
-Object.assign(window, {
-    promisfy,
-    request,
-    debounce
-});
-
 
 
 Promise.all([
@@ -196,9 +80,13 @@ Promise.all([
             request("/api/devices"),
         ]).then(([rooms, endpoints, devices]) => {
 
-            rooms.forEach(item => window.store.rooms.add(item));
-            endpoints.forEach(item => window.store.endpoints.add(item));
-            devices.forEach(item => window.store.devices.add(item));
+            //rooms.forEach(item => window.store.rooms.add(item));
+            //endpoints.forEach(item => window.store.endpoints.add(item));
+            //devices.forEach(item => window.store.devices.add(item));
+
+            store.rooms.push(...rooms);
+            store.endpoints.push(...endpoints);
+            store.devices.push(...devices);
 
             console.log("[pre] api resrouces fetched");
 
