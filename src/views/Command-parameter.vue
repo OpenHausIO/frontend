@@ -49,6 +49,11 @@ export default {
         useRoute()
       );
 
+      // NOTE:
+      // cant use `let $route = useRoute(); here`
+      // it allways returns undefine, thats the reason
+      // for this hacky "this.endpoint" thing
+
       window.request(
         `/api/endpoints/${this.endpoint._id}/commands/${this.data._id}`,
         {
@@ -70,10 +75,14 @@ export default {
 
 <template>
   <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <h3>{{ data.name }}</h3>
+      </div>
+    </div>
     <div class="row" v-bind:key="index" v-for="(param, index) in data.params">
       <div class="col">
         <div v-if="param.min && param.max">
-          <h3>{{ data.name }}</h3>
           <input
             type="range"
             class="form-range"
@@ -85,7 +94,6 @@ export default {
           {{ param }}
         </div>
         <div v-else>
-          Single
           {{ data.name }}: {{ param }} {{ index }}
 
           <button class="btn btn-primary" @click="trigger(param)">

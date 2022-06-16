@@ -1,7 +1,7 @@
 <script setup>
 import Tile from "@/components/Tile.vue";
-import { RESOLVE_COMPONENT } from "@vue/compiler-core";
 import Collapsable from "../components/Collapsable.vue";
+import { store } from "../store";
 </script>
 
 <script>
@@ -9,7 +9,7 @@ export default {
   components: { Collapsable, Tile },
   data() {
     return {
-      items: window.store.endpoints,
+      items: store.endpoints,
       rooms: {},
       groupItems: true,
     };
@@ -23,12 +23,12 @@ export default {
   },
   methods: {
     getRoomNameById(_id) {
-      let room = Array.from(window.store.rooms).find((obj) => {
+      let room = Array.from(store.rooms).find((obj) => {
         return obj._id === _id;
       });
 
       if (!room) {
-        return "Nope";
+        return "undefined";
       }
 
       return room.name;
@@ -74,7 +74,10 @@ export default {
                 class="bg-dark border-secondary"
               >
                 <template #icon>
-                  <i class="fa-2xl" :class="item.icon"></i>
+                  <i
+                    class="fa-2xl"
+                    :class="item.icon || 'fa-solid fa-question'"
+                  ></i>
                 </template>
                 <template #title>{{ item.name }} </template>
                 <!--{{ item.name }} -> slot content -->
@@ -107,7 +110,10 @@ export default {
               class="bg-dark border-secondary"
             >
               <template #icon>
-                <i class="fa-2xl" :class="item.icon"></i>
+                <i
+                  class="fa-2xl"
+                  :class="item.icon || 'fa-solid fa-question'"
+                ></i>
               </template>
               <template #title>{{ item.name }} </template>
               <span class="text-secondary fw-light">

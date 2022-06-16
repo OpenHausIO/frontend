@@ -2,10 +2,12 @@
 import Tile from "@/components/Tile.vue";
 import Collapsable from "../components/Collapsable.vue";
 import { useRoute } from "vue-router";
+import { store } from "../store";
 </script>
 
 <script>
 export default {
+  components: { Tile, Collapsable },
   data() {
     return {
       data: {},
@@ -15,11 +17,11 @@ export default {
   mounted() {
     let $route = useRoute();
 
-    this.data = Array.from(window.store.rooms).find((item) => {
+    this.data = Array.from(store.rooms).find((item) => {
       return item._id === $route.params._id;
     });
 
-    let endpoints = Array.from(window.store.endpoints).filter((obj) => {
+    let endpoints = Array.from(store.endpoints).filter((obj) => {
       return obj.room === this.data._id;
     });
 
@@ -29,7 +31,7 @@ export default {
   },
   methods: {
     getRoomNameById(_id) {
-      let room = Array.from(window.store.rooms).find((obj) => {
+      let room = Array.from(store.rooms).find((obj) => {
         return obj._id === _id;
       });
 
@@ -45,15 +47,14 @@ export default {
 
 <template>
   <div class="container-fluid">
-    <div class="row">
+    <div class="row hide">
       <div>
         <b>sngle Room: {{ data }}, Endpoints: {{ endpoints }}</b>
         <hr />
         {{ $route.params._id }}
       </div>
     </div>
-    <!-- DONT GROUP -->
-    <div class="row">
+    <div class="row" v-if="endpoints.lenght > 0">
       <RouterLink
         v-bind:key="item._id"
         v-for="item in endpoints"
@@ -79,6 +80,10 @@ export default {
         </div>
       </RouterLink>
     </div>
-    <!-- DONT GROUP -->
+    <div class="row" v-else>
+      <div class="col-12">
+        <h1>No Endpoints assigned</h1>
+      </div>
+    </div>
   </div>
 </template>

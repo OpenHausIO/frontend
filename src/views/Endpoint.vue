@@ -1,6 +1,8 @@
 <script setup>
 import Tile from "@/components/Tile.vue";
 import { useRoute, RouterLink } from "vue-router";
+import { store } from "@/store";
+import { getRoomNameById, alert, request } from "@/helper";
 </script>
 
 <script>
@@ -14,25 +16,13 @@ export default {
   mounted() {
     let $route = useRoute();
 
-    this.data = Array.from(window.store.endpoints).find((item) => {
+    this.data = Array.from(store.endpoints).find((item) => {
       return item._id === $route.params._id;
     });
   },
   methods: {
-    getRoomNameById(_id) {
-      let room = Array.from(window.store.rooms).find((obj) => {
-        return obj._id === _id;
-      });
-
-      if (!room) {
-        return "Raum: nicht gesetzt";
-      }
-
-      return room.name;
-    },
-    popup(...args) {
-      window.alert.apply(window, args);
-    },
+    getRoomNameById,
+    alert,
     trigger(_id) {
       let command = this.data.commands.find((obj) => {
         return obj._id === _id;
@@ -45,7 +35,7 @@ export default {
 
       let url = `/api/endpoints/${this.data._id}/commands/${_id}`;
 
-      window.request(
+      request(
         url,
         {
           method: "POST",
@@ -71,6 +61,7 @@ export default {
         </h3>
       </div>
 
+      <!-- COMMANDS -->
       <div
         class="col-2 mb-4"
         v-bind:key="command._id"
@@ -106,6 +97,19 @@ export default {
           {{ command.name }}
         </Tile>
       </div>
+      <!-- COMMANDS -->
+      <!-- STATES -->
+      <div
+        class="col-2 mb-4"
+        v-bind:key="state._id"
+        v-for="state in data.states"
+      >
+        <Tile class="bg-dark border-secondary">
+          <div>{{ state.name }}</div>
+          <i>{{ state.value ? state.value : "na" }}</i>
+        </Tile>
+      </div>
+      <!-- STATES -->
     </div>
   </div>
 </template>

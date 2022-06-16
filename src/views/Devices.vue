@@ -1,6 +1,8 @@
 <script setup>
 import Tile from "@/components/Tile.vue";
-import Collapsable from "../components/Collapsable.vue";
+import Collapsable from "@/components/Collapsable.vue";
+import { store } from "../store";
+import { getRoomNameById, getDeviceNameById } from "@/helper";
 </script>
 
 <script>
@@ -8,7 +10,7 @@ export default {
   components: { Collapsable, Tile },
   data() {
     return {
-      items: window.store.devices,
+      items: store.devices,
     };
   },
   mounted() {
@@ -21,28 +23,8 @@ export default {
     */
   },
   methods: {
-    getDeviceNameById(_id) {
-      let device = Array.from(window.store.devices).find((obj) => {
-        return obj._id === _id;
-      });
-
-      if (!device) {
-        return "Nope";
-      }
-
-      return device.name;
-    },
-    getRoomNameById(_id) {
-      let room = Array.from(window.store.rooms).find((obj) => {
-        return obj._id === _id;
-      });
-
-      if (!room) {
-        return "Raum: nicht gesetzt";
-      }
-
-      return room.name;
-    },
+    getDeviceNameById,
+    getRoomNameById,
   },
 };
 </script>
@@ -65,6 +47,12 @@ export default {
       >
         <div class="col-2 mb-4">
           <Tile :href="href" @click="navigate" class="bg-dark border-secondary">
+            <template #icon>
+              <i
+                class="fa-2xl"
+                :class="item.icon || 'fa-solid fa-question'"
+              ></i>
+            </template>
             <template #title>{{ item.name }} </template>
             <span class="text-secondary fw-light">
               ({{ getRoomNameById(item.room) }})

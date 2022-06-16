@@ -2,6 +2,8 @@
 import Tile from "@/components/Tile.vue";
 import Collapsable from "../components/Collapsable.vue";
 import { useRoute } from "vue-router";
+import router from "@/router";
+import { store } from "../store";
 </script>
 
 <script>
@@ -16,21 +18,30 @@ export default {
   mounted() {
     let $route = useRoute();
 
-    this.data = Array.from(window.store.devices).find((item) => {
+    this.data = Array.from(store.devices).find((item) => {
       return item._id === $route.params._id;
     });
 
-    let endpoints = Array.from(window.store.endpoints).filter((obj) => {
+    let endpoints = Array.from(store.endpoints).filter((obj) => {
       return obj.device === this.data._id;
     });
 
-    this.endpoints.push(...endpoints);
+    // skip endpoint selection when only one is provide by the device
+    if (endpoints.length === 1) {
+      router.replace({
+        name: "/endpoints/:_id",
+        params: {
+          _id: endpoints[0]._id,
+        },
+      });
+      return;
+    }
 
-    console.log("$route:", $route, $route.params._id, this.data);
+    this.endpoints.push(...endpoints);
   },
   methods: {
     getRoomNameById(_id) {
-      let room = Array.from(window.store.rooms).find((obj) => {
+      let room = Array.from(store.rooms).find((obj) => {
         return obj._id === _id;
       });
 
