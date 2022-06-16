@@ -126,6 +126,7 @@ export default {
             </li>
           </RouterLink>
 
+          <!--
           <RouterLink custom to="/test" v-slot="{ href, navigate, isActive }">
             <li class="nav-item">
               <a
@@ -138,6 +139,7 @@ export default {
               >
             </li>
           </RouterLink>
+-->
         </ul>
       </div>
     </div>
