@@ -54,7 +54,7 @@ export default {
         {{ $route.params._id }}
       </div>
     </div>
-    <div class="row" v-if="endpoints.lenght > 0">
+    <div class="row" v-if="endpoints.length > 0">
       <RouterLink
         v-bind:key="item._id"
         v-for="item in endpoints"
