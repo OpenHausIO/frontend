@@ -2,7 +2,7 @@
 import Tile from "@/components/Tile.vue";
 import Collapsable from "@/components/Collapsable.vue";
 import { store } from "../store";
-import { groupObjByKey } from "@/helper";
+import { groupObjByKey, isNumber } from "@/helper";
 </script>
 
 <script>
@@ -21,7 +21,15 @@ export default {
   },
   computed: {
     items() {
-      //return [...store.rooms, ...store.rooms, ...store.rooms];
+      return [
+        ...store.rooms,
+        //...store.rooms.slice(5),
+        //...store.rooms.slice(1),
+        //...store.rooms.slice(3),
+        //...store.rooms,
+        //...store.rooms,
+        ...store.rooms,
+      ];
       return store.rooms;
     },
   },
@@ -109,6 +117,7 @@ export default {
     </div>
     <div class="h-100" v-else>
       <!-- DONT GROUP -->
+      <!-- 1) remove h-100 to remove spaces between tiles -->
       <div class="row h-100 display-flex text-center">
         <RouterLink
           v-bind:key="item._id"
@@ -138,7 +147,8 @@ export default {
               <template #title>{{ item.name }} </template>
               <!--{{ item.name }} -> slot content -->
               <span class="text-secondary fw-light">
-                Floor: {{ item.floor || "not set" }}
+                Floor:
+                {{ isNumber(item.floor) ? item.floor : "not set" }}
               </span>
             </Tile>
           </div>
@@ -149,12 +159,30 @@ export default {
   </div>
 </template>
 
+<!--
+
+The tiles beave a litle bit wierd:
+- See isseu #2 comment
+- Tiles should shrink if not enough there
+- Should grow when tenough x there
+- consume full height of row when needed (above condition)
+-->
+
 <style scope>
 .row.display-flex {
   display: flex;
   flex-wrap: wrap;
 }
 .row.display-flex > [class*="col-"] {
-  flex-grow: 1;
+  flex-grow: 0;
+  /* 1) set max-height to shrink tiles */
+  /*max-height: 300px;*/
 }
+
+/*
+[class*="col-"] {
+  color: transparent;
+  text-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+}
+*/
 </style>
