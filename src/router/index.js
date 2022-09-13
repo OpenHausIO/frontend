@@ -3,20 +3,36 @@ import { createRouter, createWebHashHistory } from "vue-router";
 const routes = [{
     path: "/dashboard",
     name: "Dasboard",
+    icon: "fas fa-home",
     component: () => import("../views/Dashboard.vue")
 }, {
     path: "/rooms",
     name: "Rooms",
+    icon: "fa-solid fa-door-open",
     component: () => import("../views/Rooms.vue")
 }, {
     path: "/endpoints",
     name: "Endpoints",
+    icon: "fa-regular fa-lightbulb",
     component: () => import("../views/Endpoints.vue")
 }, {
     path: "/devices",
     name: "Devices",
+    icon: "fa-solid fa-tv",
     component: () => import("../views/Devices.vue")
-}];
+}, /*{
+    path: "/scenes",
+    name: "Scenes",
+    icon: "fa-solid fa-clone",
+    component: () => import("../views/Scenes.vue")
+}, {
+    path: "/plugins",
+    name: "Plugins",
+    icon: "fa-solid fa-puzzle-piece",
+    component: () => import("../views/Plugins.vue")
+}*/];
+
+
 
 const router = createRouter({
     history: createWebHashHistory(),
