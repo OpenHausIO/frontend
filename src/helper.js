@@ -176,3 +176,12 @@ export function toggleFullscreen(elem) {
     }
 
 }
+
+
+export function isNumber(n) {
+    if (new RegExp(/^\d+$/).test(n)) {
+        return true;
+    } else {
+        return false;
+    }
+};
