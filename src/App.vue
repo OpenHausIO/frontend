@@ -35,63 +35,64 @@ export default {
   </div>
   <!-- OVERLAY -->
 
-  <!-- NAVIGATION -->
-  <nav
-    class="
-      navbar navbar-expand-lg navbar-dark
-      bg-dark
-      border-bottom border-secondary
-      sticky-top
-      p-0
-    "
-    style="max-width: 500px"
-  >
-    <div class="container-fluid p-0">
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarNav"
-        aria-controls="navbarNav"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a
-              class="nav-link h5 m-0 p-3"
-              aria-current="page"
-              @click="$router.go(-1)"
-              >Back</a
-            >
-          </li>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand navbar-dark bg-dark sticky-top p-0">
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav w-100 row">
+        <!-- STATIC BACK BUTTON -->
+        <li class="nav-item col text-center">
+          <a class="nav-link" @click="$router.go(-1)">
+            <i class="d-block fa-solid fa-chevron-left"></i>
+            <span>Back</span>
+          </a>
+        </li>
+        <!-- LINK -->
 
-          <RouterLink
-            custom
-            v-bind:to="route.path"
-            v-slot="{ href, navigate, isActive }"
-            v-bind:key="index"
-            v-for="(route, index) in routes"
+        <!-- SPACEER -->
+        <li
+          class="p-0"
+          style="width: 1px; background-color: rgba(0, 0, 0, 0.2)"
+        ></li>
+        <!-- SPACEER -->
+        <!-- STATIC BACK BUTTON -->
+
+        <!-- DYNAMIC LINKS -->
+        <RouterLink
+          custom
+          v-bind:to="route.path"
+          v-slot="{ href, navigate, isActive }"
+          v-bind:key="index"
+          v-for="(route, index) in routes"
+        >
+          <!-- LINK -->
+          <li
+            class="nav-item col text-center p-0"
+            :href="href"
+            @click="navigate"
           >
-            <li class="nav-item">
-              <a
-                class="nav-link h5 m-0 p-3"
-                aria-current="page"
-                :href="href"
-                :class="{ active: isActive || subIsActive(route.path) }"
-                @click="navigate"
-                >{{ route.name }}</a
-              >
-            </li>
-          </RouterLink>
-        </ul>
-      </div>
+            <a
+              class="nav-link"
+              :class="{ active: isActive || subIsActive(route.path) }"
+            >
+              <i class="d-block" :class="route.icon"></i>
+              <span>{{ route.name }}</span>
+            </a>
+          </li>
+          <!-- LINK -->
+
+          <!-- SPACEER -->
+          <li
+            class="p-0"
+            style="width: 1px; background-color: rgba(0, 0, 0, 0.2)"
+            v-if="index + 1 != routes.length"
+          ></li>
+          <!-- SPACEER -->
+        </RouterLink>
+        <!-- DYNAMIC LINKS -->
+      </ul>
     </div>
   </nav>
-  <!-- NAVIGATION -->
+  <!-- NAVBAR -->
 
   <!-- VIEW -->
   <RouterView class="h-100" id="view" />
@@ -104,7 +105,7 @@ export default {
 
 #view {
   /*57 = navbar height */
-  max-height: calc(100% - 65px);
+  max-height: calc(100% - 66px);
   overflow-y: scroll;
 }
 
@@ -125,11 +126,29 @@ export default {
   top: calc(100% - 50px);
 }
 
-nav {
-  overflow-x: scroll;
+ul.navbar-nav li a i {
+  display: block;
+  font-size: 26px;
 }
 
-.nav-link {
+hr {
+  border: 0;
+  border-top-color: currentcolor;
+  border-top-style: none;
+  border-top-width: 0px;
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.nav-link.active {
+  /*
+    --bs-info-rgb
+    --bs-primary-rgb
+  */
+  color: rgba(var(--bs-primary-rgb), 1) !important;
+}
+
+a.nav-link {
   text-transform: uppercase;
+  cursor: pointer;
 }
 </style>
