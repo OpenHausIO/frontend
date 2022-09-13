@@ -11,14 +11,16 @@ export default {
 
 
 <template>
-  <div class="card">
+  <div class="card rounded-0 h-100">
     <div class="card-body text-center">
-      <slot name="icon"></slot>
+      <div style="padding: 10% 0">
+        <slot name="icon"></slot>
 
-      <h3 class="mt-2">
-        <slot name="title"></slot>
-      </h3>
-      <slot></slot>
+        <h3 class="mt-2 d-block">
+          <slot name="title"></slot>
+        </h3>
+        <slot></slot>
+      </div>
     </div>
   </div>
 </template>

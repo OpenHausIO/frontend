@@ -3,6 +3,8 @@
 //import HelloWorld from "@/components/HelloWorld.vue";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
+
+import { routes } from "./router";
 </script>
 
 <script>
@@ -40,9 +42,11 @@ export default {
       bg-dark
       border-bottom border-secondary
       sticky-top
+      p-0
     "
+    style="max-width: 500px"
   >
-    <div class="container-fluid">
+    <div class="container-fluid p-0">
       <button
         class="navbar-toggler"
         type="button"
@@ -57,89 +61,32 @@ export default {
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" aria-current="page" @click="$router.go(-1)"
+            <a
+              class="nav-link h5 m-0 p-3"
+              aria-current="page"
+              @click="$router.go(-1)"
               >Back</a
             >
           </li>
 
           <RouterLink
             custom
-            to="/dashboard"
+            v-bind:to="route.path"
             v-slot="{ href, navigate, isActive }"
+            v-bind:key="index"
+            v-for="(route, index) in routes"
           >
             <li class="nav-item">
               <a
-                class="nav-link"
+                class="nav-link h5 m-0 p-3"
                 aria-current="page"
                 :href="href"
-                :class="{ active: isActive }"
+                :class="{ active: isActive || subIsActive(route.path) }"
                 @click="navigate"
-                >Dashboard</a
+                >{{ route.name }}</a
               >
             </li>
           </RouterLink>
-
-          <RouterLink custom to="/rooms" v-slot="{ href, navigate, isActive }">
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                aria-current="page"
-                :href="href"
-                :class="{ active: isActive || subIsActive('/rooms') }"
-                @click="navigate"
-                >Rooms</a
-              >
-            </li>
-          </RouterLink>
-
-          <RouterLink
-            custom
-            to="/endpoints"
-            v-slot="{ href, navigate, isActive }"
-          >
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                aria-current="page"
-                :href="href"
-                :class="{ active: isActive || subIsActive('/endpoints') }"
-                @click="navigate"
-                >Endpoints</a
-              >
-            </li>
-          </RouterLink>
-
-          <RouterLink
-            custom
-            to="/devices"
-            v-slot="{ href, navigate, isActive }"
-          >
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                aria-current="page"
-                :href="href"
-                :class="{ active: isActive || subIsActive('/devices') }"
-                @click="navigate"
-                >Devices</a
-              >
-            </li>
-          </RouterLink>
-
-          <!--
-          <RouterLink custom to="/test" v-slot="{ href, navigate, isActive }">
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                aria-current="page"
-                :href="href"
-                :class="{ active: isActive }"
-                @click="navigate"
-                >Test</a
-              >
-            </li>
-          </RouterLink>
--->
         </ul>
       </div>
     </div>
@@ -147,7 +94,7 @@ export default {
   <!-- NAVIGATION -->
 
   <!-- VIEW -->
-  <RouterView class="mt-4" />
+  <RouterView class="h-100" id="view" />
   <!-- VIEW -->
 </template>
 
@@ -155,10 +102,10 @@ export default {
 @import "@/assets/base.css";
 /*@import "node_modules/bootstrap/dist/css/bootstrap.css";*/
 
-html,
-body {
-  min-height: 100%;
-  min-width: 100%;
+#view {
+  /*57 = navbar height */
+  max-height: calc(100% - 65px);
+  overflow-y: scroll;
 }
 
 #overlay {
@@ -176,5 +123,13 @@ body {
 #inner {
   margin: 0 auto;
   top: calc(100% - 50px);
+}
+
+nav {
+  overflow-x: scroll;
+}
+
+.nav-link {
+  text-transform: uppercase;
 }
 </style>

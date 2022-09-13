@@ -7,14 +7,23 @@ import { groupObjByKey } from "@/helper";
 
 <script>
 export default {
-  components: { Collapsable, Tile },
+  components: {
+    Collapsable,
+    Tile,
+  },
   data() {
     return {
-      items: store.rooms,
+      //items: store.rooms,
       floors: {},
       groupItems: false,
       hideButtonGrouping: false,
     };
+  },
+  computed: {
+    items() {
+      //return [...store.rooms, ...store.rooms, ...store.rooms];
+      return store.rooms;
+    },
   },
   watch: {
     items: {
@@ -47,6 +56,7 @@ export default {
 </script>
 <template>
   <div class="container-fluid">
+    <!--
     <div class="row mb-3" v-if="!hideButtonGrouping">
       <div class="col">
         <button
@@ -57,6 +67,7 @@ export default {
         </button>
       </div>
     </div>
+    -->
 
     <div v-if="groupItems">
       <!-- COLLAPSABLE FLOOR -->
@@ -96,9 +107,9 @@ export default {
       </div>
       <!-- COLLAPSABLE FLOOR -->
     </div>
-    <div v-else>
+    <div class="h-100" v-else>
       <!-- DONT GROUP -->
-      <div class="row h-100">
+      <div class="row h-100 display-flex text-center">
         <RouterLink
           v-bind:key="item._id"
           v-for="item in items"
@@ -111,16 +122,16 @@ export default {
           }"
           v-slot="{ href, navigate }"
         >
-          <div class="col-2 h-25 d-inline-block">
+          <div class="p-0 col-6 col-md-3 col-xl-2">
             <Tile
               :href="href"
               @click="navigate"
-              class="border-dark"
+              class="border-secondary"
               style="background: transparent"
             >
               <template #icon>
                 <i
-                  class="fa-2xl"
+                  class="fa-3x"
                   :class="item.icon || 'fa-solid fa-question'"
                 ></i>
               </template>
@@ -139,39 +150,11 @@ export default {
 </template>
 
 <style scope>
-/*
-.flex-container {
-  display: -ms-flexbox;
-  display: -webkit-flex;
+.row.display-flex {
   display: flex;
-  -webkit-flex-direction: row;
-  -ms-flex-direction: row;
-  flex-direction: row;
-  -webkit-flex-wrap: wrap;
-  -ms-flex-wrap: wrap;
   flex-wrap: wrap;
-  -webkit-justify-content: flex-start;
-  -ms-flex-pack: start;
-  justify-content: flex-start;
-  -webkit-align-content: stretch;
-  -ms-flex-line-pack: stretch;
-  align-content: stretch;
-  -webkit-align-items: stretch;
-  -ms-flex-align: stretch;
-  align-items: stretch;
 }
-
-.flex-item {
-  -webkit-order: 0;
-  -ms-flex-order: 0;
-  order: 0;
-  -webkit-flex: 0 1 auto;
-  -ms-flex: 0 1 auto;
-  flex: 0 1 auto;
-  -webkit-align-self: stretch;
-  -ms-flex-item-align: stretch;
-  align-self: stretch;
-  min-width: 0;
+.row.display-flex > [class*="col-"] {
+  flex-grow: 1;
 }
-*/
 </style>
