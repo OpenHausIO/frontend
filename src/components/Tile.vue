@@ -11,6 +11,7 @@ export default {
 
 
 <template>
+  <!-- 1) Remove h-100 to shrink tiles -->
   <div class="card rounded-0 h-100">
     <div class="card-body text-center">
       <div style="padding: 10% 0">
