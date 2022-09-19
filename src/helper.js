@@ -1,3 +1,4 @@
+import { onMounted, onUnmounted } from 'vue'
 import { store } from "@/store";
 
 // TODO prefix with underscoe (_)?
@@ -184,4 +185,17 @@ export function isNumber(n) {
     } else {
         return false;
     }
+};
+
+// from https://vuejs.org/guide/reusability/composables.html#mouse-tracker-example
+export function useEventListener(target, event, callback) {
+
+    onMounted(() => {
+        target.addEventListener(event, callback);
+    });
+
+    onUnmounted(() => {
+        target.removeEventListener(event, callback);
+    });
+
 };
