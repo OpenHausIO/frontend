@@ -1,6 +1,4 @@
-# vue-project
-
-This template should help get you started developing with Vue 3 in Vite.
+# Frontend
 
 ## Recommended IDE Setup
 
@@ -33,48 +31,8 @@ npm run build
 
 
 ## Screenshots
-
-### Rooms
-![Roooms grouped](./docs/img/rooms-grouped.png)
-Rooms are grouped by floor, they are on.
+![Dashboard](./docs/img/dashboard.png)
+![Rooms](./docs/img/rooms.png)
+![Endpoints](./docs/img/endpoints.png)
+![Devices](./docs/img/devices.png)
 <br /><br />
-
-![Roooms ungrouped](./docs/img/rooms-ungrouped.png)
-Rooms ungrouped.
-<br /><br />
-
-![Rooom](./docs/img/room.png)
-Endpoints in a room after clicking on a room tile
-
----
-
-### Endpoints
-![Endpoints grouped](./docs/img/endpoints-grouped.png)
-Endoints are grouped by room they are in.,
-<br /><br />
-
-![Endpoints ungrouped](./docs/img/endpoints-ungrouped.png)
-Endpoints appear as they are, ungrouped.
-<br /><br />
-
-![Endpoints Commands](./docs/img/endpoint.png)
-Commands a endpoint has/provide.
-<br /><br />
-
-![Endpoints Commands with parameter](./docs/img/endpoint-parameters-button.png)
-Commands with parameters (button/enum)
-<br /><br />
-
-![Endpoints Commands with parameter](./docs/img/endpoint-parameters-range.png)
-Commands with parameters (range)
-
-
----
-
-### Devices
-![Endpoints grouped](./docs/img/devices.png)
-Phsyical devices, if you click on it, you see all endpoints the devices provides
-<br /><br />
-
-![Endpoints un-grouped](./docs/img/devices-endpoints.png)
-Available endpoints without grouping them. Room name is added to tile.
