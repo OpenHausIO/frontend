@@ -4,6 +4,9 @@ import router from "./router";
 import { store } from "./store";
 import { request } from "./helper.js";
 
+import VueNotificationList from '@dafcoe/vue-notification';
+import GridLayout from 'vue3-drr-grid-layout'
+import 'vue3-drr-grid-layout/dist/style.css'
 
 // monkey patch ws
 window.events = null;
@@ -105,8 +108,44 @@ Promise.all([
 
     console.log("Preshit done, mount vue app");
 
+    app.use(VueNotificationList)
     app.use(router);
+    app.use(GridLayout);
     app.mount("#app");
+
+
+    (() => {
+
+        let counter = 0;
+        let timer = null
+
+        document.body.addEventListener("click", () => {
+
+            clearTimeout(timer);
+
+            console.log("clicked", counter);
+
+            timer = setTimeout(() => {
+                console.log("counter reset", counter);
+                counter = 0;
+            }, 1000);
+
+            counter++;
+
+            if (counter >= 10) {
+
+                clearTimeout(timer);
+                counter = 0;
+
+                router.push({
+                    path: "/settings"
+                });
+            }
+
+        }, true);
+
+    })();
+
 
 }).catch((err) => {
 
