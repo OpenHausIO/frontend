@@ -5,14 +5,22 @@ import { store } from "../store";
 </script>
 
 <script>
+import { inject } from "vue";
 export default {
-  components: { Collapsable, Tile },
+  components: {
+    Collapsable,
+    Tile,
+  },
   data() {
     return {
       items: store.endpoints,
       rooms: {},
-      groupItems: true,
     };
+  },
+  computed: {
+    settings() {
+      return inject("settings");
+    },
   },
   mounted() {
     this.rooms = Array.from(this.items).reduce((obj, item) => {
@@ -39,18 +47,7 @@ export default {
 
 <template>
   <div class="container-fluid">
-    <div class="row mb-3">
-      <div class="col">
-        <button
-          class="btn btn-outline-primary"
-          @click="groupItems = !groupItems"
-        >
-          Toggle Grouping
-        </button>
-      </div>
-    </div>
-
-    <div v-show="groupItems">
+    <div v-show="settings.groupEndpointItems">
       <!-- COLLAPSABLE FLOOR -->
       <div class="row" v-bind:key="index" v-for="(endpoints, index) in rooms">
         <Collapsable>
@@ -88,9 +85,9 @@ export default {
       </div>
       <!-- COLLAPSABLE FLOOR -->
     </div>
-    <div v-show="!groupItems">
+    <div class="h-100" v-show="!settings.groupEndpointItems">
       <!-- DONT GROUP -->
-      <div class="row">
+      <div class="row h-100 display-flex text-center">
         <RouterLink
           v-bind:key="item._id"
           v-for="item in items"
@@ -103,11 +100,11 @@ export default {
           }"
           v-slot="{ href, navigate }"
         >
-          <div class="col-2 mb-4">
+          <div class="p-0 col-6 col-md-3 col-xl-2">
             <Tile
               :href="href"
               @click="navigate"
-              class="bg-dark border-secondary"
+              style="background: transparent; border: 1px solid #000"
             >
               <template #icon>
                 <i

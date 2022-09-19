@@ -6,8 +6,12 @@ import { getRoomNameById, getDeviceNameById } from "@/helper";
 </script>
 
 <script>
+import { inject } from "vue";
 export default {
-  components: { Collapsable, Tile },
+  components: {
+    Collapsable,
+    Tile,
+  },
   data() {
     return {
       items: store.devices,
@@ -21,6 +25,18 @@ export default {
       return obj;
     }, {});
     */
+  } /*
+  computed: {
+    items() {
+      return store.devices.filter((item) => {
+        return item.enabled;
+      });
+    },
+  },*/,
+  computed: {
+    settings() {
+      return inject("settings");
+    },
   },
   methods: {
     getDeviceNameById,
@@ -32,7 +48,7 @@ export default {
 <template>
   <div class="container-fluid">
     <!-- DONT GROUP -->
-    <div class="row">
+    <div class="row h-100 display-flex text-center">
       <RouterLink
         v-bind:key="item._id"
         v-for="item in items"
@@ -45,8 +61,12 @@ export default {
         }"
         v-slot="{ href, navigate }"
       >
-        <div class="col-2 mb-4">
-          <Tile :href="href" @click="navigate" class="bg-dark border-secondary">
+        <div class="p-0 col-6 col-md-3 col-xl-2">
+          <Tile
+            :href="href"
+            @click="navigate"
+            style="background: transparent; border: 1px solid #000"
+          >
             <template #icon>
               <i
                 class="fa-2xl"

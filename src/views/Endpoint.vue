@@ -23,7 +23,7 @@ export default {
   methods: {
     getRoomNameById,
     alert,
-    trigger(_id) {
+    trigger(_id, event) {
       let command = this.data.commands.find((obj) => {
         return obj._id === _id;
       });
@@ -32,6 +32,10 @@ export default {
         console.warn("Could not find command with _id: ", _id);
         return;
       }
+
+      // does not work
+      //event.target.classList.toggle("animate");
+      //event.target.classList.toggle("animate__fadeIn");
 
       let url = `/api/endpoints/${this.data._id}/commands/${_id}`;
 
@@ -89,7 +93,7 @@ export default {
         <Tile
           v-else
           class="bg-dark border-secondary"
-          @click="trigger(command._id)"
+          @click="trigger(command._id, $event)"
         >
           <template #title>
             <i :class="command.icon"></i>

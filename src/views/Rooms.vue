@@ -6,6 +6,7 @@ import { groupObjByKey, isNumber } from "@/helper";
 </script>
 
 <script>
+import { inject } from "vue";
 export default {
   components: {
     Collapsable,
@@ -21,16 +22,19 @@ export default {
   },
   computed: {
     items() {
+      return store.rooms;
       return [
-        ...store.rooms,
+        //...store.rooms,
         //...store.rooms.slice(5),
         //...store.rooms.slice(1),
-        //...store.rooms.slice(3),
+        //...store.rooms,
+        ///...store.rooms,
         //...store.rooms,
         //...store.rooms,
-        ...store.rooms,
       ];
-      return store.rooms;
+    },
+    settings() {
+      return inject("settings");
     },
   },
   watch: {
@@ -77,7 +81,7 @@ export default {
     </div>
     -->
 
-    <div v-if="groupItems">
+    <div v-if="settings.groupRoomItems">
       <!-- COLLAPSABLE FLOOR -->
       <div class="row" v-bind:key="index" v-for="(rooms, index) in floors">
         <Collapsable>
@@ -131,12 +135,11 @@ export default {
           }"
           v-slot="{ href, navigate }"
         >
-          <div class="p-0 col-6 col-md-3 col-xl-2">
+          <div class="p-0 col-6 col-sm-6 col-md-4 col-lg-3 col-xxl-2">
             <Tile
               :href="href"
               @click="navigate"
-              class="border-secondary"
-              style="background: transparent"
+              style="background: transparent; border: 1px solid #000"
             >
               <template #icon>
                 <i

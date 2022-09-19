@@ -68,7 +68,12 @@ export default {
         v-slot="{ href, navigate }"
       >
         <div class="col-2 mb-4">
-          <Tile :href="href" @click="navigate" class="bg-dark border-secondary">
+          <Tile
+            :href="href"
+            @click="navigate"
+            class="bg-dark"
+            style="border: 1px solid #000"
+          >
             <template #icon>
               <i class="fa-2xl" :class="item.icon"></i>
             </template>
