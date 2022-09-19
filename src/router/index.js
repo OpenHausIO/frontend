@@ -20,12 +20,12 @@ const routes = [{
     name: "Devices",
     icon: "fa-solid fa-tv",
     component: () => import("../views/Devices.vue")
-}, /*{
+}/*, {
     path: "/scenes",
     name: "Scenes",
     icon: "fa-solid fa-clone",
     component: () => import("../views/Scenes.vue")
-}, {
+},/* {
     path: "/plugins",
     name: "Plugins",
     icon: "fa-solid fa-puzzle-piece",
@@ -63,9 +63,15 @@ const router = createRouter({
             name: "/test",
             component: () => import("../views/Test.vue")
         }, {
+            path: "/settings",
+            name: "Settings",
+            icon: "fa fa-gear",
+            component: () => import("../views/Settings.vue")
+        }, {
             path: "/:pathMatch(.*)*",
             name: "NotFound",
             redirect: "/dashboard"
+            // use settings.startpage
         }]
 });
 
