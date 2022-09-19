@@ -3,16 +3,60 @@
 //import HelloWorld from "@/components/HelloWorld.vue";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
+import "@dafcoe/vue-notification/dist/vue-notification.css";
 
 import { routes } from "./router";
 </script>
 
 <script>
+import { reactive, provide, inject } from "vue";
+
 export default {
+  name: "Frontend",
   data() {
     return {
       overlay: false,
+      settings: {},
     };
+  },
+  mounted() {
+    console.log("App.vue mounted");
+
+    if (!window.localStorage.getItem("settings")) {
+      window.localStorage.setItem(
+        "settings",
+        JSON.stringify({
+          // grouping
+          groupItems: true,
+          groupRoomItems: true,
+          groupEndpointItems: true,
+          groupDeviceItems: true,
+          // visibility
+          showSettingsButton: true,
+          showBackButton: true,
+
+          // misc
+          showVueTourOnNextVisit: true,
+
+          // dashboard widgets
+          editDashboardWidgets: false,
+          showDashboardWidgets: true,
+
+          // screensaver
+          screensaverOverlayDelay: 30,
+          enableScreenSaverOverlay: false,
+
+          startpage: "/dashboard",
+          collapsed: [],
+        })
+      );
+    }
+
+    let msg = window.localStorage.getItem("settings") || "{}";
+    let data = JSON.parse(msg);
+    let settings = reactive(data);
+    this.settings = settings;
+    provide("settings", settings);
   },
   methods: {
     subIsActive(input) {
@@ -35,12 +79,23 @@ export default {
   </div>
   <!-- OVERLAY -->
 
+  <!-- NOTIFICATIONS -->
+  <div id="notifications">
+    <vue-notification-list position="top-right"></vue-notification-list>
+  </div>
+  <!-- NOTIFICATIONS -->
+
   <!-- NAVBAR -->
-  <nav class="navbar navbar-expand navbar-dark bg-dark sticky-top p-0">
-    <div class="collapse navbar-collapse">
-      <ul class="navbar-nav w-100 row">
+  <!--       border-bottom border-secondary -->
+  <nav
+    class="navbar navbar-expand navbar-dark bg-dark sticky-top p-0"
+    style="border-bottom: 1px solid #000"
+  >
+    <div class="collapse navbar-collapse w-100">
+      <ul class="navbar-nav w-100 row m-0">
         <!-- STATIC BACK BUTTON -->
-        <li class="nav-item col text-center">
+        <!-- set class .fixed-nav-item for small button -->
+        <li class="nav-item col text-center p-0" v-if="settings.showBackButton">
           <a class="nav-link" @click="$router.go(-1)">
             <i class="d-block fa-solid fa-chevron-left"></i>
             <span>Back</span>
@@ -49,10 +104,8 @@ export default {
         <!-- LINK -->
 
         <!-- SPACEER -->
-        <li
-          class="p-0"
-          style="width: 1px; background-color: rgba(0, 0, 0, 0.2)"
-        ></li>
+        <!-- style="width: 1px; background-color: rgba(0, 0, 0, 0.2)" -->
+        <li class="p-0" style="width: 2px; background-color: #000"></li>
         <!-- SPACEER -->
         <!-- STATIC BACK BUTTON -->
 
@@ -81,14 +134,27 @@ export default {
           <!-- LINK -->
 
           <!-- SPACEER -->
-          <li
-            class="p-0"
-            style="width: 1px; background-color: rgba(0, 0, 0, 0.2)"
-            v-if="index + 1 != routes.length"
-          ></li>
+          <li class="p-0" style="width: 2px; background-color: #000"></li>
           <!-- SPACEER -->
         </RouterLink>
         <!-- DYNAMIC LINKS -->
+
+        <!-- STATIC BACK BUTTON -->
+        <li
+          class="nav-item col text-center p-0"
+          v-if="settings.showSettingsButton"
+        >
+          <a
+            class="nav-link"
+            :class="{ active: subIsActive('/settings') }"
+            @click="$router.push({ name: 'Settings' })"
+          >
+            <i class="d-block fa fa-gear"></i>
+            <span>Settings</span>
+          </a>
+        </li>
+        <!-- LINK -->
+        <!-- STATIC BACK BUTTON -->
       </ul>
     </div>
   </nav>
@@ -151,4 +217,18 @@ a.nav-link {
   text-transform: uppercase;
   cursor: pointer;
 }
+
+.fixed-nav-item {
+  width: 100px;
+}
+
+#notifications > * {
+  z-index: 9999 !important;
+}
+
+/*
+nav.navbar {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+*/
 </style>
