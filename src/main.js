@@ -16,6 +16,8 @@ window.events = null;
 // create vue app
 const app = createApp(App);
 
+app.config.globalProperties.$window = window;
+
 
 Promise.all([
 
