@@ -32,6 +32,7 @@ npm run build
 
 ## Screenshots
 ![Dashboard](./docs/img/dashboard.png)
+![Dashboard-Widgets](./docs/img/dashboard-widgets.png)
 ![Rooms](./docs/img/rooms.png)
 ![Endpoints](./docs/img/endpoints.png)
 ![Devices](./docs/img/devices.png)

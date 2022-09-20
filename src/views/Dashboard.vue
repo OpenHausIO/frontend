@@ -1,8 +1,11 @@
 <script>
 import { defineComponent, reactive, inject } from "vue";
+import Widget from "../components/Widget.vue";
 
 export default defineComponent({
-  components: {},
+  components: {
+    Widget,
+  },
   data() {
     return {};
   },
@@ -11,8 +14,29 @@ export default defineComponent({
       this.layout = JSON.parse(window.localStorage.getItem("widgets"));
     } else {
       this.layout = [
-        { x: 0, y: 0, w: 2, h: 12, i: 0 },
-        { x: 2, y: 0, w: 2, h: 4, i: 1 },
+        { x: 0, y: 0, w: 6, h: 12, i: 0, widget: "Weather", moved: false },
+        { x: 6, y: 0, w: 3, h: 12, i: 1, widget: "Notes", moved: false },
+        { x: 9, y: 0, w: 3, h: 12, i: 2, widget: "Todo", moved: false },
+        {
+          x: 4,
+          y: 12,
+          w: 6,
+          h: 8,
+          i: 4,
+          widget: "FritzBox",
+          move: false,
+          moved: false,
+        },
+        { x: 0, y: 12, w: 4, h: 18, i: 5, widget: "Notes", moved: false },
+        { x: 4, y: 20, w: 8, h: 10, i: 6, widget: "Scenes", moved: false },
+        { x: 10, y: 12, w: 2, h: 8, i: 7, widget: "Alarm", moved: false },
+      ];
+      /*
+      this.layout = [
+        { x: 0, y: 0, w: 6, h: 12, i: 0, widget: "Weather" },
+        { x: 6, y: 8, w: 4, h: 12, i: 1, widget: "Notes" },
+        { x: 10, y: 7, w: 2, h: 12, i: 2, widget: "Todo" },
+        /*
         { x: 4, y: 0, w: 2, h: 5, i: 2 },
         { x: 6, y: 0, w: 2, h: 3, i: 3 },
         { x: 8, y: 3, w: 2, h: 3, i: 4 },
@@ -21,7 +45,9 @@ export default defineComponent({
         { x: 2, y: 5, w: 2, h: 5, i: 7 },
         { x: 4, y: 5, w: 2, h: 5, i: 8 },
         { x: 6, y: 3, w: 2, h: 6, i: 9 },
+        
       ];
+      */
     }
   },
   computed: {
@@ -76,10 +102,12 @@ export default defineComponent({
         :i="item.i"
         @resize="resize"
         @moved="moved"
-        class="bg-dark p-2"
+        class="bg-dark"
         style="border: 1px solid #000"
       >
-        Widget #{{ item.i }}
+        <Widget :name="item.widget">
+          <!--<template #main> Widget #{{ item.i }}</template>-->
+        </Widget>
       </grid-item>
     </template>
   </grid-layout>
