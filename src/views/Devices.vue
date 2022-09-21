@@ -8,7 +8,6 @@ const settings = settingsStore();
 </script>
 
 <script>
-import { inject } from "vue";
 export default {
   components: {
     Collapsable,
@@ -35,12 +34,6 @@ export default {
       });
     },
   },*/,
-  computed: {
-    /*
-    settings() {
-      return inject("settings");
-    },*/
-  },
   methods: {
     getDeviceNameById,
     getRoomNameById,

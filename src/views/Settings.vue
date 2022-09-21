@@ -4,8 +4,8 @@ const settings = settingsStore();
 </script>
 
 <script>
-import { defineComponent, watch, inject, nextTick } from "vue";
-import { toggleFullscreen, useEventListener } from "../helper.js";
+import { defineComponent, watch, nextTick } from "vue";
+import { toggleFullscreen } from "../helper.js";
 import { useNotificationStore } from "@dafcoe/vue-notification";
 import { v4 as uuid } from "uuid";
 
@@ -17,7 +17,7 @@ export default defineComponent({
     return {};
   },
   mounted() {
-    console.log("Mounted, watch settings", inject("settings"));
+    console.log("Mounted, watch settings");
 
     // save changes that are made
     watch(this.settings, () => {
@@ -56,7 +56,7 @@ export default defineComponent({
         }
       });
     },
-    addDashboardWidget() {
+    addDashboardWidget(widget) {
       let widgets = JSON.parse(window.localStorage.getItem("widgets"));
 
       let i = ((start) => {
@@ -75,7 +75,7 @@ export default defineComponent({
         w: 2,
         h: 2,
         uuid: uuid(),
-        widget: "Clock",
+        widget,
         moved: false,
         i,
       });
@@ -190,6 +190,7 @@ export default defineComponent({
 
     <hr />
 
+    <!-- DASHBOARD -->
     <div class="form-check form-switch">
       <input
         class="form-check-input"
@@ -203,6 +204,28 @@ export default defineComponent({
     </div>
 
     <div class="form-check form-switch">
+      <label for="dashboardGridColsInput" class="form-label">Cols</label>
+      <input
+        type="number"
+        id="dashboardGridColsInput"
+        class="form-control"
+        v-model="settings.dashboardGrid.cols"
+        :disabled="!settings.editDashboardWidgets"
+      />
+    </div>
+
+    <div class="form-check form-switch">
+      <label for="dashboardGridRowsInput" class="form-label">Rows</label>
+      <input
+        type="number"
+        id="dashboardGridRowsInput"
+        class="form-control"
+        v-model="settings.dashboardGrid.rows"
+        :disabled="!settings.editDashboardWidgets"
+      />
+    </div>
+
+    <div class="form-check form-switch">
       <input
         class="form-check-input"
         type="checkbox"
@@ -213,6 +236,8 @@ export default defineComponent({
         Show Dashboard widgets
       </label>
     </div>
+
+    <!-- DASHBOARD -->
 
     <hr />
 
@@ -266,8 +291,18 @@ export default defineComponent({
       Toggle fullscreen
     </button>
 
-    <button class="btn btn-outline-primary m-1" @click="addDashboardWidget()">
+    <button
+      class="btn btn-outline-primary m-1"
+      @click="addDashboardWidget('Clock')"
+    >
       Add "Clock" widget to Dashboard
+    </button>
+
+    <button
+      class="btn btn-outline-primary m-1"
+      @click="addDashboardWidget('Cams')"
+    >
+      Add "Cams" widget to Dashboard
     </button>
 
     <a

@@ -4,7 +4,7 @@ const settings = settingsStore();
 </script>
 
 <script>
-import { defineComponent, reactive, inject } from "vue";
+import { defineComponent } from "vue";
 import Widget from "../components/Widget.vue";
 import { v4 as uuid } from "uuid";
 
@@ -28,33 +28,23 @@ export default defineComponent({
           y: 12,
           w: 6,
           h: 8,
-          i: 4,
           widget: "FritzBox",
           move: false,
           moved: false,
+          i: 3,
         },
-        { x: 0, y: 12, w: 4, h: 18, widget: "Notes", moved: false, i: 3 },
-        { x: 4, y: 20, w: 8, h: 10, widget: "Scenes", moved: false, i: 4 },
-        { x: 10, y: 12, w: 2, h: 8, widget: "Alarm", moved: false, i: 5 },
+        { x: 0, y: 12, w: 4, h: 18, widget: "Notes", moved: false, i: 4 },
+        { x: 4, y: 20, w: 8, h: 10, widget: "Scenes", moved: false, i: 5 },
+        { x: 10, y: 12, w: 2, h: 8, widget: "Alarm", moved: false, i: 6 },
       ].map((widget) => {
         widget.uuid = uuid();
         return widget;
       });
     }
   },
-  computed: {
-    /*
-    settings() {
-      return inject("settings");
-    },
-    */
-  },
   methods: {
-    moved(i, x, y) {
-      console.log(`Moved i:${i}; x:${x}; y:${y}`);
-      window.localStorage.setItem("widgets", JSON.stringify(this.layout));
-    },
-    resize(i, h, w, nh, nw) {
+    saveLayout() {
+      console.log("Saved widget layout");
       window.localStorage.setItem("widgets", JSON.stringify(this.layout));
     },
   },
@@ -67,8 +57,8 @@ export default defineComponent({
 <template>
   <grid-layout
     v-model:layout="layout"
-    :col-num="12"
-    :row-height="30"
+    :col-num="settings.dashboardGrid.cols"
+    :row-height="settings.dashboardGrid.rows"
     :margin="[0, 0]"
     :isDraggable="settings.editDashboardWidgets"
     :isResizable="settings.editDashboardWidgets"
@@ -97,8 +87,9 @@ export default defineComponent({
         :w="item.w"
         :h="item.h"
         :i="item.i"
-        @resize="resize"
-        @moved="moved"
+        @resize="saveLayout()"
+        @move="saveLayout()"
+        @moved="saveLayout()"
         class="bg-dark"
         style="border: 1px solid #000"
       >

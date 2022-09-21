@@ -7,7 +7,6 @@ const settings = settingsStore();
 </script>
 
 <script>
-import { inject } from "vue";
 export default {
   components: {
     Collapsable,
@@ -18,13 +17,6 @@ export default {
       items: store.endpoints,
       rooms: {},
     };
-  },
-  computed: {
-    /*
-    settings() {
-      return inject("settings");
-    },
-    */
   },
   mounted() {
     this.rooms = Array.from(this.items).reduce((obj, item) => {

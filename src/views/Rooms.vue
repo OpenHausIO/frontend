@@ -8,7 +8,6 @@ const settings = settingsStore();
 </script>
 
 <script>
-import { inject } from "vue";
 export default {
   components: {
     Collapsable,
@@ -34,10 +33,7 @@ export default {
         //...store.rooms,
         //...store.rooms,
       ];
-    } /*
-    settings() {
-      return inject("settings");
-    },*/,
+    },
   },
   watch: {
     items: {
