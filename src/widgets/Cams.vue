@@ -36,7 +36,7 @@ export default defineComponent({
   <div>
     <video muted autoplay loop>
       <!--<source src="flower.webm" type="video/webm" />-->
-      <source src="cam.mp4" type="video/mp4" />
+      <source src="http://cam.mp4" type="video/mp4" />
     </video>
   </div>
 </template>
