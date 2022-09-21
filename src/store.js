@@ -1,5 +1,27 @@
 import { reactive } from "vue";
 
+import { defineStore } from "pinia"
+
+export const settingsStore = defineStore('settings', {
+    state() {
+        return {
+            groupItems: true,
+            groupRoomItems: true,
+            groupEndpointItems: true,
+            groupDeviceItems: true,
+            showSettingsButton: true,
+            showBackButton: true,
+            showVueTourOnNextVisit: true,
+            showGradientBackground: true,
+            editDashboardWidgets: false,
+            showDashboardWidgets: true,
+            screensaverOverlayDelay: 30,
+            enableScreenSaverOverlay: false,
+            startpage: "/dashboard",
+        }
+    }
+});
+
 const store = reactive({
     rooms: [],
     endpoints: [],

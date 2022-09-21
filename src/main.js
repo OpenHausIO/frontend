@@ -1,4 +1,4 @@
-import { createApp } from "vue";
+import { createApp, watch } from "vue";
 import App from "./App.vue";
 import router from "./router";
 import { store } from "./store";
@@ -8,15 +8,43 @@ import VueNotificationList from '@dafcoe/vue-notification';
 import GridLayout from 'vue3-drr-grid-layout'
 import 'vue3-drr-grid-layout/dist/style.css'
 
+import { createPinia } from 'pinia';
+const pinia = createPinia();
+
 // monkey patch ws
 window.events = null;
 
+pinia.use(({ store }) => {
+
+    if (window.localStorage.getItem("settings")) {
+        Object.assign(store, JSON.parse(window.localStorage.getItem("settings")));
+    }
+
+    store.$subscribe(() => {
+        window.localStorage.setItem("settings", JSON.stringify(store));
+    });
+
+    // initial background settings
+    // TODO: Find a better way
+    if (store.showGradientBackground) {
+        document.getElementById("app").classList.remove("bg-dark");
+        document.getElementById("app").classList.add("gardien-background");
+    } else {
+        document.getElementById("app").classList.add("bg-dark");
+        document.getElementById("app").classList.remove("gardien-background");
+    }
+
+});
 
 
 // create vue app
 const app = createApp(App);
 
 app.config.globalProperties.$window = window;
+app.config.globalProperties.$console = console;
+
+
+
 
 
 Promise.all([
@@ -113,6 +141,7 @@ Promise.all([
     app.use(VueNotificationList)
     app.use(router);
     app.use(GridLayout);
+    app.use(pinia);
     app.mount("#app");
 
 
@@ -124,15 +153,12 @@ Promise.all([
         document.body.addEventListener("click", () => {
 
             clearTimeout(timer);
-
-            console.log("clicked", counter);
+            counter++;
 
             timer = setTimeout(() => {
                 console.log("counter reset", counter);
                 counter = 0;
-            }, 1000);
-
-            counter++;
+            }, 600);
 
             if (counter >= 10) {
 

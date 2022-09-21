@@ -6,57 +6,26 @@ import "bootstrap";
 import "@dafcoe/vue-notification/dist/vue-notification.css";
 
 import { routes } from "./router";
+
+import { settingsStore } from "./store.js";
+const settings = settingsStore();
 </script>
 
 <script>
-import { reactive, provide, inject } from "vue";
+import { reactive, provide, inject, watch } from "vue";
+import { mapState } from "pinia";
+
+console.log(settingsStore);
 
 export default {
   name: "Frontend",
   data() {
     return {
       overlay: false,
-      settings: {},
     };
   },
   mounted() {
     console.log("App.vue mounted");
-
-    if (!window.localStorage.getItem("settings")) {
-      window.localStorage.setItem(
-        "settings",
-        JSON.stringify({
-          // grouping
-          groupItems: true,
-          groupRoomItems: true,
-          groupEndpointItems: true,
-          groupDeviceItems: true,
-          // visibility
-          showSettingsButton: true,
-          showBackButton: true,
-
-          // misc
-          showVueTourOnNextVisit: true,
-
-          // dashboard widgets
-          editDashboardWidgets: false,
-          showDashboardWidgets: true,
-
-          // screensaver
-          screensaverOverlayDelay: 30,
-          enableScreenSaverOverlay: false,
-
-          startpage: "/dashboard",
-          collapsed: [],
-        })
-      );
-    }
-
-    let msg = window.localStorage.getItem("settings") || "{}";
-    let data = JSON.parse(msg);
-    let settings = reactive(data);
-    this.settings = settings;
-    provide("settings", settings);
   },
   methods: {
     subIsActive(input) {
