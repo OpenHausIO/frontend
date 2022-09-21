@@ -3,6 +3,8 @@ import Tile from "@/components/Tile.vue";
 import Collapsable from "@/components/Collapsable.vue";
 import { store } from "../store";
 import { getRoomNameById, getDeviceNameById } from "@/helper";
+import { settingsStore } from "../store.js";
+const settings = settingsStore();
 </script>
 
 <script>
@@ -34,9 +36,10 @@ export default {
     },
   },*/,
   computed: {
+    /*
     settings() {
       return inject("settings");
-    },
+    },*/
   },
   methods: {
     getDeviceNameById,

@@ -3,6 +3,8 @@ import Tile from "@/components/Tile.vue";
 import Collapsable from "@/components/Collapsable.vue";
 import { store } from "../store";
 import { groupObjByKey, isNumber } from "@/helper";
+import { settingsStore } from "../store.js";
+const settings = settingsStore();
 </script>
 
 <script>
@@ -32,10 +34,10 @@ export default {
         //...store.rooms,
         //...store.rooms,
       ];
-    },
+    } /*
     settings() {
       return inject("settings");
-    },
+    },*/,
   },
   watch: {
     items: {

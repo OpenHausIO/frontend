@@ -2,6 +2,8 @@
 import Tile from "@/components/Tile.vue";
 import Collapsable from "../components/Collapsable.vue";
 import { store } from "../store";
+import { settingsStore } from "../store.js";
+const settings = settingsStore();
 </script>
 
 <script>
@@ -18,9 +20,11 @@ export default {
     };
   },
   computed: {
+    /*
     settings() {
       return inject("settings");
     },
+    */
   },
   mounted() {
     this.rooms = Array.from(this.items).reduce((obj, item) => {

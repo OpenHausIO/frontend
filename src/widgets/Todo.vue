@@ -3,6 +3,12 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "Todo",
+  props: {
+    uuid: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
       title: "Hausarbeit",
@@ -42,9 +48,58 @@ export default defineComponent({
       ],
     };
   },
+  mounted() {
+    let str = window.localStorage.getItem(`widget-${this.uuid}`);
+
+    if (!str) {
+      str = JSON.stringify({
+        title: "",
+        jobs: [],
+      });
+
+      window.localStorage.setItem(`widget-${this.uuid}`, str);
+    }
+
+    let config = JSON.parse(str);
+
+    this.title = config.title;
+    this.jobs = config.jobs || [];
+  },
   methods: {
     toggleDone(job) {
+      if (job.edit) {
+        return;
+      }
+
       job.done = !job.done;
+
+      window.localStorage.setItem(
+        `widget-${this.uuid}`,
+        JSON.stringify({
+          title: this.title,
+          jobs: this.jobs,
+        })
+      );
+    },
+    addJob() {
+      this.jobs.push({
+        done: false,
+        desc: "",
+        edit: true,
+      });
+    },
+    closeEdit() {
+      this.jobs.forEach((job) => {
+        job.edit = false;
+      });
+
+      window.localStorage.setItem(
+        `widget-${this.uuid}`,
+        JSON.stringify({
+          title: this.title,
+          jobs: this.jobs,
+        })
+      );
     },
   },
 });
@@ -63,11 +118,18 @@ export default defineComponent({
           ></i>
           <i class="fa-regular fa-circle text-primary" v-else></i>
           &nbsp;
-          <del v-if="job.done">{{ job.desc }}</del>
-          <span v-else>{{ job.desc }}</span>
+          <div class="d-inline" v-if="job.edit">
+            <input type="text" v-model="job.desc" />
+          </div>
+          <div class="d-inline" v-else>
+            <del v-if="job.done">{{ job.desc }}</del>
+            <span v-else>{{ job.desc }}</span>
+          </div>
         </label>
       </li>
     </ul>
+    <button class="btn btn-outline-primary" @click="addJob()">Add</button>
+    <button class="btn btn-outline-primary" @click="closeEdit()">Done</button>
   </div>
 </template>
 

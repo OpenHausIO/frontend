@@ -7,10 +7,15 @@ import Todo from "../widgets/Todo.vue";
 import FritzBox from "../widgets/FritzBox.vue";
 import Scenes from "../widgets/Scenes.vue";
 import Alarm from "../widgets/Alarm.vue";
+import Clock from "../widgets/Clock.vue";
 
 export default defineComponent({
   props: {
     name: {
+      type: String,
+      required: true,
+    },
+    uuid: {
       type: String,
       required: true,
     },
@@ -23,6 +28,7 @@ export default defineComponent({
     FritzBox,
     Scenes,
     Alarm,
+    Clock,
   },
   data() {
     return {};
@@ -32,7 +38,7 @@ export default defineComponent({
 
 
 <template>
-  <component class="h-100 w-100 d-block" v-bind:is="name" />
+  <component class="h-100 w-100 d-block" v-bind:is="name" :uuid="uuid" />
 </template>
 
 <style scope>

@@ -3,24 +3,46 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "Notes",
+  props: {
+    uuid: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
-      title: "Einkaufsliste",
+      title: "",
       content: "",
       placeholder: "Click & type to add notes",
     };
   },
-  watch: {
-    content(oldC, newC) {
-      window.localStorage.setItem(`notes-${this.title}`, newC);
-    },
-  },
   mounted() {
-    this.content = window.localStorage.getItem(`notes-${this.title}`);
+    let str = window.localStorage.getItem(`widget-${this.uuid}`);
 
-    if (!this.content) {
-      this.content = this.placeholder;
+    if (!str) {
+      str = JSON.stringify({
+        title: "",
+        content: "",
+      });
+
+      window.localStorage.setItem(`widget-${this.uuid}`, str);
     }
+
+    let config = JSON.parse(str);
+
+    this.title = config.title;
+    this.content = config.content || this.placeholder;
+  },
+  methods: {
+    keyPress() {
+      window.localStorage.setItem(
+        `widget-${this.uuid}`,
+        JSON.stringify({
+          content: this.content,
+          title: this.title,
+        })
+      );
+    },
   },
 });
 </script>
@@ -55,6 +77,7 @@ export default defineComponent({
         v-model="content"
         spellcheck="false"
         :placeholder="placeholder"
+        @keypress="keyPress()"
       >
       </textarea>
     </div>
