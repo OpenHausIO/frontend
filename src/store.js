@@ -5,7 +5,7 @@ import { defineStore } from "pinia"
 export const settingsStore = defineStore('settings', {
     state() {
         return {
-            groupItems: true,
+            groupItems: false,
             groupRoomItems: true,
             groupEndpointItems: true,
             groupDeviceItems: true,
@@ -17,6 +17,10 @@ export const settingsStore = defineStore('settings', {
             showDashboardWidgets: true,
             screensaverOverlayDelay: 30,
             enableScreenSaverOverlay: false,
+            dashboardGrid: {
+                cols: 12,
+                rows: 30
+            },
             startpage: "/dashboard",
         }
     }
