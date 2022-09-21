@@ -1,0 +1,49 @@
+<script>
+import { defineComponent } from "vue";
+import { routes } from "../router/index.js";
+
+export default defineComponent({
+  name: "Cams",
+  data() {
+    return {};
+  },
+  mounted() {
+    let hasNavigationElement = routes.find((route) => {
+      return route.path === "/cams";
+    });
+
+    console.log("Hello from Cams widget");
+    if (!hasNavigationElement) {
+      routes.push({
+        name: "Cams",
+        path: "/cams",
+        icon: "fa-solid fa-video",
+        component: () => {
+          return {
+            template: "<div>cam page</div>",
+          };
+        },
+      });
+    }
+  },
+});
+</script>
+
+
+<template>
+  <div>
+    <video muted autoplay loop>
+      <!--<source src="flower.webm" type="video/webm" />-->
+      <source src="cam.mp4" type="video/mp4" />
+    </video>
+  </div>
+</template>
+
+<style scope>
+video,
+source {
+  object-fit: fill;
+  height: 100%;
+  width: 100%;
+}
+</style>

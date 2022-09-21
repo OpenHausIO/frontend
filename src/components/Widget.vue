@@ -8,6 +8,7 @@ import FritzBox from "../widgets/FritzBox.vue";
 import Scenes from "../widgets/Scenes.vue";
 import Alarm from "../widgets/Alarm.vue";
 import Clock from "../widgets/Clock.vue";
+import Cams from "../widgets/Cams.vue";
 
 export default defineComponent({
   props: {
@@ -29,6 +30,7 @@ export default defineComponent({
     Scenes,
     Alarm,
     Clock,
+    Cams,
   },
   data() {
     return {};
