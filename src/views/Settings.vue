@@ -1,46 +1,39 @@
+<script setup>
+import { settingsStore } from "../store.js";
+const settings = settingsStore();
+</script>
+
 <script>
 import { defineComponent, watch, inject, nextTick } from "vue";
 import { toggleFullscreen, useEventListener } from "../helper.js";
 import { useNotificationStore } from "@dafcoe/vue-notification";
+import { v4 as uuid } from "uuid";
 
 const { setNotification } = useNotificationStore();
 
 export default defineComponent({
   //props: ["href"],
   data() {
-    return {
-      /*
-      settings: {
-        // grouping
-        groupItems: true,
-        groupRoomItems: true,
-        groupEndpointItems: true,
-        groupDeviceItems: true,
-        // visibility
-        showSettingsButton: true,
-        showBackButton: true,
-
-        collapsed: [],
-      },*/
-    };
-  },
-  computed: {
-    settings() {
-      return inject("settings");
-    },
+    return {};
   },
   mounted() {
     console.log("Mounted, watch settings", inject("settings"));
 
     // save changes that are made
-    watch(this.settings, (val) => {
+    watch(this.settings, () => {
       if (!this.settings.groupItems) {
         this.settings.groupRoomItems = false;
         this.settings.groupEndpointItems = false;
         this.settings.groupDeviceItems = false;
       }
 
-      window.localStorage.setItem("settings", JSON.stringify(val));
+      if (this.settings.showGradientBackground) {
+        document.getElementById("app").classList.remove("bg-dark");
+        document.getElementById("app").classList.add("gardien-background");
+      } else {
+        document.getElementById("app").classList.add("bg-dark");
+        document.getElementById("app").classList.remove("gardien-background");
+      }
     });
   },
 
@@ -62,6 +55,32 @@ export default defineComponent({
           });
         }
       });
+    },
+    addDashboardWidget() {
+      let widgets = JSON.parse(window.localStorage.getItem("widgets"));
+
+      let i = ((start) => {
+        widgets.every((a) => {
+          if (start === a) {
+            start = a + 1;
+            return true;
+          }
+        });
+        return start;
+      })(widgets.length);
+
+      widgets.push({
+        x: 10,
+        y: 12,
+        w: 2,
+        h: 2,
+        uuid: uuid(),
+        widget: "Clock",
+        moved: false,
+        i,
+      });
+
+      window.localStorage.setItem("widgets", JSON.stringify(widgets));
     },
   },
 });
@@ -201,6 +220,23 @@ export default defineComponent({
       <input
         class="form-check-input"
         type="checkbox"
+        id="showGradientBackgroundCheckbox"
+        v-model="settings.showGradientBackground"
+      />
+      <label
+        class="form-check-label small"
+        for="showGradientBackgroundCheckbox"
+      >
+        Enable Background gardient
+      </label>
+    </div>
+
+    <hr />
+
+    <div class="form-check form-switch">
+      <input
+        class="form-check-input"
+        type="checkbox"
         id="enableScreenSaverOverlayCheckbox"
         v-model="settings.enableScreenSaverOverlay"
       />
@@ -228,6 +264,10 @@ export default defineComponent({
 
     <button class="btn btn-outline-primary m-1" @click="toggleFullscreen()">
       Toggle fullscreen
+    </button>
+
+    <button class="btn btn-outline-primary m-1" @click="addDashboardWidget()">
+      Add "Clock" widget to Dashboard
     </button>
 
     <a
