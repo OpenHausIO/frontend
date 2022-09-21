@@ -1,7 +1,7 @@
 import { createApp, watch } from "vue";
 import App from "./App.vue";
 import router from "./router";
-import { store } from "./store";
+import { settingsStore, store } from "./store";
 import { request } from "./helper.js";
 
 import VueNotificationList from '@dafcoe/vue-notification';
@@ -144,6 +144,7 @@ Promise.all([
     app.use(pinia);
     app.mount("#app");
 
+    let settings = settingsStore();
 
     (() => {
 
@@ -151,25 +152,27 @@ Promise.all([
         let timer = null
 
         document.body.addEventListener("click", () => {
-
-            clearTimeout(timer);
-            counter++;
-
-            timer = setTimeout(() => {
-                console.log("counter reset", counter);
-                counter = 0;
-            }, 600);
-
-            if (counter >= 10) {
+            if (!settings.showSettingsButton) {
 
                 clearTimeout(timer);
-                counter = 0;
+                counter++;
 
-                router.push({
-                    path: "/settings"
-                });
+                timer = setTimeout(() => {
+                    console.log("counter reset", counter);
+                    counter = 0;
+                }, 600);
+
+                if (counter >= 10) {
+
+                    clearTimeout(timer);
+                    counter = 0;
+
+                    router.push({
+                        path: "/settings"
+                    });
+                }
+
             }
-
         }, true);
 
     })();
