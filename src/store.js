@@ -6,9 +6,9 @@ export const settingsStore = defineStore('settings', {
     state() {
         return {
             groupItems: false,
-            groupRoomItems: true,
-            groupEndpointItems: true,
-            groupDeviceItems: true,
+            groupRoomItems: false,
+            groupEndpointItems: false,
+            groupDeviceItems: false,
             showSettingsButton: true,
             showBackButton: true,
             showVueTourOnNextVisit: true,
