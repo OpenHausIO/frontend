@@ -27,6 +27,7 @@ export default {
     });
 
     // skip endpoint selection when only one is provide by the device
+    // TODO Make this optional in settings
     if (endpoints.length === 1) {
       router.replace({
         name: "/endpoints/:_id",
