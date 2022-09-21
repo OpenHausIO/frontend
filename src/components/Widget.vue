@@ -9,6 +9,7 @@ import Scenes from "../widgets/Scenes.vue";
 import Alarm from "../widgets/Alarm.vue";
 import Clock from "../widgets/Clock.vue";
 import Cams from "../widgets/Cams.vue";
+import Empty from "../widgets/Cams.vue";
 
 export default defineComponent({
   props: {
@@ -31,6 +32,7 @@ export default defineComponent({
     Alarm,
     Clock,
     Cams,
+    Empty,
   },
   data() {
     return {};
