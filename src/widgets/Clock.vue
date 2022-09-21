@@ -7,14 +7,14 @@ export default defineComponent({
   data() {
     return {
       timestamp: null,
-      time: dateFormat(Date.now(), "HH:mm:ss"),
+      time: dateFormat(Date.now(), "HH:MM:ss"),
       interval: null,
     };
   },
   mounted() {
     this.interval = setInterval(() => {
       this.timestamp = Date.now();
-      this.time = dateFormat(this.timestamp, "HH:mm:ss");
+      this.time = dateFormat(this.timestamp, "HH:MM:ss");
     }, 1000);
   },
   unmounted() {
