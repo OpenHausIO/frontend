@@ -1,6 +1,6 @@
 <script>
 import { defineComponent } from "vue";
-import { routes } from "../router/index.js";
+import router, { routes } from "../router/index.js";
 
 export default defineComponent({
   name: "Cams",
@@ -14,7 +14,7 @@ export default defineComponent({
 
     console.log("Hello from Cams widget");
     if (!hasNavigationElement) {
-      routes.push({
+      let r = {
         name: "Cams",
         path: "/cams",
         icon: "fa-solid fa-video",
@@ -23,7 +23,9 @@ export default defineComponent({
             template: "<div>cam page</div>",
           };
         },
-      });
+      };
+      router.addRoute(r);
+      routes.push(r);
     }
   },
 });

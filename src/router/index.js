@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from "vue-router";
+import { reactive } from "vue";
 
-const routes = [{
+const routes = reactive([{
     path: "/dashboard",
     name: "Dasboard",
     icon: "fas fa-home",
@@ -30,7 +31,7 @@ const routes = [{
     name: "Plugins",
     icon: "fa-solid fa-puzzle-piece",
     component: () => import("../views/Plugins.vue")
-}*/];
+}*/]);
 
 
 
