@@ -206,7 +206,7 @@ export default defineComponent({
       <input
         type="number"
         id="dashboardGridColsInput"
-        class="form-control"
+        class="form-control bg-dark text-white"
         v-model="settings.dashboardGrid.cols"
         :disabled="!settings.editDashboardWidgets"
       />
@@ -217,7 +217,7 @@ export default defineComponent({
       <input
         type="number"
         id="dashboardGridRowsInput"
-        class="form-control"
+        class="form-control bg-dark text-white"
         v-model="settings.dashboardGrid.rows"
         :disabled="!settings.editDashboardWidgets"
       />
