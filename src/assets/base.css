@@ -6,7 +6,12 @@ body {
     background-size: cover;
     */
 
+    /*color: #efefef;*/
+    color: rgb(230, 230, 230);
+    overflow-y: scroll;
+}
 
+#app.gardien-background {
     background-color: #2e3236;
 
     background-image: radial-gradient(circle, #4e505298 0, rgba(35, 40, 46, .5) 15%, #101418 95%);
@@ -16,10 +21,6 @@ body {
     background-repeat: no-repeat;
     background-size: cover;
     background-attachment: fixed;
-
-    /*color: #efefef;*/
-    color: rgb(230, 230, 230);
-    overflow-y: scroll;
 }
 
 *,
