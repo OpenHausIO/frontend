@@ -12,7 +12,6 @@ import { v4 as uuid } from "uuid";
 const { setNotification } = useNotificationStore();
 
 export default defineComponent({
-  //props: ["href"],
   data() {
     return {};
   },
@@ -89,7 +88,6 @@ export default defineComponent({
 <template>
   <div class="container-fluid">
     Settings page
-    {{ settings }}
 
     <div class="form-check form-switch">
       <input
@@ -111,7 +109,7 @@ export default defineComponent({
         type="checkbox"
         id="groupItemsRoomCheckbox"
         v-model="settings.groupRoomItems"
-        :disabled="!this.settings.groupItems"
+        :disabled="!settings.groupItems"
       />
       <label class="form-check-label small" for="groupItemsRoomCheckbox">
         Group Room Items
@@ -124,7 +122,7 @@ export default defineComponent({
         type="checkbox"
         id="groupItemsEndpointCheckbox"
         v-model="settings.groupEndpointItems"
-        :disabled="!this.settings.groupItems"
+        :disabled="!settings.groupItems"
       />
       <label class="form-check-label small" for="groupItemsEndpointCheckbox">
         Group Endpoint Items
@@ -137,7 +135,7 @@ export default defineComponent({
         type="checkbox"
         id="groupItemsDeviceCheckbox"
         v-model="settings.groupDeviceItems"
-        :disabled="!this.settings.groupItems"
+        :disabled="!settings.groupItems"
       />
       <label class="form-check-label small" for="groupItemsDeviceCheckbox">
         Group Device Items
@@ -236,7 +234,6 @@ export default defineComponent({
         Show Dashboard widgets
       </label>
     </div>
-
     <!-- DASHBOARD -->
 
     <hr />
