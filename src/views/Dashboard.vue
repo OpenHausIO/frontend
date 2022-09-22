@@ -90,7 +90,10 @@ export default defineComponent({
         @resize="saveLayout()"
         @move="saveLayout()"
         @moved="saveLayout()"
-        class="bg-dark"
+        :class="{
+          'bg-dark': !settings.transparentDashboardWidgets,
+          'bg-transparent': settings.transparentDashboardWidgets,
+        }"
         style="border: 1px solid #000"
       >
         <Widget :name="item.widget" :uuid="item.uuid">
