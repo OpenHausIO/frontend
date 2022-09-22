@@ -14,6 +14,7 @@ export const settingsStore = defineStore("settings", {
             showGradientBackground: true,
             editDashboardWidgets: false,
             showDashboardWidgets: true,
+            transparentDashboardWidgets: false,
             screensaverOverlayDelay: 30,
             enableScreenSaverOverlay: false,
             dashboardGrid: {

@@ -287,17 +287,28 @@ export default defineComponent({
               </label>
             </div>
 
-            <input type="number" v-model="settings.screensaverOverlayDelay" />
+            <div class="form-check form-switch">
+              <label for="screenSaverOVerlayInput" class="form-label">
+                Timeout in Sec.
+              </label>
+              <input
+                type="number"
+                id="screenSaverOVerlayInput"
+                class="form-control bg-dark text-white"
+                v-model="settings.screensaverOverlayDelay"
+                :disabled="!settings.enableScreenSaverOverlay"
+              />
+              <input
+                type="range"
+                class="form-range"
+                v-model="settings.screensaverOverlayDelay"
+                min="10"
+                max="60"
+                step="10"
+                id="customRange3"
+              />
+            </div>
 
-            <input
-              type="range"
-              class="form-range"
-              v-model="settings.screensaverOverlayDelay"
-              min="10"
-              max="60"
-              step="10"
-              id="customRange3"
-            />
             <!-- CONTENT -->
           </div>
         </div>
@@ -321,6 +332,20 @@ export default defineComponent({
                 for="showGradientBackgroundCheckbox"
               >
                 Enable Background gardient
+              </label>
+            </div>
+            <div class="form-check form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="transparentDashboardWidgetsCheckbox"
+                v-model="settings.transparentDashboardWidgets"
+              />
+              <label
+                class="form-check-label small"
+                for="transparentDashboardWidgetsCheckbox"
+              >
+                Transparent Dashboard Widgets
               </label>
             </div>
             <!-- CONTENT -->
