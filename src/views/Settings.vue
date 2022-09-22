@@ -305,7 +305,7 @@ export default defineComponent({
                 min="10"
                 max="60"
                 step="10"
-                id="customRange3"
+                :disabled="!settings.enableScreenSaverOverlay"
               />
             </div>
 
@@ -358,7 +358,7 @@ export default defineComponent({
       <div class="col">
         <div class="card" style="width: 18rem">
           <div class="card-body bg-dark">
-            <h5 class="card-title">Look & Feel</h5>
+            <h5 class="card-title">Miscellaneous</h5>
             <!-- CONTENT -->
 
             <div class="form-check form-switch">
