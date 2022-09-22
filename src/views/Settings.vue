@@ -8,12 +8,15 @@ import { defineComponent, watch, nextTick } from "vue";
 import { toggleFullscreen } from "../helper.js";
 import { useNotificationStore } from "@dafcoe/vue-notification";
 import { v4 as uuid } from "uuid";
+import Widget from "../components/Widget.vue";
 
 const { setNotification } = useNotificationStore();
 
 export default defineComponent({
   data() {
-    return {};
+    return {
+      widgets: Widget.components,
+    };
   },
   mounted() {
     console.log("Mounted, watch settings");
@@ -66,7 +69,7 @@ export default defineComponent({
           }
         });
         return start;
-      })(widgets.length);
+      })(widgets.length + 1);
 
       widgets.push({
         x: 10,
@@ -80,6 +83,17 @@ export default defineComponent({
       });
 
       window.localStorage.setItem("widgets", JSON.stringify(widgets));
+
+      setNotification({
+        message: `Widget "${widget}" added to Dashboard`,
+        type: "success",
+        showIcon: false,
+        dismiss: {
+          manually: true,
+          automatically: true,
+        },
+        appearance: "dark",
+      });
     },
   },
 });
@@ -159,6 +173,7 @@ export default defineComponent({
         </div>
       </div>
       <!-- ITEM GROUPING -->
+
       <!-- NAVIGATION -->
       <div class="col">
         <div class="card" style="width: 18rem">
@@ -199,6 +214,7 @@ export default defineComponent({
         </div>
       </div>
       <!-- NAVIGATION -->
+
       <!-- WIDGETS -->
       <div class="col">
         <div class="card" style="width: 18rem">
@@ -261,11 +277,35 @@ export default defineComponent({
                 Show Dashboard widgets
               </label>
             </div>
+
+            <hr />
+
+            <div class="btn-group d-block">
+              <button
+                type="button"
+                class="btn btn-primary dropdown-toggle w-100"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Add Widget
+              </button>
+              <ul class="dropdown-menu dropdown-menu-dark">
+                <li v-bind:key="index" v-for="(widget, index) in widgets">
+                  <button
+                    class="dropdown-item d-flex gap-2 align-items-center"
+                    @click="addDashboardWidget(widget.name)"
+                  >
+                    {{ widget.name }}
+                  </button>
+                </li>
+              </ul>
+            </div>
             <!-- CARD CONTENT -->
           </div>
         </div>
       </div>
       <!-- WIDGETS -->
+
       <!-- SCREENSAVER -->
       <div class="col">
         <div class="card" style="width: 18rem">
@@ -314,6 +354,7 @@ export default defineComponent({
         </div>
       </div>
       <!-- SCREENSAVER -->
+
       <!-- LOOK & FEEL -->
       <div class="col">
         <div class="card" style="width: 18rem">
@@ -377,29 +418,15 @@ export default defineComponent({
             </div>
 
             <button
-              class="btn btn-outline-primary m-1"
+              class="btn btn-outline-primary d-block"
               @click="toggleFullscreen()"
             >
               Toggle fullscreen
             </button>
 
-            <button
-              class="btn btn-outline-primary m-1"
-              @click="addDashboardWidget('Clock')"
-            >
-              Add "Clock" widget to Dashboard
-            </button>
-
-            <button
-              class="btn btn-outline-primary m-1"
-              @click="addDashboardWidget('Cams')"
-            >
-              Add "Cams" widget to Dashboard
-            </button>
-
             <a
               href="http://localhost:3001"
-              class="btn btn-outline-primary m-1"
+              class="btn btn-outline-primary m-1 d-block"
               target="_blank"
               >Administration
             </a>

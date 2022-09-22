@@ -2,6 +2,8 @@
 import { defineComponent, watch } from "vue";
 import dateFormat from "dateformat";
 
+export const menu = [];
+
 export default defineComponent({
   name: "Clock",
   data() {
@@ -20,6 +22,7 @@ export default defineComponent({
   unmounted() {
     clearInterval(this.interval);
   },
+  menu: [],
 });
 </script>
 

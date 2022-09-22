@@ -96,7 +96,11 @@ export default defineComponent({
         }"
         style="border: 1px solid #000"
       >
-        <Widget :name="item.widget" :uuid="item.uuid">
+        <Widget
+          :name="item.widget"
+          :uuid="item.uuid"
+          :unlocked="settings.editDashboardWidgets"
+        >
           <!--<template #main> Widget #{{ item.i }}</template>-->
         </Widget>
       </grid-item>

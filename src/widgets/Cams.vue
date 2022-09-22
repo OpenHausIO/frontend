@@ -2,6 +2,8 @@
 import { defineComponent } from "vue";
 import router, { routes } from "../router/index.js";
 
+export const menu = [];
+
 export default defineComponent({
   name: "Cams",
   data() {
@@ -28,6 +30,7 @@ export default defineComponent({
       routes.push(r);
     }
   },
+  menu: [],
 });
 </script>
 

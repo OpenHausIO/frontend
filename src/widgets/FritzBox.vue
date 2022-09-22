@@ -6,6 +6,7 @@ export default defineComponent({
   data() {
     return {};
   },
+  menu: [],
 });
 </script>
 

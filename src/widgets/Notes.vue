@@ -13,6 +13,7 @@ export default defineComponent({
     return {
       title: "",
       content: "",
+      showTextbox: false,
       placeholder: "Click & type to add notes",
     };
   },
@@ -34,7 +35,7 @@ export default defineComponent({
     this.content = config.content || this.placeholder;
   },
   methods: {
-    keyPress() {
+    keyUp() {
       window.localStorage.setItem(
         `widget-${this.uuid}`,
         JSON.stringify({
@@ -43,31 +44,43 @@ export default defineComponent({
         })
       );
     },
+    editTitle() {
+      this.showTextbox = true;
+    },
+    closeEdit() {
+      this.showTextbox = false;
+    },
+    dispatchEvent(event) {
+      console.log("diuspatchEvent called in notes.vue", event);
+    },
   },
+  menu: [
+    {
+      title: "Edit title",
+      method: "editTitle",
+    },
+    {
+      title: "Done editing",
+      method: "closeEdit",
+    },
+  ],
 });
 </script>
 
 
 <template>
   <div class="p-2">
-    <h3 class="float-start">Notes: {{ title }}</h3>
-    <i
-      class="
-        fa-solid fa-ellipsis-vertical
-        float-end
-        border
-        rounded-circle
-        text-center
-      "
-      style="width: 25px; height: 25px"
-      @click="$window.alert('Open Widget settings')"
-    ></i>
-    <div class="form-floating h-100 w-100">
+    <h3>
+      Notes: <input type="text" v-model="title" v-if="showTextbox" />
+      <span v-else>
+        {{ title }}
+      </span>
+    </h3>
+    <div class="h-100 w-100">
       <textarea
         class="
           form-control
           bg-transparent
-          h-75
           w-100
           p-0
           border-0
@@ -77,7 +90,7 @@ export default defineComponent({
         v-model="content"
         spellcheck="false"
         :placeholder="placeholder"
-        @keypress="keyPress()"
+        @keyup="keyUp()"
       >
       </textarea>
     </div>
@@ -87,6 +100,6 @@ export default defineComponent({
 <style scope>
 textarea {
   resize: none;
-  min-height: calc(100% - 33px);
+  min-height: calc(100% - 40px) !important;
 }
 </style>

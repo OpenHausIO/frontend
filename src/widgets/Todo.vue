@@ -1,5 +1,5 @@
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, watch } from "vue";
 
 export default defineComponent({
   name: "Todo",
@@ -65,6 +65,7 @@ export default defineComponent({
     this.title = config.title;
     this.jobs = config.jobs || [];
   },
+  created() {},
   methods: {
     toggleDone(job) {
       if (job.edit) {
@@ -101,7 +102,30 @@ export default defineComponent({
         })
       );
     },
+    removeJobs() {},
+    editJobs() {
+      this.jobs.forEach((job) => {
+        job.edit = true;
+      });
+    },
+    dispatchEvent(event) {
+      console.log("Dispatch event in child called", event);
+    },
   },
+  menu: [
+    {
+      title: "Add Job",
+      method: "addJob",
+    },
+    {
+      title: "Edit Jobs",
+      method: "editJobs",
+    },
+    {
+      title: "Done editing",
+      method: "closeEdit",
+    },
+  ],
 });
 </script>
 
@@ -128,8 +152,10 @@ export default defineComponent({
         </label>
       </li>
     </ul>
+    <!--
     <button class="btn btn-outline-primary" @click="addJob()">Add</button>
     <button class="btn btn-outline-primary" @click="closeEdit()">Done</button>
+    -->
   </div>
 </template>
 
