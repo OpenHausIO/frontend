@@ -66,7 +66,7 @@ export default defineComponent({
       <textarea
         class="
           form-control
-          bg-dark
+          bg-transparent
           h-75
           w-100
           p-0
