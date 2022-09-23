@@ -28,8 +28,8 @@ export default defineComponent({
 
 
 <template>
-  <div class="p-2 text-center">
-    <h2>{{ time }}</h2>
+  <div class="p-2 text-center" style="font-size: 5vw">
+    {{ time }}
   </div>
 </template>
 

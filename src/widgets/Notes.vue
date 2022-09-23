@@ -32,7 +32,7 @@ export default defineComponent({
     let config = JSON.parse(str);
 
     this.title = config.title;
-    this.content = config.content || this.placeholder;
+    this.content = config.content || "";
   },
   methods: {
     keyUp() {

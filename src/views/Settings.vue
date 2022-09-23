@@ -63,8 +63,8 @@ export default defineComponent({
 
       let i = ((start) => {
         widgets.every((a) => {
-          if (start === a) {
-            start = a + 1;
+          if (start === a.i) {
+            start = a.i + 1;
             return true;
           }
         });
@@ -79,7 +79,7 @@ export default defineComponent({
         uuid: uuid(),
         widget,
         moved: false,
-        i,
+        i: i + 1,
       });
 
       window.localStorage.setItem("widgets", JSON.stringify(widgets));
