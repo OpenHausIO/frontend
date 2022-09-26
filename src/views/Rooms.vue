@@ -1,16 +1,20 @@
 <script setup>
 import Tile from "@/components/Tile.vue";
 import Collapsable from "@/components/Collapsable.vue";
-import { store } from "../store";
+//import { store } from "../store";
 import { groupObjByKey, isNumber } from "@/helper";
 import { settingsStore } from "../store.js";
 const settings = settingsStore();
+
 //const items = itemStore();
 //const rooms = items.rooms;
 //console.log("Item store", items.rooms);
 </script>
 
 <script>
+import { itemStore } from "../store.js";
+const store = itemStore();
+
 export default {
   components: {
     Collapsable,

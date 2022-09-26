@@ -1,13 +1,20 @@
 <script setup>
 import Tile from "@/components/Tile.vue";
 import { useRoute, RouterLink } from "vue-router";
-import { store } from "@/store";
-import { getRoomNameById, alert, request } from "@/helper";
+//import { store } from "@/store";
+import { alert, request } from "@/helper";
 </script>
 
 <script>
+import { mapActions } from "pinia";
+import { itemStore } from "../store.js";
+const store = itemStore();
+
 export default {
-  components: { Tile, RouterLink },
+  components: {
+    Tile,
+    RouterLink,
+  },
   data() {
     return {
       data: {},
@@ -21,7 +28,8 @@ export default {
     });
   },
   methods: {
-    getRoomNameById,
+    //getRoomNameById,
+    ...mapActions(itemStore, ["getRoomNameById", "getDeviceNameById"]),
     alert,
     trigger(_id, event) {
       let command = this.data.commands.find((obj) => {

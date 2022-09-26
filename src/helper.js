@@ -1,5 +1,6 @@
 import { onMounted, onUnmounted } from 'vue'
-import { store } from "@/store";
+//import { itemStore } from "./store";
+//const store = itemStore();
 
 // TODO prefix with underscoe (_)?
 export function promisfy(worker, cb) {
@@ -113,7 +114,7 @@ export function groupObjByKey(arr, key) {
     }, {});
 }
 
-
+/*
 export function getRoomNameById(_id) {
 
     let room = store.rooms.find((obj) => {
@@ -127,8 +128,9 @@ export function getRoomNameById(_id) {
     return room.name;
 
 }
+*/
 
-
+/*
 export function getDeviceNameById(_id) {
     //TODO convert to array
     let device = Array.from(store.devices).find((obj) => {
@@ -142,6 +144,7 @@ export function getDeviceNameById(_id) {
     return device.name;
 
 }
+*/
 
 
 export function alert(...args) {

@@ -1,13 +1,14 @@
-import { reactive } from "vue";
+//import { reactive } from "vue";
 import { defineStore } from "pinia";
-
 import { v4 as uuid } from "uuid";
 
+/*
 export const commonStore = defineStore("common", {
     state() {
         return {};
     }
 });
+*/
 
 export const settingsStore = defineStore("settings", {
     state() {
@@ -35,8 +36,8 @@ export const settingsStore = defineStore("settings", {
     persistent: true
 });
 
-/*
-export const itemStore = defineStore("itemStore", {
+
+export const itemStore = defineStore("items", {
     state() {
         return {
             rooms: [],
@@ -99,12 +100,36 @@ export const itemStore = defineStore("itemStore", {
                 console.warn(`Could not remove item to property "${key}" in store`);
 
             }
+        },
+        getDeviceNameById(_id) {
+
+            //TODO convert to array
+            let device = this.$state.devices.find((obj) => {
+                return obj._id === _id;
+            });
+
+            if (!device) {
+                return "Device not set";
+            }
+
+            return device.name;
+
+        },
+        getRoomNameById(_id) {
+
+            let room = this.$state.rooms.find((obj) => {
+                return obj._id === _id;
+            });
+
+            if (!room) {
+                return "Room not set";
+            }
+
+            return room.name;
+
         }
     }
-}, {
-    persistent: true
 });
-*/
 
 
 export const widgetStore = defineStore("widgets", {
@@ -157,6 +182,7 @@ export const widgetStore = defineStore("widgets", {
 });
 
 
+/*
 const store = reactive({
     rooms: [],
     endpoints: [],
@@ -217,9 +243,9 @@ const store = reactive({
         }
     }
 });
+*/
 
-
-export { store };
+//export { store };
 
 //export const device = store.devices;
 //export const rooms = store.rooms;

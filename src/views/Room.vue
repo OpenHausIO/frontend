@@ -2,12 +2,19 @@
 import Tile from "@/components/Tile.vue";
 import Collapsable from "../components/Collapsable.vue";
 import { useRoute } from "vue-router";
-import { store } from "../store";
+//import { store } from "../store";
 </script>
 
 <script>
+import { mapActions } from "pinia";
+import { itemStore } from "../store.js";
+const store = itemStore();
+
 export default {
-  components: { Tile, Collapsable },
+  components: {
+    Tile,
+    Collapsable,
+  },
   data() {
     return {
       data: {},
@@ -17,6 +24,7 @@ export default {
   mounted() {
     let $route = useRoute();
 
+    // NOTE: This should?! be a computed property?
     this.data = Array.from(store.rooms).find((item) => {
       return item._id === $route.params._id;
     });
@@ -30,6 +38,8 @@ export default {
     this.endpoints.push(...endpoints);
   },
   methods: {
+    ...mapActions(itemStore, ["getRoomNameById"]),
+    /*
     getRoomNameById(_id) {
       let room = Array.from(store.rooms).find((obj) => {
         return obj._id === _id;
@@ -41,6 +51,7 @@ export default {
 
       return room.name;
     },
+    */
   },
 };
 </script>

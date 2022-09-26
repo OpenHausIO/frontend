@@ -2,8 +2,8 @@ import { createApp, watch } from "vue";
 import App from "./App.vue";
 import router from "./router";
 //import { settingsStore, store } from "./store";
-import { store } from "./store";
-import { request } from "./helper.js";
+import { itemStore } from "./store";
+
 
 import VueNotificationList from '@dafcoe/vue-notification';
 import GridLayout from 'vue3-drr-grid-layout'
@@ -11,6 +11,9 @@ import 'vue3-drr-grid-layout/dist/style.css'
 
 import { createPinia } from 'pinia';
 const pinia = createPinia();
+
+import { request } from "./helper.js";
+
 
 // monkey patch ws
 window.events = null;
@@ -119,6 +122,24 @@ Promise.all([
 
     }),
 
+    // mount vue plugins
+    new Promise((resolve, reject) => {
+        try {
+
+            app.use(VueNotificationList)
+            app.use(router);
+            app.use(GridLayout);
+            app.use(pinia);
+
+            resolve();
+
+        } catch (e) {
+
+            reject(e);
+
+        }
+    }),
+
     // fetch /api resources
     new Promise((resolve, reject) => {
         Promise.all([
@@ -130,6 +151,9 @@ Promise.all([
             //rooms.forEach(item => window.store.rooms.add(item));
             //endpoints.forEach(item => window.store.endpoints.add(item));
             //devices.forEach(item => window.store.devices.add(item));
+
+
+            const store = itemStore();
 
             store.rooms.push(...rooms);
             store.endpoints.push(...endpoints);
@@ -152,10 +176,7 @@ Promise.all([
 
     console.log("Preshit done, mount vue app");
 
-    app.use(VueNotificationList)
-    app.use(router);
-    app.use(GridLayout);
-    app.use(pinia);
+
     app.mount("#app");
 
     /*

@@ -1,13 +1,17 @@
 <script setup>
 import Tile from "@/components/Tile.vue";
 import Collapsable from "@/components/Collapsable.vue";
-import { store } from "../store";
-import { getRoomNameById, getDeviceNameById } from "@/helper";
+//import { store } from "../store";
+//import { getRoomNameById, getDeviceNameById } from "@/helper";
 import { settingsStore } from "../store.js";
 const settings = settingsStore();
 </script>
 
 <script>
+import { mapActions } from "pinia";
+import { itemStore } from "../store.js";
+const store = itemStore();
+
 export default {
   components: {
     Collapsable,
@@ -35,8 +39,9 @@ export default {
     },
   },*/,
   methods: {
-    getDeviceNameById,
-    getRoomNameById,
+    //getDeviceNameById,
+    //getRoomNameById,
+    ...mapActions(itemStore, ["getRoomNameById", "getDeviceNameById"]),
   },
 };
 </script>
