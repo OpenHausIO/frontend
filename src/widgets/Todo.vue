@@ -102,7 +102,19 @@ export default defineComponent({
         })
       );
     },
-    removeJobs() {},
+    deleteJobs() {
+      this.jobs = this.jobs.filter(({ done }) => {
+        return !done;
+      });
+
+      window.localStorage.setItem(
+        `widget-${this.uuid}`,
+        JSON.stringify({
+          title: this.title,
+          jobs: this.jobs,
+        })
+      );
+    },
     editJobs() {
       this.jobs.forEach((job) => {
         job.edit = true;
@@ -125,6 +137,10 @@ export default defineComponent({
       title: "Done editing",
       method: "closeEdit",
     },
+    {
+      title: "Delete Jobs",
+      method: "deleteJobs",
+    },
   ],
 });
 </script>
@@ -133,7 +149,7 @@ export default defineComponent({
 <template>
   <div class="p-2">
     <h3>Todo's: {{ title }}</h3>
-    <ul>
+    <ul v-if="jobs.length > 0">
       <li v-bind:key="index" v-for="(job, index) in jobs">
         <label @click="toggleDone(job)">
           <i
@@ -152,6 +168,10 @@ export default defineComponent({
         </label>
       </li>
     </ul>
+    <div v-else>
+      Nothing todo!<br />
+      Add some jobs or relax.
+    </div>
     <!--
     <button class="btn btn-outline-primary" @click="addJob()">Add</button>
     <button class="btn btn-outline-primary" @click="closeEdit()">Done</button>

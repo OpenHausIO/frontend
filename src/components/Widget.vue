@@ -73,6 +73,9 @@ export default defineComponent({
       }
     },
   },
+  errorCaptured(err) {
+    console.lo("Error captured", err);
+  },
 });
 </script>
 
