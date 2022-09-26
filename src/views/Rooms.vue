@@ -3,7 +3,7 @@ import Tile from "@/components/Tile.vue";
 import Collapsable from "@/components/Collapsable.vue";
 import { store } from "../store";
 import { groupObjByKey, isNumber } from "@/helper";
-import { settingsStore, itemStore } from "../store.js";
+import { settingsStore } from "../store.js";
 const settings = settingsStore();
 //const items = itemStore();
 //const rooms = items.rooms;

@@ -1,21 +1,23 @@
 <script setup>
-import { settingsStore } from "../store.js";
+import { settingsStore, widgetStore } from "../store.js";
 const settings = settingsStore();
+//const widgets = widgetStore();
+//console.log("widgets store", widgets);
 </script>
 
 <script>
 import { defineComponent } from "vue";
 import Widget from "../components/Widget.vue";
-import { v4 as uuid } from "uuid";
+//import { v4 as uuid } from "uuid";
 
 export default defineComponent({
   components: {
     Widget,
   },
-  data() {
-    return {};
-  },
   beforeCreate() {
+    this.layout = widgetStore().$state;
+    //console.log("this.layout", this.layout);
+    /*
     if (window.localStorage.getItem("widgets")) {
       this.layout = JSON.parse(window.localStorage.getItem("widgets"));
     } else {
@@ -40,7 +42,9 @@ export default defineComponent({
         widget.uuid = uuid();
         return widget;
       });
+
     }
+    */
   },
   methods: {
     saveLayout() {

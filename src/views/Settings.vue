@@ -1,5 +1,5 @@
 <script setup>
-import { settingsStore } from "../store.js";
+import { settingsStore, widgetStore } from "../store.js";
 const settings = settingsStore();
 </script>
 
@@ -10,7 +10,9 @@ import { useNotificationStore } from "@dafcoe/vue-notification";
 import { v4 as uuid } from "uuid";
 import Widget from "../components/Widget.vue";
 
+import { widgetStore } from "../store.js";
 const { setNotification } = useNotificationStore();
+const widgetsSt = widgetStore();
 
 export default defineComponent({
   data() {
@@ -59,6 +61,7 @@ export default defineComponent({
       });
     },
     addDashboardWidget(widget) {
+      /*
       let widgets = JSON.parse(window.localStorage.getItem("widgets"));
 
       let i = ((start) => {
@@ -83,9 +86,27 @@ export default defineComponent({
       });
 
       window.localStorage.setItem("widgets", JSON.stringify(widgets));
+      */
+
+      widgetsSt.add(widget);
 
       setNotification({
         message: `Widget "${widget}" added to Dashboard`,
+        type: "success",
+        showIcon: false,
+        dismiss: {
+          manually: true,
+          automatically: true,
+        },
+        appearance: "dark",
+      });
+    },
+    clearLocalStorage() {
+      // clear local "persistent" storage
+      window.localStorage.clear();
+
+      setNotification({
+        message: "Local storage has been cleaned",
         type: "success",
         showIcon: false,
         dismiss: {
@@ -422,6 +443,13 @@ export default defineComponent({
               @click="toggleFullscreen()"
             >
               Toggle fullscreen
+            </button>
+
+            <button
+              class="btn btn-outline-primary d-block"
+              @click="clearLocalStorage()"
+            >
+              Clear localStorage
             </button>
 
             <a
