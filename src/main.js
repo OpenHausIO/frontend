@@ -1,7 +1,8 @@
 import { createApp, watch } from "vue";
 import App from "./App.vue";
 import router from "./router";
-import { settingsStore, store } from "./store";
+//import { settingsStore, store } from "./store";
+import { store } from "./store";
 import { request } from "./helper.js";
 
 import VueNotificationList from '@dafcoe/vue-notification';
@@ -14,26 +15,39 @@ const pinia = createPinia();
 // monkey patch ws
 window.events = null;
 
+// persistent handle
+// (in localStorage)
+pinia.use(({ store, options }) => {
+    if (options?.persistent) {
+
+        if (window.localStorage.getItem(store.$id)) {
+            Object.assign(store, JSON.parse(window.localStorage.getItem(store.$id)));
+        }
+
+        store.$subscribe((mutation, state) => {
+            //console.log(`store: ${store.$id} .subscribe`, mutation, state);
+            window.localStorage.setItem(store.$id, JSON.stringify(state));
+        });
+
+    }
+});
+
+
 pinia.use(({ store }) => {
+    if (store.$id === "settings") {
 
-    if (window.localStorage.getItem("settings")) {
-        Object.assign(store, JSON.parse(window.localStorage.getItem("settings")));
+        // initial background settings
+        // TODO: Find a better way
+        // TODO: Move this to settings store and not "global/common"
+        if (store.showGradientBackground) {
+            document.getElementById("app").classList.remove("bg-dark");
+            document.getElementById("app").classList.add("gardien-background");
+        } else {
+            document.getElementById("app").classList.add("bg-dark");
+            document.getElementById("app").classList.remove("gardien-background");
+        }
+
     }
-
-    store.$subscribe(() => {
-        window.localStorage.setItem("settings", JSON.stringify(store));
-    });
-
-    // initial background settings
-    // TODO: Find a better way
-    if (store.showGradientBackground) {
-        document.getElementById("app").classList.remove("bg-dark");
-        document.getElementById("app").classList.add("gardien-background");
-    } else {
-        document.getElementById("app").classList.add("bg-dark");
-        document.getElementById("app").classList.remove("gardien-background");
-    }
-
 });
 
 
@@ -96,7 +110,7 @@ Promise.all([
 
             let data = JSON.parse(msg.data);
 
-            console.log("[EVENT]", data);
+            //console.log("[EVENT]", data);
             //app.$emit("event", data);
 
         };
@@ -144,6 +158,7 @@ Promise.all([
     app.use(pinia);
     app.mount("#app");
 
+    /*
     let settings = settingsStore();
 
     (() => {
@@ -176,6 +191,7 @@ Promise.all([
         }, true);
 
     })();
+    */
 
 
 }).catch((err) => {
