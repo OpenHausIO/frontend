@@ -12,10 +12,10 @@ const settings = settingsStore();
 </script>
 
 <script>
-import { reactive, provide, inject, watch } from "vue";
-import { mapState } from "pinia";
+//import { reactive, provide, inject, watch } from "vue";
+//import { mapState } from "pinia";
 
-console.log(settingsStore);
+console.log("settingsStore:", settingsStore);
 
 export default {
   name: "Frontend",
@@ -200,4 +200,8 @@ nav.navbar {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 */
+
+.notification-list-item--dark {
+  background-color: #343a40 !important;
+}
 </style>
