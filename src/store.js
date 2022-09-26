@@ -1,6 +1,14 @@
 import { reactive } from "vue";
 import { defineStore } from "pinia";
 
+import { v4 as uuid } from "uuid";
+
+export const commonStore = defineStore("common", {
+    state() {
+        return {};
+    }
+});
+
 export const settingsStore = defineStore("settings", {
     state() {
         return {
@@ -23,10 +31,11 @@ export const settingsStore = defineStore("settings", {
             },
             startpage: "/dashboard",
         }
-    }
+    },
+    persistent: true
 });
 
-
+/*
 export const itemStore = defineStore("itemStore", {
     state() {
         return {
@@ -92,7 +101,61 @@ export const itemStore = defineStore("itemStore", {
             }
         }
     }
+}, {
+    persistent: true
 });
+*/
+
+
+export const widgetStore = defineStore("widgets", {
+    state() {
+        return [
+            { x: 6, y: 0, w: 3, h: 12, widget: "Notes" },
+            { x: 9, y: 0, w: 3, h: 12, widget: "Todo" },
+            { x: 0, y: 12, w: 4, h: 18, widget: "Notes" },
+        ].map((widget, i) => {
+            widget.i = i;
+            widget.uuid = uuid();
+            widget.moved = false;
+            return widget;
+        });
+    },
+    actions: {
+        add(widget, options) {
+
+            let i = ((start) => {
+                this.$state.every((a) => {
+                    if (start === a) {
+                        start = a + 1;
+                        return true;
+                    }
+                });
+                return start;
+            })(this.$state.length + 1);
+
+            let obj = Object.assign({
+                x: 0,
+                y: 0,
+                z: 0,
+                w: 4,
+                h: 4,
+                i,
+                widget,
+                moved: false,
+                uuid: uuid()
+            }, options);
+
+            this.$state.push(obj);
+
+            window.localStorage.setItem("widgets", JSON.stringify(this.$state));
+
+            console.log("Widget added to store", obj);
+
+        }
+    },
+    persistent: true
+});
+
 
 const store = reactive({
     rooms: [],
