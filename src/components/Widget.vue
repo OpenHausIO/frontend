@@ -12,15 +12,15 @@ import Cams from "../widgets/Cams.vue";
 import Empty from "../widgets/Empty.vue";
 
 const components = {
-  Weather,
+  //Weather,
   Notes,
   Todo,
   //CustomWidget: window["CustomWidget"],
-  FritzBox,
-  Scenes,
-  Alarm,
+  //FritzBox,
+  //Scenes,
+  //Alarm,
   Clock,
-  Cams,
+  //Cams,
   Empty,
 };
 
