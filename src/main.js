@@ -1,8 +1,7 @@
 import { createApp, watch } from "vue";
 import App from "./App.vue";
 import router from "./router";
-//import { settingsStore, store } from "./store";
-import { itemStore } from "./store";
+import { itemStore, settingsStore } from "./store";
 
 
 import VueNotificationList from '@dafcoe/vue-notification';
@@ -179,7 +178,6 @@ Promise.all([
 
     app.mount("#app");
 
-    /*
     let settings = settingsStore();
 
     (() => {
@@ -212,7 +210,6 @@ Promise.all([
         }, true);
 
     })();
-    */
 
 
 }).catch((err) => {
