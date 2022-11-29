@@ -254,7 +254,7 @@ export default defineComponent({
                 class="form-check-label small"
                 for="editDashboardWidgetsCheckbox"
               >
-                Edit Dashboard widgets
+                Unlock Dashboard widgets
               </label>
             </div>
 
