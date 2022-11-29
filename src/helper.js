@@ -146,7 +146,8 @@ export function getDeviceNameById(_id) {
 }
 */
 
-
+// TODO: REMOVE since window is globaly available
+// in vue through global property/options
 export function alert(...args) {
     return window.alert.apply(window, args);
 }
