@@ -194,7 +194,7 @@ Promise.all([
                 timer = setTimeout(() => {
                     console.log("counter reset", counter);
                     counter = 0;
-                }, 600);
+                }, 400);
 
                 if (counter >= 10) {
 
