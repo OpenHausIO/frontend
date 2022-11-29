@@ -1,14 +1,14 @@
 <script>
 import { defineComponent } from "vue";
 
-import Weather from "../widgets/Weather.vue";
+//import Weather from "../widgets/Weather.vue";
 import Notes from "../widgets/Notes.vue";
 import Todo from "../widgets/Todo.vue";
-import FritzBox from "../widgets/FritzBox.vue";
-import Scenes from "../widgets/Scenes.vue";
-import Alarm from "../widgets/Alarm.vue";
+//import FritzBox from "../widgets/FritzBox.vue";
+//import Scenes from "../widgets/Scenes.vue";
+//import Alarm from "../widgets/Alarm.vue";
 import Clock from "../widgets/Clock.vue";
-import Cams from "../widgets/Cams.vue";
+//import Cams from "../widgets/Cams.vue";
 import Empty from "../widgets/Empty.vue";
 
 const components = {
