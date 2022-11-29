@@ -184,4 +184,14 @@ ul {
   list-style: none;
   padding: 0;
 }
+
+input[type="text"] {
+  border: 0;
+  border-bottom: 1px solid #000;
+  color: #fff;
+}
+
+input[type="text"]:focus {
+  outline: none;
+}
 </style>
