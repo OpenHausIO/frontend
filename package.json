@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    "preview": "vite preview --port 5050"
+    "preview": "vite preview --port 5050",
+    "build:docker": "docker build . -t openhaus/frontend:latest",
+    "docker-nginx": "docker run --rm --name frontend -v $PWD/dist:/usr/share/nginx/html:ro -p 3000:80 -d nginx"
   },
   "dependencies": {
     "@dafcoe/vue-notification": "^0.1.6",
