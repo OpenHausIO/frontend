@@ -60,7 +60,29 @@ app.config.globalProperties.$window = window;
 app.config.globalProperties.$console = console;
 
 
+app.directive("repeat", {
+    mounted(el, binding, vnode, prevVnode) {
 
+        let timeout = null;
+        let interval = null;
+
+        el.addEventListener("mousedown", () => {
+            timeout = setTimeout(() => {
+
+                interval = setInterval(() => {
+                    binding.value.handler(binding.value.command);
+                }, binding.value.interval || 1000);
+
+            }, 1000);
+        });
+
+        el.addEventListener("mouseup", () => {
+            clearInterval(interval);
+            clearTimeout(timeout);
+        });
+
+    }
+});
 
 
 Promise.all([

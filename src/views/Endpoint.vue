@@ -57,6 +57,9 @@ export default {
         }
       );
     },
+    repeat(cmd) {
+      this.trigger(cmd._id);
+    },
   },
 };
 </script>
@@ -102,6 +105,7 @@ export default {
           v-else
           class="bg-dark border-secondary"
           @click="trigger(command._id, $event)"
+          v-repeat="{ handler: repeat, interval: 300, command }"
         >
           <template #title>
             <i :class="command.icon"></i>
