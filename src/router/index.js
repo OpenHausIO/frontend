@@ -3,7 +3,7 @@ import { reactive } from "vue";
 
 const routes = reactive([{
     path: "/dashboard",
-    name: "Dasboard",
+    name: "Dashboard",
     icon: "fas fa-home",
     visible: true,
     component: () => import("../views/Dashboard.vue")
