@@ -1,6 +1,7 @@
 import { createApp, watch } from "vue";
 import App from "./App.vue";
 import router from "./router";
+import { routes } from "./router";
 import { itemStore, settingsStore } from "./store";
 
 
@@ -201,6 +202,12 @@ Promise.all([
     app.mount("#app");
 
     let settings = settingsStore();
+
+    // init navbar visibility
+    // not reactive, this happens in settings
+    routes.forEach((route) => {
+        route.visible = settings[`show${route.name}Button`];
+    });
 
     (() => {
 

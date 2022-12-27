@@ -9,6 +9,7 @@ import { toggleFullscreen } from "../helper.js";
 import { useNotificationStore } from "@dafcoe/vue-notification";
 import { v4 as uuid } from "uuid";
 import Widget from "../components/Widget.vue";
+import { routes } from "../router/index.js";
 
 import { widgetStore } from "../store.js";
 const { setNotification } = useNotificationStore();
@@ -38,6 +39,10 @@ export default defineComponent({
         document.getElementById("app").classList.add("bg-dark");
         document.getElementById("app").classList.remove("gardien-background");
       }
+
+      routes.forEach((route) => {
+        route.visible = this.settings[`show${route.name}Button`];
+      });
     });
   },
 
@@ -229,6 +234,27 @@ export default defineComponent({
                 for="showBackButtonCheckbox"
               >
                 Show Back button
+              </label>
+            </div>
+
+            <hr />
+
+            <div
+              class="form-check form-switch"
+              v-bind:key="route.path"
+              v-for="route in routes"
+            >
+              <input
+                class="form-check-input"
+                type="checkbox"
+                :id="'show' + route.name + 'ButtonCheck'"
+                v-model="settings['show' + route.name + 'Button']"
+              />
+              <label
+                class="form-check-label small"
+                :for="'show' + route.name + 'ButtonCheck'"
+              >
+                Show {{ route.name }} button
               </label>
             </div>
           </div>

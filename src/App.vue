@@ -35,6 +35,13 @@ export default {
       });
     },
   },
+  computed: {
+    routeEntrys() {
+      return routes.filter(({ visible }) => {
+        return visible;
+      });
+    },
+  },
 };
 </script>
 
@@ -84,7 +91,7 @@ export default {
           v-bind:to="route.path"
           v-slot="{ href, navigate, isActive }"
           v-bind:key="index"
-          v-for="(route, index) in routes"
+          v-for="(route, index) in routeEntrys"
         >
           <!-- LINK -->
           <li
