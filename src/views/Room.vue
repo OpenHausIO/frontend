@@ -65,7 +65,7 @@ export default {
         {{ $route.params._id }}
       </div>
     </div>
-    <div class="row" v-if="endpoints.length > 0">
+    <div class="row h-100 display-flex text-center" v-if="endpoints.length > 0">
       <RouterLink
         v-bind:key="item._id"
         v-for="item in endpoints"
@@ -78,12 +78,11 @@ export default {
         }"
         v-slot="{ href, navigate }"
       >
-        <div class="col-2 mb-4">
+        <div class="p-0 col-6 col-md-3 col-xl-2">
           <Tile
             :href="href"
             @click="navigate"
-            class="bg-dark"
-            style="border: 1px solid #000"
+            style="background: transparent; border: 1px solid #000"
           >
             <template #icon>
               <i class="fa-2xl" :class="item.icon"></i>
