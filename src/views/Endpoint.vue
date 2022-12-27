@@ -61,24 +61,75 @@ export default {
       this.trigger(cmd._id);
     },
   },
+  computed: {
+    commands() {
+      return this.data.commands?.length || 0;
+    },
+    states() {
+      return this.data.states?.length || 0;
+    },
+    /*
+    scenes() {
+      return Math.round(Math.random() * 10);
+    },*/
+  },
 };
 </script>
 
 <template>
   <div class="container-fluid">
-    <div class="row">
-      <div class="col-12">
-        <h3>
-          {{ data.name }}
-          <span class="text-secondary fw-light"
-            >({{ getRoomNameById(data.room) }})</span
-          >
-        </h3>
+    <!-- HEADER -->
+    <div
+      class="row py-4"
+      style="border-top: 1px solid #000; border-bottom: 1px solid #000"
+    >
+      <!-- LEFT -->
+      <div class="col">
+        <div class="d-inline-flex">
+          <div class="me-2 pt-1">
+            <i
+              :class="data.icon || 'fa-solid fa-circle-question'"
+              class="fa-3x"
+            ></i>
+          </div>
+          <div class="">
+            <h3 class="mb-0">
+              {{ data.name }}
+              <!--<sup class="text-secondary">•</sup>-->
+            </h3>
+            <span class="text-secondary fw-light d-block">
+              {{ getRoomNameById(data.room) }}
+            </span>
+          </div>
+        </div>
       </div>
-
+      <!-- LEFT -->
+      <!-- RIGHT -->
+      <div class="col text-end" style="font-size: 14px">
+        <span class="text-secondary fw-light d-block">
+          <!--Commands: {{ Math.round(Math.random() * 10) }}-->
+          Commands: {{ commands }}
+        </span>
+        <span class="text-secondary fw-light d-block">
+          States: {{ states }}
+        </span>
+        <!--
+        <span class="text-secondary fw-light d-block">
+          Scenes: {{ scenes }}
+        </span>
+        -->
+      </div>
+      <!-- RIGHT -->
+    </div>
+    <!-- HEADER -->
+    <!-- COMMANDS/STATES/SCENES -->
+    <div
+      class="row display-flex text-center"
+      style="height: calc(100% - 109px)"
+    >
       <!-- COMMANDS -->
       <div
-        class="col-2 mb-4"
+        class="p-0 col-6 col-md-3 col-xl-2"
         v-bind:key="command._id"
         v-for="command in data.commands"
       >
@@ -94,16 +145,20 @@ export default {
           v-slot="{ href, navigate }"
           v-if="command.params?.length > 0"
         >
-          <Tile class="bg-dark border-secondary" :href="href" @click="navigate">
+          <Tile
+            style="background: transparent; border: 1px solid rgb(0, 0, 0)"
+            :href="href"
+            @click="navigate"
+          >
             <template #title>
-              <i :class="command.icon"></i>
+              <i :class="command.icon || 'fa-regular fa-circle-question'"></i>
             </template>
             {{ command.name }}
           </Tile>
         </RouterLink>
         <Tile
           v-else
-          class="bg-dark border-secondary"
+          style="background: transparent; border: 1px solid rgb(0, 0, 0)"
           @click="trigger(command._id, $event)"
           v-repeat="{ handler: repeat, interval: 300, command }"
         >
@@ -116,16 +171,17 @@ export default {
       <!-- COMMANDS -->
       <!-- STATES -->
       <div
-        class="col-2 mb-4"
+        class="p-0 col-6 col-md-3 col-xl-2"
         v-bind:key="state._id"
         v-for="state in data.states"
       >
-        <Tile class="bg-dark border-secondary">
+        <Tile style="background: transparent; border: 1px solid rgb(0, 0, 0)">
           <div>{{ state.name }}</div>
           <i>{{ state.value ? state.value : "na" }}</i>
         </Tile>
       </div>
       <!-- STATES -->
     </div>
+    <!-- COMMANDS/STATES/SCENES -->
   </div>
 </template>
