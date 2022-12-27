@@ -8,8 +8,9 @@ import router from "@/router";
 
 <script>
 //import { mapActions } from "pinia";
-import { itemStore } from "../store.js";
+import { itemStore, settingsStore } from "../store.js";
 const store = itemStore();
+const settings = settingsStore();
 
 export default {
   components: {
@@ -36,7 +37,7 @@ export default {
 
     // skip endpoint selection when only one is provide by the device
     // TODO Make this optional in settings
-    if (endpoints.length === 1) {
+    if (endpoints.length === 1 && settings.jumpToOnlyEndpointSet) {
       router.replace({
         name: "/endpoints/:_id",
         params: {

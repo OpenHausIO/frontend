@@ -436,6 +436,20 @@ export default defineComponent({
                 Transparent Dashboard Widgets
               </label>
             </div>
+            <div class="form-check form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="jumpToOnlyEndpointSetCheckbox"
+                v-model="settings.jumpToOnlyEndpointSet"
+              />
+              <label
+                class="form-check-label small"
+                for="jumpToOnlyEndpointSetCheckbox"
+              >
+                Jump to only Endpoint set from Device
+              </label>
+            </div>
             <!-- CONTENT -->
           </div>
         </div>

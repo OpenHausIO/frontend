@@ -30,6 +30,7 @@ export const settingsStore = defineStore("settings", {
             transparentDashboardWidgets: false,
             screensaverOverlayDelay: 30,
             enableScreenSaverOverlay: false,
+            jumpToOnlyEndpointSet: true,
             dashboardGrid: {
                 cols: 12,
                 rows: 30
