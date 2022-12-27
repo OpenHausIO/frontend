@@ -6,6 +6,7 @@ import { useRoute } from "vue-router";
 </script>
 
 <script>
+import { isNumber } from "../helper.js";
 import { mapActions } from "pinia";
 import { itemStore } from "../store.js";
 const store = itemStore();
@@ -19,6 +20,7 @@ export default {
     return {
       data: {},
       endpoints: [],
+      scenes: [], // fake, fill with real scenes if implemented!
     };
   },
   mounted() {
@@ -58,14 +60,57 @@ export default {
 
 <template>
   <div class="container-fluid">
-    <div class="row hide">
-      <div>
-        <b>sngle Room: {{ data }}, Endpoints: {{ endpoints }}</b>
-        <hr />
-        {{ $route.params._id }}
+    <!-- HEADER -->
+    <div
+      class="row py-4"
+      style="border-top: 1px solid #000; border-bottom: 1px solid #000"
+    >
+      <!-- LEFT -->
+      <div class="col">
+        <div class="d-inline-flex">
+          <div class="me-2 pt-1">
+            <i
+              :class="data.icon || 'fa-solid fa-circle-question'"
+              class="fa-3x"
+            ></i>
+          </div>
+          <div class="">
+            <h3 class="mb-0">
+              {{ data.name }}
+            </h3>
+            <span class="text-secondary fw-light d-block">
+              {{ isNumber(data?.number) ? "Number: " + data.number : "" }}
+              <span v-if="isNumber(data?.number) && isNumber(data?.floor)">
+                /
+              </span>
+              {{ isNumber(data?.floor) ? "Floor: " + data.floor : "" }}
+            </span>
+          </div>
+        </div>
       </div>
+      <!-- LEFT -->
+      <!-- SCENES -->
+      <div class="col">
+        <div class="d-inline-flex">
+          <button
+            class="btn btn-outline-primary d-inline-block"
+            style="height: 58px; margin-right: 5px"
+            v-for="(scene, index) in scenes"
+            v-bind:key="index"
+          >
+            Scene #{{ index + 1 }}
+          </button>
+        </div>
+      </div>
+      <!-- SCENES -->
     </div>
-    <div class="row h-100 display-flex text-center" v-if="endpoints.length > 0">
+    <!-- HEADER -->
+    <!-- ITEM -->
+    <div
+      class="row display-flex text-center"
+      v-if="endpoints.length > 0"
+      style="height: calc(100% - 109px)"
+    >
       <RouterLink
         v-bind:key="item._id"
         v-for="item in endpoints"
@@ -95,9 +140,10 @@ export default {
         </div>
       </RouterLink>
     </div>
+    <!-- ITEM -->
     <div class="row" v-else>
       <div class="col-12">
-        <h1>No Endpoints assigned</h1>
+        <h6>Empty here, assign some endpoints to this room.</h6>
       </div>
     </div>
   </div>
