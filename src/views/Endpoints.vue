@@ -29,16 +29,10 @@ export default {
     }, {});
   },
   methods: {
-    getRoomNameById(_id) {
-      let room = Array.from(store.rooms).find((obj) => {
+    getRoomById(_id) {
+      return Array.from(store.rooms).find((obj) => {
         return obj._id === _id;
       });
-
-      if (!room) {
-        return "undefined";
-      }
-
-      return room.name;
     },
   },
 };
@@ -48,9 +42,26 @@ export default {
   <div class="container-fluid">
     <div v-show="settings.groupEndpointItems">
       <!-- COLLAPSABLE FLOOR -->
-      <div class="row" v-bind:key="index" v-for="(endpoints, index) in rooms">
+      <div class="row" v-bind:key="roomId" v-for="(endpoints, roomId) in rooms">
         <Collapsable>
-          <template #title>Room: {{ getRoomNameById(index) }}</template>
+          <template #title>
+            <div class="me-2 pt-1">
+              <i
+                :class="
+                  getRoomById(roomId)?.icon || 'fa-solid fa-circle-question'
+                "
+                class="fa-3x"
+              ></i>
+            </div>
+            <div class="">
+              <h3 class="mb-0">
+                {{ getRoomById(roomId)?.name || "Undefined" }}
+              </h3>
+              <span class="text-secondary fw-light d-block">
+                Endpoints: {{ endpoints.length }}
+              </span>
+            </div>
+          </template>
           <RouterLink
             v-bind:key="item._id || Date.now()"
             v-for="item in endpoints"
@@ -63,11 +74,11 @@ export default {
             }"
             v-slot="{ href, navigate }"
           >
-            <div class="col-2 mb-4">
+            <div class="p-0 col-6 col-md-3 col-xl-2">
               <Tile
                 :href="href"
                 @click="navigate"
-                class="bg-dark border-secondary"
+                style="background: transparent; border: 1px solid rgb(0, 0, 0)"
               >
                 <template #icon>
                   <i
@@ -113,7 +124,7 @@ export default {
               </template>
               <template #title>{{ item.name }} </template>
               <span class="text-secondary fw-light">
-                ({{ getRoomNameById(item.room) }})
+                ({{ getRoomById(item.room)?.name || "Undefined" }})
               </span>
             </Tile>
           </div>

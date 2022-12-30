@@ -73,24 +73,26 @@ export default {
 </script>
 <template>
   <div class="container-fluid">
-    <!--
-    <div class="row mb-3" v-if="!hideButtonGrouping">
-      <div class="col">
-        <button
-          class="btn btn-outline-primary"
-          @click="groupItems = !groupItems"
-        >
-          Toggle Grouping
-        </button>
-      </div>
-    </div>
-    -->
-
     <div v-if="settings.groupRoomItems">
       <!-- COLLAPSABLE FLOOR -->
-      <div class="row" v-bind:key="index" v-for="(rooms, index) in floors">
+      <div
+        class="row"
+        style="border-top: 1px solid #000; border-bottom: 1px solid #000"
+        v-bind:key="index"
+        v-for="(rooms, index) in floors"
+      >
         <Collapsable>
-          <template #title>Floor: {{ index }}</template>
+          <template #title>
+            <div class="me-2 pt-1">
+              <i class="fa-sharp fa-solid fa-layer-group fa-3x"></i>
+            </div>
+            <div class="">
+              <h3 class="mb-0">Floor {{ index }}</h3>
+              <span class="text-secondary fw-light d-block">
+                Rooms: {{ rooms.length }}
+              </span>
+            </div>
+          </template>
           <RouterLink
             v-bind:key="item._id || Date.now()"
             v-for="item in rooms"
@@ -103,11 +105,11 @@ export default {
             }"
             v-slot="{ href, navigate }"
           >
-            <div class="col-2 mb-4">
+            <div class="p-0 col-6 col-md-3 col-xl-2">
               <Tile
                 :href="href"
                 @click="navigate"
-                class="bg-dark border-secondary"
+                style="background: transparent; border: 1px solid rgb(0, 0, 0)"
               >
                 <template #icon>
                   <i
