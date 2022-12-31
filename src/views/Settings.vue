@@ -25,6 +25,8 @@ export default defineComponent({
     console.log("Mounted, watch settings");
 
     // save changes that are made
+    /*
+    // TODO: Remove, see #42
     watch(this.settings, () => {
       if (!this.settings.groupItems) {
         this.settings.groupRoomItems = false;
@@ -44,11 +46,13 @@ export default defineComponent({
         route.visible = this.settings[`show${route.name}Button`];
       });
     });
+    */
   },
 
   methods: {
     toggleFullscreen,
     showSettingsButtonInfo() {
+      /*
       nextTick(() => {
         if (this.settings.showSettingsButton) {
           setNotification({
@@ -64,6 +68,7 @@ export default defineComponent({
           });
         }
       });
+      */
     },
     addDashboardWidget(widget) {
       /*

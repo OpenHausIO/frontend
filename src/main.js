@@ -14,6 +14,9 @@ const pinia = createPinia();
 
 import { request } from "./helper.js";
 
+import { useNotificationStore } from "@dafcoe/vue-notification";
+const { setNotification } = useNotificationStore();
+
 
 // monkey patch ws
 window.events = null;
@@ -24,11 +27,12 @@ pinia.use(({ store, options }) => {
     if (options?.persistent) {
 
         if (window.localStorage.getItem(store.$id)) {
+            console.log("Get item sotre", JSON.parse(window.localStorage.getItem(store.$id)))
             Object.assign(store, JSON.parse(window.localStorage.getItem(store.$id)));
         }
 
         store.$subscribe((mutation, state) => {
-            //console.log(`store: ${store.$id} .subscribe`, mutation, state);
+            console.log(`store: ${store.$id} .subscribe`, mutation, JSON.stringify(state));
             window.localStorage.setItem(store.$id, JSON.stringify(state));
         });
 
@@ -39,9 +43,48 @@ pinia.use(({ store, options }) => {
 pinia.use(({ store }) => {
     if (store.$id === "settings") {
 
+        // listen for changes
+        // `.watch()` in Settings.vue does not work.
+        // see #42
+        store.$subscribe((mutation, state) => {
+
+            console.log("mutation", mutation);
+            console.log("state", state);
+
+            if (!store.groupItems) {
+                store.groupRoomItems = false;
+                store.groupEndpointItems = false;
+                store.groupDeviceItems = false;
+            }
+
+            if (store.showGradientBackground) {
+                document.getElementById("app").classList.remove("bg-dark");
+                document.getElementById("app").classList.add("gardien-background");
+            } else {
+                document.getElementById("app").classList.add("bg-dark");
+                document.getElementById("app").classList.remove("gardien-background");
+            }
+
+            if (!store.showSettingsButton) {
+                setNotification({
+                    message: "Tap 10x times on any empty space to go to this page again when the settings button is hidden.",
+                    type: "info",
+                    showIcon: false,
+                    dismiss: {
+                        manually: true,
+                        automatically: false,
+                    },
+                    appearance: "dark",
+                });
+            }
+
+            routes.forEach((route) => {
+                route.visible = store[`show${route.name}Button`];
+            });
+
+        });
+
         // initial background settings
-        // TODO: Find a better way
-        // TODO: Move this to settings store and not "global/common"
         if (store.showGradientBackground) {
             document.getElementById("app").classList.remove("bg-dark");
             document.getElementById("app").classList.add("gardien-background");
