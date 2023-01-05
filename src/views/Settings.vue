@@ -204,10 +204,10 @@ export default defineComponent({
 
 <template>
   <div class="container-fluid">
-    <div class="row pt-3">
+    <div class="row pt-3 justify-content-start">
       <!-- ITEM GROUPING -->
-      <div class="col">
-        <div class="card" style="width: 18rem">
+      <div class="col-2">
+        <div class="card">
           <div class="card-body bg-dark">
             <h5 class="card-title">Item Grouping</h5>
 
@@ -249,8 +249,8 @@ export default defineComponent({
       <!-- ITEM GROUPING -->
 
       <!-- NAVIGATION -->
-      <div class="col">
-        <div class="card" style="width: 18rem">
+      <div class="col-2">
+        <div class="card">
           <div class="card-body bg-dark">
             <h5 class="card-title">Navigation</h5>
             <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
@@ -285,8 +285,8 @@ export default defineComponent({
       <!-- NAVIGATION -->
 
       <!-- WIDGETS -->
-      <div class="col">
-        <div class="card" style="width: 18rem">
+      <div class="col-2">
+        <div class="card">
           <div class="card-body bg-dark">
             <h5 class="card-title">Widgets</h5>
 
@@ -342,8 +342,8 @@ export default defineComponent({
       <!-- WIDGETS -->
 
       <!-- SCREENSAVER -->
-      <div class="col">
-        <div class="card" style="width: 18rem">
+      <div class="col-2">
+        <div class="card">
           <div class="card-body bg-dark">
             <h5 class="card-title">Screensaver</h5>
             <!-- CONTENT -->
@@ -372,8 +372,8 @@ export default defineComponent({
       <!-- SCREENSAVER -->
 
       <!-- LOOK & FEEL -->
-      <div class="col">
-        <div class="card" style="width: 18rem">
+      <div class="col-2">
+        <div class="card">
           <div class="card-body bg-dark">
             <h5 class="card-title">Look & Feel</h5>
             <!-- CONTENT -->
@@ -405,8 +405,8 @@ export default defineComponent({
       <!-- LOOK & FEEL -->
 
       <!-- MISCELLANEOUS -->
-      <div class="col">
-        <div class="card" style="width: 18rem">
+      <div class="col-2">
+        <div class="card">
           <div class="card-body bg-dark">
             <h5 class="card-title">Miscellaneous</h5>
             <!-- CONTENT -->
@@ -432,8 +432,8 @@ export default defineComponent({
       <!-- MISCELLANEOUS -->
 
       <!-- SETTINGS -->
-      <div class="col">
-        <div class="card" style="width: 18rem">
+      <div class="col-2">
+        <div class="card">
           <div class="card-body bg-dark">
             <h5 class="card-title">Settings</h5>
             <!-- CONTENT -->
@@ -458,3 +458,12 @@ export default defineComponent({
     </div>
   </div>
 </template>
+
+<style scoped>
+.col-2{
+  margin-bottom: var(--bs-gutter-x);
+}
+div.card{
+  min-height: 100%;
+}
+</style>
