@@ -46,6 +46,11 @@ docker run --net=host --rm --name frontend --env BACKEND_HOST=172.17.0.1 openhau
 ```
 > The backend runs on the docker host
 
+### Export the Image
+```sh
+docker save openhaus/frontend:latest | gzip > ./frontend-vX.X.X-docker.tgz
+```
+
 ## Screenshots
 ![Dashboard](./docs/img/dashboard.png)
 --
@@ -60,4 +65,6 @@ docker run --net=host --rm --name frontend --env BACKEND_HOST=172.17.0.1 openhau
 ![EndpointInfobar](./docs/img/endpoint-inforbar.png)
 --
 ![Devices](./docs/img/devices.png)
+--
+![Devices](./docs/img/settings.png)
 <br /><br />
