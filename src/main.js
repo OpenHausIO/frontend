@@ -26,9 +26,11 @@ window.events = null;
 pinia.use(({ store, options }) => {
     if (options?.persistent) {
 
+        console.log("Store asdfasdfasfdasdfasfda", store.$state);
+
         if (window.localStorage.getItem(store.$id)) {
             console.log("Get item sotre", JSON.parse(window.localStorage.getItem(store.$id)))
-            Object.assign(store, JSON.parse(window.localStorage.getItem(store.$id)));
+            Object.assign(store.$state, JSON.parse(window.localStorage.getItem(store.$id)));
         }
 
         store.$subscribe((mutation, state) => {
