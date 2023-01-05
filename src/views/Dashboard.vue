@@ -1,38 +1,23 @@
 <script setup>
 import { settingsStore, widgetStore } from "../store.js";
-const settings = settingsStore();
-//const widgets = widgetStore();
-//console.log("widgets store", widgets);
+const settings = settingsStore(); // why here no .$state?!
+const widgets = widgetStore().$state; // why here .$state and not in settings?
 </script>
 
 <script>
 import { defineComponent } from "vue";
 import Widget from "../components/Widget.vue";
-//import { v4 as uuid } from "uuid";
 
 export default defineComponent({
   components: {
     Widget,
-  },
-  beforeCreate() {
-    this.layout = widgetStore().$state;
-    //console.log("this.layout", this.layout);
-  },
-  methods: {
-    saveLayout() {
-      console.log("Saved widget layout");
-      window.localStorage.setItem("widgets", JSON.stringify(this.layout));
-    },
-  },
-  mounted() {
-    window.localStorage.setItem("widgets", JSON.stringify(this.layout));
   },
 });
 </script>
 
 <template>
   <grid-layout
-    v-model:layout="layout"
+    v-model:layout="widgets"
     :col-num="settings.dashboardGrid.cols"
     :row-height="settings.dashboardGrid.rows"
     :margin="[0, 0]"
@@ -55,7 +40,7 @@ export default defineComponent({
       <!--useCssTransforms: props.useCssTransforms-->
       <!--width: width.value-->
       <grid-item
-        v-for="item in layout"
+        v-for="item in widgets"
         :key="item.uuid"
         v-bind="gridItemProps"
         :x="item.x"
@@ -63,9 +48,6 @@ export default defineComponent({
         :w="item.w"
         :h="item.h"
         :i="item.i"
-        @resize="saveLayout()"
-        @move="saveLayout()"
-        @moved="saveLayout()"
         :class="{
           'bg-dark': !settings.transparentDashboardWidgets,
           'bg-transparent': settings.transparentDashboardWidgets,
