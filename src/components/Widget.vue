@@ -1,6 +1,9 @@
 <script>
 import { defineComponent } from "vue";
 
+import { widgetStore } from "../store.js";
+const store = widgetStore();
+
 //import Weather from "../widgets/Weather.vue";
 import Notes from "../widgets/Notes.vue";
 import Todo from "../widgets/Todo.vue";
@@ -48,21 +51,8 @@ export default defineComponent({
     };
   },
   methods: {
-    remove() {
-      let widgets = JSON.parse(window.localStorage.getItem("widgets")) || [];
-
-      console.log("Widgets size", widgets.length);
-
-      let target = widgets.find((widget) => {
-        return this.uuid === widget.uuid;
-      });
-
-      let index = widgets.indexOf(target);
-      widgets.splice(index, 1);
-
-      console.log("Widgets size", widgets.length);
-
-      window.localStorage.setItem("widgets", JSON.stringify(widgets));
+    remove(widget) {
+      store.remove(widget);
     },
     dispatchEvent(entry) {
       let widget = this.$refs.widget;
@@ -114,7 +104,7 @@ export default defineComponent({
         <li>
           <button
             class="dropdown-item d-flex gap-2 align-items-center"
-            @click="remove()"
+            @click="remove(this.$refs.widget)"
           >
             Remove
           </button>
