@@ -75,12 +75,7 @@ export default {
   <div class="container-fluid">
     <div v-if="settings.groupRoomItems">
       <!-- COLLAPSABLE FLOOR -->
-      <div
-        class="row"
-        style="border-top: 1px solid #000; border-bottom: 1px solid #000"
-        v-bind:key="index"
-        v-for="(rooms, index) in floors"
-      >
+      <div class="row" v-bind:key="index" v-for="(rooms, index) in floors">
         <Collapsable>
           <template #title>
             <div class="me-2 pt-1">
