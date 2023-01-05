@@ -6,6 +6,12 @@ export const menu = [];
 
 export default defineComponent({
   name: "Clock",
+  props: {
+    uuid: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
       timestamp: null,
