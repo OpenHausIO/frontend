@@ -139,6 +139,8 @@ export const itemStore = defineStore("items", {
 
 export const widgetStore = defineStore("widgets", {
     state() {
+        return [];
+        /*
         return [
             { x: 6, y: 0, w: 3, h: 12, widget: "Notes" },
             { x: 9, y: 0, w: 3, h: 12, widget: "Todo" },
@@ -149,6 +151,7 @@ export const widgetStore = defineStore("widgets", {
             widget.moved = false;
             return widget;
         });
+        */
     },
     actions: {
         add(widget, options) {
@@ -180,6 +183,34 @@ export const widgetStore = defineStore("widgets", {
             window.localStorage.setItem("widgets", JSON.stringify(this.$state));
 
             console.log("Widget added to store", obj);
+
+        },
+        remove(widget) {
+
+            console.log("Remove widget first line!", widget);
+
+            let target = this.$state.find((item) => {
+                console.log("Compare target", widget.uuid, "=", item.uuid)
+                return widget.uuid === item.uuid;
+            });
+
+            console.log("Remove widget, target", target);
+
+            let index = this.$state.indexOf(target);
+
+            if (index === -1) {
+                console.log("Widget index not found for target, do nothing", target);
+                return;
+            }
+
+            console.log("Remove widget, index", index);
+            console.log("Remove widget, .$state", this.$state);
+
+            this.$state.splice(index, 1);
+
+            window.localStorage.setItem("widgets", JSON.stringify(this.$state));
+
+            console.log("Widget removed from store", this.$state);
 
         }
     },
