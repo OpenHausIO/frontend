@@ -1,24 +1,27 @@
 <script setup>
-import { settingsStore, widgetStore } from "../store.js";
-const settings = settingsStore();
+//import { settingsStore, widgetStore } from "../store.js";
+//const settings = settingsStore();
+//const widgets = widgetStore();
 </script>
 
 <script>
 import { defineComponent, watch, nextTick } from "vue";
 import { toggleFullscreen } from "../helper.js";
 import { useNotificationStore } from "@dafcoe/vue-notification";
-import { v4 as uuid } from "uuid";
+//import { v4 as uuid } from "uuid";
 import Widget from "../components/Widget.vue";
 import { routes } from "../router/index.js";
 
-import { widgetStore } from "../store.js";
 const { setNotification } = useNotificationStore();
-const widgetsSt = widgetStore();
+
+import { settingsStore, widgetStore } from "../store.js";
+const settings = settingsStore();
+const widgets = widgetStore();
 
 export default defineComponent({
   data() {
     return {
-      widgets: Widget.components,
+      //widgets: Widget.components,
     };
   },
   mounted() {
@@ -98,7 +101,7 @@ export default defineComponent({
       window.localStorage.setItem("widgets", JSON.stringify(widgets));
       */
 
-      widgetsSt.add(widget);
+      widgets.add(widget);
 
       setNotification({
         message: `Widget "${widget}" added to Dashboard`,
@@ -112,6 +115,16 @@ export default defineComponent({
       });
     },
     clearSettings() {
+      // works, but not for widgets
+      settings.$reset(); // OK
+      //widgets.$reset(); // BROKEN!
+
+      // workaround for `widgets.$reset()`
+      // reset does not work, pop works!
+      while (widgets.$state.length > 0) {
+        widgets.$state.pop();
+      }
+
       // clear local "persistent" storage
       window.localStorage.clear();
 
@@ -166,6 +179,10 @@ export default defineComponent({
           console.log(`localStorage ${key} = ${data[key]}`);
           window.localStorage.setItem(key, data[key]);
         }
+
+        // make settings & widgets import reactive
+        Object.assign(settings.$state, JSON.parse(data.settings));
+        Object.assign(widgets.$state, JSON.parse(data.widgets));
 
         setNotification({
           message: "Settings have been restored.",
@@ -406,7 +423,10 @@ export default defineComponent({
                 Add Widget
               </button>
               <ul class="dropdown-menu dropdown-menu-dark">
-                <li v-bind:key="index" v-for="(widget, index) in widgets">
+                <li
+                  v-bind:key="index"
+                  v-for="(widget, index) in Widget.components"
+                >
                   <button
                     class="dropdown-item d-flex gap-2 align-items-center"
                     @click="addDashboardWidget(widget.name)"
