@@ -25,14 +25,14 @@ npm run build
 ## Docker image
 
 ### Environment variables
-| Name             | Default value                    | Required | Description                                          |
-| ---------------- | -------------------------------- | -------- | ---------------------------------------------------- |
-| NODE_ENV         | `production`                     |          | node.js environment                                  |
-| NGINX_HOSTNAME   | `open-haus.lan, open-haus.local` |          | nginx hostname                                       |
-| BACKEND_PROTOCOL | `http`                           |          | OpenHaus backend http protocol                       |
-| BACKEND_HOST     | `127.0.0.1`                      | x        | OpenHaus backend http host                           |
-| BACKEND_PORT     | `8080`                           |          | OpenHaus backend http port                           |
-| RESOLVER         | `127.0.0.11`                     |          | DNS resolver used inside the backend location block. |
+| Name             | Default value                    | Description                                          |
+| ---------------- | -------------------------------- | ---------------------------------------------------- |
+| NODE_ENV         | `production`                     | node.js environment                                  |
+| NGINX_HOSTNAME   | `open-haus.lan, open-haus.local` | nginx hostname                                       |
+| BACKEND_PROTOCOL | `http`                           | OpenHaus backend http protocol                       |
+| BACKEND_HOST     | `127.0.0.1`                      | OpenHaus backend http host                           |
+| BACKEND_PORT     | `8080`                           | OpenHaus backend http port                           |
+| RESOLVER         | `127.0.0.11`                     | DNS resolver used inside the backend location block. |
 
 > NOTE:<br />
 > You can also use the environment variables `BACKEND_PROTOCOL`, `BACKEND_HOST` & `BACKEND_PORT` while you develop local.<br />
