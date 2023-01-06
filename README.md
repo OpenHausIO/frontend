@@ -34,6 +34,10 @@ npm run build
 | BACKEND_PORT     | `8080`                           |          | OpenHaus backend http port                           |
 | RESOLVER         | `127.0.0.11`                     |          | DNS resolver used inside the backend location block. |
 
+> NOTE:<br />
+> You can also use the environment variables `BACKEND_PROTOCOL`, `BACKEND_HOST` & `BACKEND_PORT` while you develop local.<br />
+> E.g. run `BACKEND_HOST=open-haus.local npm run dev` to use your local hosted backend instead of the loopback address.
+
 ### Build the image
 ```sh
 npm run build
