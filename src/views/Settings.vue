@@ -11,12 +11,14 @@ import { useNotificationStore } from "@dafcoe/vue-notification";
 //import { v4 as uuid } from "uuid";
 import Widget from "../components/Widget.vue";
 import { routes } from "../router/index.js";
+import router from "../router/index.js";
 
 const { setNotification } = useNotificationStore();
 
-import { settingsStore, widgetStore } from "../store.js";
+import { settingsStore, widgetStore, commonStore } from "../store.js";
 const settings = settingsStore();
 const widgets = widgetStore();
+const common = commonStore();
 
 export default defineComponent({
   data() {
@@ -127,6 +129,7 @@ export default defineComponent({
 
       // clear local "persistent" storage
       window.localStorage.clear();
+      window.sessionStorage.clear();
 
       setNotification({
         message: "Local storage has been cleaned",
@@ -138,6 +141,14 @@ export default defineComponent({
         },
         appearance: "dark",
       });
+
+      setTimeout(() => {
+        common.authenticated = false;
+        common.navbar = false;
+        router.replace({
+          path: "/auth/login",
+        });
+      }, 3000);
     },
     exportSettings() {
       let blob = new Blob([JSON.stringify(window.localStorage, null, 2)], {
@@ -443,7 +454,7 @@ export default defineComponent({
       <!-- WIDGETS -->
 
       <!-- SCREENSAVER -->
-      <div class="col-2">
+      <div class="col-2 hide">
         <div class="card">
           <div class="card-body bg-dark">
             <h5 class="card-title">Screensaver</h5>
@@ -552,7 +563,7 @@ export default defineComponent({
             <h5 class="card-title">Miscellaneous</h5>
             <!-- CONTENT -->
 
-            <div class="form-check form-switch">
+            <div class="form-check form-switch hide">
               <input
                 class="form-check-input"
                 type="checkbox"
@@ -568,15 +579,16 @@ export default defineComponent({
             </div>
 
             <button
-              class="btn btn-outline-primary d-block"
+              class="btn btn-outline-primary d-block w-100 mb-1"
               @click="toggleFullscreen()"
             >
               Toggle fullscreen
             </button>
 
             <a
-              href="http://localhost:3001"
-              class="btn btn-outline-primary m-1 d-block"
+              href="/"
+              onclick="javascript:event.target.port=3001"
+              class="btn btn-outline-primary d-block"
               target="_blank"
               >Administration
             </a>
