@@ -32,4 +32,14 @@ export default {
   opacity: 0.8;
 }
 */
+/*
+.card-body {
+  background: linear-gradient(
+    45deg,
+    rgba(0, 36, 22, 0.421) 10%,
+    rgba(9, 44, 121, 0.052) 50%,
+    rgba(0, 213, 255, 0.081) 100%
+  );
+}
+*/
 </style>
