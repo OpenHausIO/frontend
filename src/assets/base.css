@@ -40,3 +40,15 @@ body {
 :disabled {
     cursor: not-allowed !important;
 }
+
+.notification-list-item--alert .notification-list-item__tag[data-v-0730d53e] {
+    background-color: var(--bs-red) !important;
+}
+
+.notification-list-item--info .notification-list-item__icon[data-v-0730d53e] {
+    background-color: var(--bs-blue) !important;
+}
+
+.notification-list-item--success .notification-list-item__tag[data-v-0730d53e] {
+    background-color: var(--bs-green) !important;
+}
