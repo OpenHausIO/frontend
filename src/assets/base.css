@@ -23,8 +23,7 @@ body {
     background-attachment: fixed;
 }
 
-*,
-::selection {
+* :not(input):not(textarea) {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
