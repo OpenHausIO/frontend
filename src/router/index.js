@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import { reactive } from "vue";
+import { commonStore } from "../store.js";
 
 const routes = reactive([{
     path: "/dashboard",
@@ -75,6 +76,10 @@ const router = createRouter({
             icon: "fa fa-gear",
             component: () => import("../views/Settings.vue")
         }, {
+            path: "/auth/login",
+            name: "Login",
+            component: () => import("../views/Login.vue")
+        }, {
             path: "/:pathMatch(.*)*",
             name: "NotFound",
             redirect: "/dashboard"
@@ -83,9 +88,50 @@ const router = createRouter({
 });
 
 // https://router.vuejs.org/guide/advanced/navigation-guards.html
-router.beforeEach((to, from) => {
-    return true;
-})
+router.beforeEach(async (to, from) => {
+
+    // https://pinia.vuejs.org/core-concepts/outside-component-usage.html#single-page-applications
+    let common = commonStore();
+    let checked = sessionStorage.getItem("authenticated");
+    let token = localStorage.getItem("x-auth-token");
+
+    if (checked !== "true" && to.fullPath !== "/auth/login") {
+
+        // do http request to /auth and check response code
+        // if status code = 200, set authencited = true
+        // if != 200 set to false & redirect
+
+        let authenticated = await fetch("/auth", {
+            headers: {
+                "x-auth-token": token
+            }
+        }).then((response) => {
+            console.log(response.status)
+            return response.status === 200 || response.status === 404;
+        });
+
+        if (authenticated) {
+
+            common.authenticated = true;
+            sessionStorage.setItem("authenticated", true);
+            return true;
+
+        } else {
+
+            localStorage.removeItem("x-auth-token");
+            sessionStorage.removeItem("authenticated");
+
+            router.replace({
+                path: "/auth/login"
+            });
+
+        }
+
+    } else {
+        return true;
+    }
+
+});
 
 export default router;
 export { routes };

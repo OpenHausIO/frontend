@@ -2,13 +2,15 @@
 import { defineStore } from "pinia";
 import { v4 as uuid } from "uuid";
 
-/*
 export const commonStore = defineStore("common", {
     state() {
-        return {};
+        return {
+            navbar: false,
+            overlay: false,
+            authenticated: false
+        };
     }
 });
-*/
 
 export const settingsStore = defineStore("settings", {
     state() {

@@ -2,15 +2,17 @@ import { createApp, watch } from "vue";
 import App from "./App.vue";
 import router from "./router";
 import { routes } from "./router";
-import { itemStore, settingsStore } from "./store";
+//import router from "./router";
+import { createPinia } from 'pinia';
+const pinia = createPinia();
+
+import { itemStore, settingsStore, commonStore } from "./store";
 
 
 import VueNotificationList from '@dafcoe/vue-notification';
 import GridLayout from 'vue3-drr-grid-layout'
 import 'vue3-drr-grid-layout/dist/style.css'
 
-import { createPinia } from 'pinia';
-const pinia = createPinia();
 
 import { request } from "./helper.js";
 
@@ -26,15 +28,15 @@ window.events = null;
 pinia.use(({ store, options }) => {
     if (options?.persistent) {
 
-        console.log("Store asdfasdfasfdasdfasfda", store.$state);
+        //console.log("Store asdfasdfasfdasdfasfda", store.$state);
 
         if (window.localStorage.getItem(store.$id)) {
-            console.log("Get item sotre", JSON.parse(window.localStorage.getItem(store.$id)))
+            //console.log("Get item sotre", JSON.parse(window.localStorage.getItem(store.$id)))
             Object.assign(store.$state, JSON.parse(window.localStorage.getItem(store.$id)));
         }
 
         store.$subscribe((mutation, state) => {
-            console.log(`store: ${store.$id} .subscribe`, mutation, JSON.stringify(state));
+            //console.log(`store: ${store.$id} .subscribe`, mutation, JSON.stringify(state));
             window.localStorage.setItem(store.$id, JSON.stringify(state));
         });
 
@@ -131,28 +133,42 @@ app.directive("repeat", {
 });
 
 
-Promise.all([
 
-    // for DOM to be ready
-    new Promise((resolve, reject) => {
-        document.addEventListener("DOMContentLoaded", () => {
+function fetchData() {
+    return new Promise((resolve, reject) => {
+        Promise.all([
+            request("/api/rooms"),
+            request("/api/endpoints"),
+            request("/api/devices"),
+        ]).then(([rooms, endpoints, devices]) => {
 
-            console.log("[pre] DOM Content ready");
+            const store = itemStore();
+
+            store.rooms.push(...rooms);
+            store.endpoints.push(...endpoints);
+            store.devices.push(...devices);
+
+            console.log("API resrouces fetched");
 
             resolve();
 
+        }).catch((err) => {
+
+            console.error("Could not fetch api resources", err);
+
+            reject(err);
+
         });
-    }),
+    });
+}
 
-    // websocket connection to <host>/api/events 
-    new Promise((resolve, reject) => {
-
-        console.log(window.location.host)
+function connectToEvents() {
+    return new Promise((resolve, reject) => {
 
         let controller = new AbortController();
         let id = setTimeout(() => controller.abort(), 1000);
 
-        let ws = new WebSocket(`ws://${window.location.host}/api/events`);
+        let ws = new WebSocket(`ws://${window.location.host}/api/events?x-auth-token=${localStorage.getItem("x-auth-token")}`);
 
         console.log("connect to", ws.url);
 
@@ -187,16 +203,31 @@ Promise.all([
 
         window.events = ws;
 
+    })
+}
+
+
+Promise.all([
+
+    // for DOM to be ready
+    new Promise((resolve, reject) => {
+        document.addEventListener("DOMContentLoaded", () => {
+
+            console.log("[pre] DOM Content ready");
+
+            resolve();
+
+        });
     }),
 
     // mount vue plugins
     new Promise((resolve, reject) => {
         try {
 
-            app.use(VueNotificationList)
+            app.use(VueNotificationList);
+            app.use(pinia);
             app.use(router);
             app.use(GridLayout);
-            app.use(pinia);
 
             resolve();
 
@@ -207,46 +238,95 @@ Promise.all([
         }
     }),
 
-    // fetch /api resources
-    new Promise((resolve, reject) => {
-        Promise.all([
-            request("/api/rooms"),
-            request("/api/endpoints"),
-            request("/api/devices"),
-        ]).then(([rooms, endpoints, devices]) => {
-
-            //rooms.forEach(item => window.store.rooms.add(item));
-            //endpoints.forEach(item => window.store.endpoints.add(item));
-            //devices.forEach(item => window.store.devices.add(item));
-
-
-            const store = itemStore();
-
-            store.rooms.push(...rooms);
-            store.endpoints.push(...endpoints);
-            store.devices.push(...devices);
-
-            console.log("[pre] api resrouces fetched");
-
-            resolve();
-
-        }).catch((err) => {
-
-            console.error("Could not fetch api resources", err);
-
-            reject(err);
-
-        });
-    })
-
 ]).then(() => {
 
     console.log("Preshit done, mount vue app");
 
+    // stores
+    let settings = settingsStore();
+    let common = commonStore();
+
+    common.authenticated = Boolean(sessionStorage.getItem("authenticated"));
+
+    console.log("main then", common.authenticated, typeof common.authenticated)
+
+    if (common.authenticated) {
+
+        // authenticated
+        // fetch stuff & show navbar
+
+        fetchData();
+        connectToEvents();
+
+        console.log("Common authenticated")
+
+        common.navbar = true;
+
+    } else {
+
+        // wait for store changes
+        // then proceed with loading stuff
+
+        console.log("Waiut for store changed")
+
+        common.$subscribe((mutation, state) => {
+
+            console.log(mutation, state)
+
+            // TODO Move this to a "global middleware" where set/get local/session-storage
+            sessionStorage.setItem("authenticated", state.authenticated);
+            // localStorage.setItem("x-auth-token", state["x-auth-token"]);
+
+            if (state.authenticated) {
+
+
+                fetchData();
+                connectToEvents();
+
+                console.log("Store changed", mutation, state);
+
+                common.navbar = true;
+
+            }
+
+        });
+
+    }
+
+
+    /*
+    let authentciated = sessionStorage.getItem("authenticated");
+    let interval = null;
+
+    if (authentciated !== "true") {
+        interval = setInterval(() => {
+
+            console.log("Check interval!");
+            authentciated = sessionStorage.getItem("authenticated");
+
+            if (authentciated === "true") {
+
+                clearInterval(interval);
+
+                fetchData();
+                connectToEvents();
+
+            }
+
+        }, 1000);
+    } else {
+
+        fetchData();
+        connectToEvents();
+
+        common.navbar = true;
+
+    }
+    */
+
 
     app.mount("#app");
 
-    let settings = settingsStore();
 
     // init navbar visibility
     // not reactive, this happens in settings

@@ -9,19 +9,21 @@ import { routes } from "./router";
 
 import { settingsStore } from "./store.js";
 const settings = settingsStore();
+
+import { commonStore } from "./store.js";
+const common = commonStore();
 </script>
 
 <script>
 //import { reactive, provide, inject, watch } from "vue";
 //import { mapState } from "pinia";
 
-console.log("settingsStore:", settingsStore);
-
 export default {
   name: "Frontend",
   data() {
     return {
-      overlay: false,
+      //overlay: false,
+      //navbar: false,
     };
   },
   mounted() {
@@ -48,7 +50,7 @@ export default {
 
 <template>
   <!-- OVERLAY -->
-  <div v-if="overlay" id="overlay" class="text-center">
+  <div v-if="common.overlay" id="overlay" class="text-center">
     <div id="inner">
       <h1>Loading...</h1>
     </div>
@@ -66,6 +68,7 @@ export default {
   <nav
     class="navbar navbar-expand navbar-dark bg-dark sticky-top p-0"
     style="border-bottom: 1px solid #000"
+    v-if="common.navbar"
   >
     <div class="collapse navbar-collapse w-100">
       <ul class="navbar-nav w-100 row m-0">
@@ -115,7 +118,7 @@ export default {
         </RouterLink>
         <!-- DYNAMIC LINKS -->
 
-        <!-- STATIC BACK BUTTON -->
+        <!-- STATIC SETTNGS BUTTON -->
         <li
           class="nav-item col text-center p-0"
           v-if="settings.showSettingsButton"
@@ -130,14 +133,18 @@ export default {
           </a>
         </li>
         <!-- LINK -->
-        <!-- STATIC BACK BUTTON -->
+        <!-- STATIC SETTNGS BUTTON -->
       </ul>
     </div>
   </nav>
   <!-- NAVBAR -->
 
   <!-- VIEW -->
-  <RouterView class="h-100" id="view" />
+  <RouterView
+    class="h-100"
+    :class="{ 'force-max-height': !common.navbar }"
+    id="view"
+  />
   <!-- VIEW -->
 </template>
 
@@ -210,5 +217,11 @@ nav.navbar {
 
 .notification-list-item--dark {
   background-color: #343a40 !important;
+}
+
+.force-max-height {
+  min-height: 100% !important;
+  max-height: 100% !important;
+  height: 100% !important;
 }
 </style>
