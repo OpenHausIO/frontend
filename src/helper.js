@@ -52,6 +52,14 @@ export function request(url, options, cb) {
         method: "GET"
     }, options);
 
+    let token = localStorage.getItem("x-auth-token");
+
+    if (token) {
+        options.headers = Object.assign(options?.headers || {}, {
+            "x-auth-token": token
+        });
+    }
+
     console.log(`[REQUEST] ${options.method}: ${url}`)
 
     return promisfy((done) => {
