@@ -104,6 +104,12 @@ export default defineComponent({
           setTimeout(() => {
             console.log("Redirect to dashboard");
 
+            // unset only password field
+            // keep the E-Mail after logout
+            // after a page refresh you have to re enter it anyways
+            //email.value = "";
+            password.value = "";
+
             common.navbar = true;
             common.authenticated = true;
 
