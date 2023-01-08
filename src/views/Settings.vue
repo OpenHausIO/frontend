@@ -216,6 +216,29 @@ export default defineComponent({
         reader.readAsText(input.files[0]);
       });
     },
+    userLogout() {
+      window.localStorage.removeItem("x-auth-token");
+      window.sessionStorage.removeItem("authenticated");
+
+      setNotification({
+        message: "You haven been logged out",
+        type: "success",
+        showIcon: false,
+        dismiss: {
+          manually: true,
+          automatically: true,
+        },
+        appearance: "dark",
+      });
+
+      setTimeout(() => {
+        common.navbar = false;
+        common.authenticated = false;
+        router.push({
+          path: "/auth/login",
+        });
+      }, 3000);
+    },
   },
 });
 </script>
@@ -583,6 +606,13 @@ export default defineComponent({
               @click="toggleFullscreen()"
             >
               Toggle fullscreen
+            </button>
+
+            <button
+              class="btn btn-outline-primary d-block w-100 mb-1"
+              @click="userLogout()"
+            >
+              Logout
             </button>
 
             <a
