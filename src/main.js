@@ -246,7 +246,7 @@ Promise.all([
     let settings = settingsStore();
     let common = commonStore();
 
-    common.authenticated = Boolean(sessionStorage.getItem("authenticated"));
+    common.authenticated = (sessionStorage.getItem("authenticated") == "true");
 
     console.log("main then", common.authenticated, typeof common.authenticated)
 
