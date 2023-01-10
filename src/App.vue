@@ -224,4 +224,13 @@ nav.navbar {
   max-height: 100% !important;
   height: 100% !important;
 }
+
+ul.navbar-nav {
+  flex-wrap:nowrap;
+  overflow-x:auto
+}
+
+ul.navbar-nav li a{
+  min-width: 100px;
+}
 </style>
