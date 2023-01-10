@@ -12,9 +12,16 @@ body {
 }
 
 #app.gardien-background {
+    /*
     background-color: #2e3236;
     background-image: radial-gradient(circle, #4e505298 0, rgba(35, 40, 46, .5) 15%, #101418 95%), url(/noise.png);
     background-attachment: fixed;
+    */
+
+    /* Darker background, see #63 */
+    background-color: #101418;
+    background-image: radial-gradient(circle, #23282e 0%, rgba(35, 40, 46, 0.5) 15%, #101418 95%), url(/noise.png);
+
 
     /*
     // backup before #
