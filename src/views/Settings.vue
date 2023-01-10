@@ -259,9 +259,9 @@ export default defineComponent({
     <!-- HEADER -->
     <div class="row justify-content-start">
       <!-- ITEM GROUPING -->
-      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-4 p-0">
-        <div class="card">
-          <div class="card-body bg-dark">
+      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 p-0">
+        <div class="card bg-transparent">
+          <div class="card-body">
             <h5 class="card-title">Item Grouping</h5>
 
             <div class="form-check form-switch">
@@ -331,9 +331,9 @@ export default defineComponent({
       <!-- ITEM GROUPING -->
 
       <!-- NAVIGATION -->
-      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-4 p-0">
-        <div class="card">
-          <div class="card-body bg-dark">
+      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 p-0">
+        <div class="card bg-transparent">
+          <div class="card-body">
             <h5 class="card-title">Navigation</h5>
             <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
             <div class="form-check form-switch">
@@ -393,9 +393,9 @@ export default defineComponent({
       <!-- NAVIGATION -->
 
       <!-- WIDGETS -->
-      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-4 p-0">
-        <div class="card">
-          <div class="card-body bg-dark">
+      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 p-0">
+        <div class="card bg-transparent">
+          <div class="card-body">
             <h5 class="card-title">Widgets</h5>
 
             <!-- CARD CONTENT -->
@@ -489,9 +489,9 @@ export default defineComponent({
       <!-- WIDGETS -->
 
       <!-- SCREENSAVER -->
-      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-4 p-0 hide">
-        <div class="card">
-          <div class="card-body bg-dark">
+      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 p-0 hide">
+        <div class="card bg-transparent">
+          <div class="card-body">
             <h5 class="card-title">Screensaver</h5>
             <!-- CONTENT -->
             <div class="form-check form-switch">
@@ -538,9 +538,9 @@ export default defineComponent({
       <!-- SCREENSAVER -->
 
       <!-- LOOK & FEEL -->
-      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-4 p-0">
-        <div class="card">
-          <div class="card-body bg-dark">
+      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 p-0">
+        <div class="card bg-transparent">
+          <div class="card-body">
             <h5 class="card-title">Look & Feel</h5>
             <!-- CONTENT -->
             <div class="form-check form-switch">
@@ -592,9 +592,9 @@ export default defineComponent({
       <!-- LOOK & FEEL -->
 
       <!-- MISCELLANEOUS -->
-      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-4 p-0">
-        <div class="card">
-          <div class="card-body bg-dark">
+      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 p-0">
+        <div class="card bg-transparent">
+          <div class="card-body">
             <h5 class="card-title">Miscellaneous</h5>
             <!-- CONTENT -->
 
@@ -641,9 +641,9 @@ export default defineComponent({
       <!-- MISCELLANEOUS -->
 
       <!-- SETTINGS -->
-      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-4 p-0">
-        <div class="card">
-          <div class="card-body bg-dark">
+      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2  p-0">
+        <div class="card bg-transparent">
+          <div class="card-body">
             <h5 class="card-title">Settings</h5>
             <!-- CONTENT -->
 
