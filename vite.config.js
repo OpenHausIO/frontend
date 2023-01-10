@@ -34,10 +34,5 @@ export default defineConfig({
             }
         }
     },
-    build: {
-        rollupOptions: {
-            external: ["cam.mp4"]
-        }
-    },
     clearScreen: false
 });
