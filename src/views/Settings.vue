@@ -245,9 +245,21 @@ export default defineComponent({
 
 <template>
   <div class="container-fluid">
-    <div class="row pt-3 justify-content-start">
+    <!-- HEADER -->
+    <div
+      class="row py-4"
+      style="border-top: 1px solid #000; border-bottom: 1px solid #000"
+    >
+      <div class="col">
+        <h3 class="mb-0">
+              Settings
+            </h3>
+      </div>
+    </div>
+    <!-- HEADER -->
+    <div class="row justify-content-start">
       <!-- ITEM GROUPING -->
-      <div class="col-2">
+      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-4 p-0">
         <div class="card">
           <div class="card-body bg-dark">
             <h5 class="card-title">Item Grouping</h5>
@@ -319,7 +331,7 @@ export default defineComponent({
       <!-- ITEM GROUPING -->
 
       <!-- NAVIGATION -->
-      <div class="col-2">
+      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-4 p-0">
         <div class="card">
           <div class="card-body bg-dark">
             <h5 class="card-title">Navigation</h5>
@@ -381,7 +393,7 @@ export default defineComponent({
       <!-- NAVIGATION -->
 
       <!-- WIDGETS -->
-      <div class="col-2">
+      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-4 p-0">
         <div class="card">
           <div class="card-body bg-dark">
             <h5 class="card-title">Widgets</h5>
@@ -477,7 +489,7 @@ export default defineComponent({
       <!-- WIDGETS -->
 
       <!-- SCREENSAVER -->
-      <div class="col-2 hide">
+      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-4 p-0 hide">
         <div class="card">
           <div class="card-body bg-dark">
             <h5 class="card-title">Screensaver</h5>
@@ -526,7 +538,7 @@ export default defineComponent({
       <!-- SCREENSAVER -->
 
       <!-- LOOK & FEEL -->
-      <div class="col-2">
+      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-4 p-0">
         <div class="card">
           <div class="card-body bg-dark">
             <h5 class="card-title">Look & Feel</h5>
@@ -580,7 +592,7 @@ export default defineComponent({
       <!-- LOOK & FEEL -->
 
       <!-- MISCELLANEOUS -->
-      <div class="col-2">
+      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-4 p-0">
         <div class="card">
           <div class="card-body bg-dark">
             <h5 class="card-title">Miscellaneous</h5>
@@ -629,7 +641,7 @@ export default defineComponent({
       <!-- MISCELLANEOUS -->
 
       <!-- SETTINGS -->
-      <div class="col-2">
+      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-4 p-0">
         <div class="card">
           <div class="card-body bg-dark">
             <h5 class="card-title">Settings</h5>
@@ -671,5 +683,13 @@ export default defineComponent({
 }
 div.card {
   min-height: 100%;
+}
+
+.card{
+  border-color: #000;
+}
+
+.card-body, .card{
+  border-radius: 0;
 }
 </style>
