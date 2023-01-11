@@ -24,7 +24,7 @@ export default {
   },
   computed: {
     items() {
-      return store.endpoints.filter(({ enabled }, index) => {
+      return store.devices.filter(({ enabled }, index) => {
         console.log("Computed devices filter", enabled, index);
         return enabled;
       });
