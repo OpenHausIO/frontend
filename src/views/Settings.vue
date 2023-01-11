@@ -12,6 +12,7 @@ import { useNotificationStore } from "@dafcoe/vue-notification";
 import Widget from "../components/Widget.vue";
 import { routes } from "../router/index.js";
 import router from "../router/index.js";
+import { version } from "../../package.json";
 
 const { setNotification } = useNotificationStore();
 
@@ -251,9 +252,8 @@ export default defineComponent({
       style="border-top: 1px solid #000; border-bottom: 1px solid #000"
     >
       <div class="col">
-        <h3 class="mb-0">
-              Settings
-            </h3>
+        <h3 class="mb-0">Settings</h3>
+        Version: v{{ version }}
       </div>
     </div>
     <!-- HEADER -->
@@ -641,7 +641,7 @@ export default defineComponent({
       <!-- MISCELLANEOUS -->
 
       <!-- SETTINGS -->
-      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2  p-0">
+      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 p-0">
         <div class="card bg-transparent">
           <div class="card-body">
             <h5 class="card-title">Settings</h5>
@@ -685,11 +685,12 @@ div.card {
   min-height: 100%;
 }
 
-.card{
+.card {
   border-color: #000;
 }
 
-.card-body, .card{
+.card-body,
+.card {
   border-radius: 0;
 }
 </style>
