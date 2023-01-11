@@ -62,7 +62,7 @@ export default {
         }"
         v-slot="{ href, navigate }"
       >
-        <div class="p-0 col-6 col-md-3 col-xl-2">
+        <div class="p-0 col-6 col-md-4 col-xl-2">
           <Tile
             :href="href"
             @click="navigate"
