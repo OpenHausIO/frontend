@@ -10,6 +10,7 @@ import { toggleFullscreen } from "../helper.js";
 import { useNotificationStore } from "@dafcoe/vue-notification";
 //import { v4 as uuid } from "uuid";
 import Widget from "../components/Widget.vue";
+// TODO combine import: router, {router} from "../router/index.js"
 import { routes } from "../router/index.js";
 import router from "../router/index.js";
 import { version } from "../../package.json";
