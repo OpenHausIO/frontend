@@ -144,9 +144,9 @@ function fetchData() {
 
             const store = itemStore();
 
-            store.rooms.push(...rooms);
-            store.endpoints.push(...endpoints);
-            store.devices.push(...devices);
+            store.rooms = rooms;
+            store.endpoints = endpoints;
+            store.devices = devices;
 
             console.log("API resrouces fetched");
 
