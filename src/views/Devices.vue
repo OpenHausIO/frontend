@@ -19,8 +19,16 @@ export default {
   },
   data() {
     return {
-      items: store.devices,
+      //items: store.devices,
     };
+  },
+  computed: {
+    items() {
+      return store.endpoints.filter(({ enabled }, index) => {
+        console.log("Computed devices filter", enabled, index);
+        return enabled;
+      });
+    },
   },
   mounted() {
     /*

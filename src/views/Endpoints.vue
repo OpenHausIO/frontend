@@ -17,9 +17,17 @@ export default {
   },
   data() {
     return {
-      items: store.endpoints,
+      //items: store.endpoints,
       rooms: {},
     };
+  },
+  computed: {
+    items() {
+      return store.endpoints.filter(({ enabled }, index) => {
+        console.log("Computed endpoint filter", enabled, index);
+        return enabled;
+      });
+    },
   },
   mounted() {
     this.rooms = Array.from(this.items).reduce((obj, item) => {
