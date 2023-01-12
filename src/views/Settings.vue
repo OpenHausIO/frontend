@@ -335,7 +335,6 @@ export default defineComponent({
         <div class="card bg-transparent">
           <div class="card-body">
             <h5 class="card-title">Navigation</h5>
-            <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
             <div class="form-check form-switch">
               <input
                 class="form-check-input"
