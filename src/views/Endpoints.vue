@@ -18,7 +18,7 @@ export default {
   data() {
     return {
       //items: store.endpoints,
-      rooms: {},
+      //rooms: {},
     };
   },
   computed: {
@@ -28,7 +28,15 @@ export default {
         return enabled;
       });
     },
+    rooms() {
+      return Array.from(this.items).reduce((obj, item) => {
+        obj[item.room] = obj[item.room] || [];
+        obj[item.room].push(item);
+        return obj;
+      }, {});
+    },
   },
+  /*
   mounted() {
     this.rooms = Array.from(this.items).reduce((obj, item) => {
       obj[item.room] = obj[item.room] || [];
@@ -36,13 +44,14 @@ export default {
       return obj;
     }, {});
   },
+  */
   methods: {
     getRoomById(_id) {
       return Array.from(store.rooms).find((obj) => {
         return obj._id === _id;
       });
-    },
-  },
+    }
+  }
 };
 </script>
 
