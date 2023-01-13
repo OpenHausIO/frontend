@@ -24,13 +24,16 @@ export default defineConfig({
         }
     },
     server: {
+        host: "0.0.0.0",
         proxy: {
             "/api": {
                 target: `${BACKEND_PROTOCOL}://${BACKEND_HOST}:${BACKEND_PORT}`,
-                ws: true
+                ws: true,
+                xfwd: true
             },
             "/auth": {
                 target: `${BACKEND_PROTOCOL}://${BACKEND_HOST}:${BACKEND_PORT}`,
+                xfwd: true
             }
         }
     },
