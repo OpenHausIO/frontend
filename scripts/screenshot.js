@@ -11,7 +11,10 @@ const sleep = (n) => {
 const capture = async () => {
 
     // setup
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+        //headless: false,
+        //args: ["--start-maximized"]
+    });
     const page = await browser.newPage();
     await page.setViewport({
         width: 1920,
@@ -59,31 +62,39 @@ const capture = async () => {
     /*
     // enable item grouping
     await page.goto(`http://127.0.0.1:3000/#/settings`);
-    await sleep(1000);
+    await sleep(3000);
 
     let groupItemsCheckbox = await page.waitForSelector("#groupItemsCheckbox");
+    sleep(100);
     let groupItemsRoomCheckbox = await page.waitForSelector("#groupItemsRoomCheckbox");
+    sleep(100);
     let groupItemsEndpointCheckbox = await page.waitForSelector("#groupItemsEndpointCheckbox");
-    let groupItemsDeviceCheckboxawait = await page.waitForSelector("#groupItemsDeviceCheckbox");
-    await sleep(1000);
+    sleep(100);
+    let groupItemsDeviceCheckbox = await page.waitForSelector("#groupItemsDeviceCheckbox");
+    await sleep(3000);
 
+    // TODO: clicking does not work!
+    //page.click("#groupItemsCheckbox");
     groupItemsCheckbox.click();
-    groupItemsRoomCheckbox.click();
-    groupItemsEndpointCheckbox.click();
-    groupItemsDeviceCheckboxawait.click();
-    await sleep(1000);
+    sleep(1000);
+    //page.click("#groupItemsRoomCheckbox");
+    //sleep(1000);
+    //page.click("#groupItemsEndpointCheckbox");
+    //sleep(1000);
+    //page.click("#groupItemsDeviceCheckbox");
+    //await sleep(1000);
 
     await page.goto(`http://127.0.0.1:3000/#/endpoints`);
     await sleep(1000);
     await page.screenshot({
-        path: `./endpoints-grouping.png`
+        path: path.resolve(process.cwd(), `./docs/img/endpoints-grouping.png`)
     });
     sleep(1000);
 
     await page.goto(`http://127.0.0.1:3000/#/rooms`);
     await sleep(1000);
     await page.screenshot({
-        path: `./rooms-grouping.png`
+        path: path.resolve(process.cwd(), `./docs/img/rooms-grouping.png`)
     });
     sleep(1000);
     */
