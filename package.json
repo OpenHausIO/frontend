@@ -30,6 +30,7 @@
     "grunt-contrib-compress": "^2.0.0",
     "grunt-env": "^1.0.1",
     "puppeteer": "^19.5.2",
+    "puppeteer-screen-recorder": "^2.1.2",
     "vite": "^2.9.13"
   }
 }

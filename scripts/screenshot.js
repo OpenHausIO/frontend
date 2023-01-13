@@ -1,5 +1,7 @@
 const puppeteer = require("puppeteer");
 const path = require("path");
+//const { PuppeteerScreenRecorder } = require('puppeteer-screen-recorder');
+//const cp = require("child_process");
 
 const sleep = (n) => {
     return new Promise((resolve) => {
@@ -7,6 +9,24 @@ const sleep = (n) => {
     });
 };
 
+/*
+const Config = {
+    followNewTab: true,
+    fps: 25,
+    videoFrame: {
+        width: 1920,
+        height: 1080,
+    },
+    videoCrf: 18,
+    videoCodec: 'libx264',
+    videoPreset: 'ultrafast',
+    videoBitrate: 1000,
+    autopad: {
+        color: 'black' | '#35A5FF',
+    },
+    aspectRatio: '16:9',
+};
+*/
 
 const capture = async () => {
 
@@ -24,6 +44,10 @@ const capture = async () => {
     // load default page
     // without this icons are not displayed
     await page.goto(`http://127.0.0.1:3000/`);
+    //await sleep(1000);
+
+    //const recorder = new PuppeteerScreenRecorder(page, Config);
+    //await recorder.start(path.resolve(process.cwd(), "docs/video.mp4"));
 
     let pages = [/*{
         path: "dashboard",
@@ -32,11 +56,11 @@ const capture = async () => {
             url: "rooms",
             name: "rooms"
         }, {
-            url: "devices",
-            name: "devices"
-        }, {
             url: "endpoints",
             name: "endpoints"
+        }, {
+            url: "devices",
+            name: "devices"
         }, {
             url: "settings",
             name: "settings"
@@ -99,7 +123,10 @@ const capture = async () => {
     sleep(1000);
     */
 
+    //await recorder.stop();
     await browser.close();
+
+    //cp.execSync(`ffmpeg -i ${path.resolve(process.cwd(), "docs/video.mp4")} ${path.resolve(process.cwd(), "docs/video.gif")}`)
 
 };
 
