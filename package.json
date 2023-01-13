@@ -1,14 +1,15 @@
 {
   "name": "frontend",
   "private": true,
-  "version": "1.4.2",
+  "version": "1.4.6",
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview --port 5050 --host",
     "build:docker": "docker build . -t openhaus/frontend:latest",
     "docker-nginx": "docker run --rm --name frontend -v $PWD/dist:/usr/share/nginx/html:ro -p 3000:80 -d nginx",
-    "release": "grunt release"
+    "release": "grunt release",
+    "screenshot": "node scripts/screenshot.js"
   },
   "dependencies": {
     "@dafcoe/vue-notification": "^0.1.6",
@@ -28,6 +29,7 @@
     "grunt": "^1.5.3",
     "grunt-contrib-compress": "^2.0.0",
     "grunt-env": "^1.0.1",
+    "puppeteer": "^19.5.2",
     "vite": "^2.9.13"
   }
 }
