@@ -196,13 +196,34 @@ function connectToEvents() {
             return ws.send(JSON.stringify(data));
         };
 
+        const store = itemStore();
+
         ws.onmessage = (msg) => {
+            try {
 
-            let data = JSON.parse(msg.data);
+                let data = JSON.parse(msg.data);
+                let valid = 1;
 
-            //console.log("[EVENT]", data);
-            //app.$emit("event", data);
+                valid &= ["add", "remove", "update"].includes(data.event);
+                valid &= ["endpoints", "rooms", "devices"].includes(data.component);
+                valid &= Object.prototype.hasOwnProperty.call(store, data.event);
+                valid &= store[data.event] instanceof Function;
 
+                console.log("Handle websocket message", data, valid)
+
+                if (valid) {
+                    store[data.event](data.component, data.args[0]);
+                } else {
+                    console.warn("Handling condition failed. Methods:",
+                        ["add", "remove", "update"].includes(data.event),
+                        "Component:", ["endpoints", "rooms", "devices"].includes(data.component),
+                        "hasOwnProperty:", Object.prototype.hasOwnProperty.call(store, data.event),
+                        "instanceof function:", store[data.event] instanceof Function);
+                }
+
+            } catch (err) {
+                console.error("Could not handle message", err);
+            }
         };
 
         window.events = ws;
