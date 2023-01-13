@@ -1,5 +1,7 @@
 {
     "recommendations": [
-        "william-voyek.vscode-nginx"
+        "william-voyek.vscode-nginx",
+        "vue.volar",
+        "Vue.vscode-typescript-vue-plugin"
     ]
 }
