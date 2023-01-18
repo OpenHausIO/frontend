@@ -31,14 +31,25 @@ module.exports = (grunt) => {
     grunt.loadNpmTasks("grunt-contrib-compress");
     grunt.loadNpmTasks("grunt-env");
 
+    grunt.registerTask("build:docker", () => {
+        cp.execSync(`docker build . -t openhaus/frontend:latest --build-arg version=${pkg.version}`, {
+            env: process.env,
+            stdio: "inherit"
+        });
+    });
+
     grunt.registerTask("release", () => {
         [
+            "rm -rf ./dist/*",
             "npm run build",
             "npm run build:docker",
             `docker save openhaus/frontend:latest | gzip > ./frontend-v${pkg.version}-docker.tgz`,
             "grunt compress"
         ].forEach((cmd) => {
-            cp.execSync(cmd);
+            cp.execSync(cmd, {
+                env: process.env,
+                stdio: "inherit"
+            });
         });
     });
 

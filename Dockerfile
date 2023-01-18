@@ -7,6 +7,9 @@ ENV BACKEND_HOST="127.0.0.1"
 ENV BACKEND_PORT="8080"
 ENV RESOLVER="127.0.0.11"
 
+ARG version=unknown
+LABEL version=$version
+
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 COPY dist /usr/share/nginx/html
 
