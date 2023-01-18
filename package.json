@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview --port 5050",
-    "build:docker": "docker build . -t openhaus/frontend:latest",
+    "build:docker": "grunt build:docker",
     "docker-nginx": "docker run --rm --name frontend -v $PWD/dist:/usr/share/nginx/html:ro -p 3000:80 -d nginx",
     "release": "grunt release",
     "screenshot": "node scripts/screenshot.js"
