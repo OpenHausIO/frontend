@@ -22,6 +22,13 @@ npm run dev
 npm run build
 ```
 
+## Demo
+There exsits a public demo: http://demo.open-haus.io<br />
+It is deployed with docker and runs the frontend & backend container.<br />
+The instance is rested to its default values every 10 Minutes.<br />
+No authentication required, full API support.
+
+
 ## Docker image
 
 ### Environment variables
@@ -66,7 +73,7 @@ docker save openhaus/frontend:latest | gzip > ./frontend-vX.X.X-docker.tgz
 --
 ![Endpoints](./docs/img/endpoints.png)
 --
-![EndpointInfobar](./docs/img/endpoint-inforbar.png)
+![EndpointInfobar](./docs/img/endpoint-infobar.png)
 --
 ![Devices](./docs/img/devices.png)
 --
