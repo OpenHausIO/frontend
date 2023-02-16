@@ -28,6 +28,32 @@ export default {
   },
   mounted() {
     console.log("App.vue mounted");
+
+    /*
+    // draft for #59
+    let navItems = document.querySelectorAll("ul.navbar-nav > li.nav-item");
+    let elements = Array.from(navItems);
+
+    console.log("Navitems", navItems);
+
+    let widths = elements.map((el) => {
+      return el.scrollWidth;
+    });
+
+    console.log(widths)
+
+    let maxWidth = Math.max(...widths);
+
+    elements.forEach((el) => {
+      //el.style.width = maxWidth;
+      el.style.setProperty("width", `${maxWidth}px`);
+      console.log("style", el.style)
+    });
+
+    console.log(elements);
+    */
+
+
   },
   methods: {
     subIsActive(input) {
@@ -65,11 +91,8 @@ export default {
 
   <!-- NAVBAR -->
   <!--       border-bottom border-secondary -->
-  <nav
-    class="navbar navbar-expand navbar-dark bg-dark sticky-top p-0"
-    style="border-bottom: 1px solid #000"
-    v-if="common.navbar"
-  >
+  <nav class="navbar navbar-expand navbar-dark bg-dark sticky-top p-0" style="border-bottom: 1px solid #000"
+    v-if="common.navbar">
     <div class="collapse navbar-collapse w-100">
       <ul class="navbar-nav w-100 row m-0">
         <!-- STATIC BACK BUTTON -->
@@ -89,23 +112,11 @@ export default {
         <!-- STATIC BACK BUTTON -->
 
         <!-- DYNAMIC LINKS -->
-        <RouterLink
-          custom
-          v-bind:to="route.path"
-          v-slot="{ href, navigate, isActive }"
-          v-bind:key="index"
-          v-for="(route, index) in routeEntrys"
-        >
+        <RouterLink custom v-bind:to="route.path" v-slot="{ href, navigate, isActive }" v-bind:key="index"
+          v-for="(route, index) in routeEntrys">
           <!-- LINK -->
-          <li
-            class="nav-item col text-center p-0"
-            :href="href"
-            @click="navigate"
-          >
-            <a
-              class="nav-link"
-              :class="{ active: isActive || subIsActive(route.path) }"
-            >
+          <li class="nav-item col text-center p-0" :href="href" @click="navigate">
+            <a class="nav-link" :class="{ active: isActive || subIsActive(route.path) }">
               <i class="d-block" :class="route.icon"></i>
               <span>{{ route.name }}</span>
             </a>
@@ -119,15 +130,8 @@ export default {
         <!-- DYNAMIC LINKS -->
 
         <!-- STATIC SETTNGS BUTTON -->
-        <li
-          class="nav-item col text-center p-0"
-          v-if="settings.showSettingsButton"
-        >
-          <a
-            class="nav-link"
-            :class="{ active: subIsActive('/settings') }"
-            @click="$router.push({ name: 'Settings' })"
-          >
+        <li class="nav-item col text-center p-0" v-if="settings.showSettingsButton">
+          <a class="nav-link" :class="{ active: subIsActive('/settings') }" @click="$router.push({ name: 'Settings' })">
             <i class="d-block fa fa-gear"></i>
             <span>Settings</span>
           </a>
@@ -140,11 +144,7 @@ export default {
   <!-- NAVBAR -->
 
   <!-- VIEW -->
-  <RouterView
-    class="h-100"
-    :class="{ 'force-max-height': !common.navbar }"
-    id="view"
-  />
+  <RouterView class="h-100" :class="{ 'force-max-height': !common.navbar }" id="view" />
   <!-- VIEW -->
 </template>
 
@@ -159,15 +159,20 @@ export default {
 }
 
 #overlay {
-  position: fixed; /* Sit on top of the page content */
-  min-width: 100%; /* Full width (cover the whole page) */
-  min-height: 100%; /* Full height (cover the whole page) */
+  position: fixed;
+  /* Sit on top of the page content */
+  min-width: 100%;
+  /* Full width (cover the whole page) */
+  min-height: 100%;
+  /* Full height (cover the whole page) */
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.9); /* Black background with opacity */
-  z-index: 9999; /* Specify a stack order in case you're using a different order for other elements */
+  background-color: rgba(0, 0, 0, 0.9);
+  /* Black background with opacity */
+  z-index: 9999;
+  /* Specify a stack order in case you're using a different order for other elements */
 }
 
 #inner {
@@ -205,7 +210,7 @@ a.nav-link {
   width: 100px;
 }
 
-#notifications > * {
+#notifications>* {
   z-index: 9999 !important;
 }
 
@@ -226,11 +231,11 @@ nav.navbar {
 }
 
 ul.navbar-nav {
-  flex-wrap:nowrap;
-  overflow-x:auto
+  flex-wrap: nowrap;
+  overflow-x: auto
 }
 
-ul.navbar-nav li a{
+ul.navbar-nav li a {
   min-width: 100px;
 }
 </style>
