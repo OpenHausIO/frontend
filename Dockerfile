@@ -10,6 +10,9 @@ ENV RESOLVER="127.0.0.11"
 ARG version=unknown
 LABEL version=$version
 
+ARG buildDate=unknown
+LABEL buildDate=$buildDate
+
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 COPY build /usr/share/nginx/html
 
