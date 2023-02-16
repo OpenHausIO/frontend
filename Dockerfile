@@ -11,6 +11,6 @@ ARG version=unknown
 LABEL version=$version
 
 COPY nginx.conf /etc/nginx/templates/default.conf.template
-COPY dist /usr/share/nginx/html
+COPY build /usr/share/nginx/html
 
 RUN apk --no-cache add openssl
