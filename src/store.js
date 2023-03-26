@@ -25,6 +25,7 @@ export const settingsStore = defineStore("settings", {
             showRoomsButton: true,
             showEndpointsButton: true,
             showDevicesButton: true,
+            showScenesButton: true,
             showVueTourOnNextVisit: true,
             showGradientBackground: true,
             editDashboardWidgets: false,
@@ -50,6 +51,7 @@ export const itemStore = defineStore("items", {
             rooms: [],
             endpoints: [],
             devices: [],
+            scenes: []
         }
     },
     actions: {

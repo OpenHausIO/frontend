@@ -144,13 +144,15 @@ function fetchData() {
             request("/api/rooms"),
             request("/api/endpoints"),
             request("/api/devices"),
-        ]).then(([rooms, endpoints, devices]) => {
+            request("/api/scenes"),
+        ]).then(([rooms, endpoints, devices, scenes]) => {
 
             const store = itemStore();
 
             store.rooms = rooms;
             store.endpoints = endpoints;
             store.devices = devices;
+            store.scenes = scenes;
 
             console.log("API resrouces fetched");
 

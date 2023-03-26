@@ -26,7 +26,7 @@ const routes = reactive([{
     icon: "fa-solid fa-tv",
     visible: true,
     component: () => import("../views/Devices.vue")
-}/*, {
+}, {
     path: "/scenes",
     name: "Scenes",
     icon: "fa-solid fa-clone",
