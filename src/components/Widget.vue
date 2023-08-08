@@ -73,28 +73,12 @@ export default defineComponent({
 <template>
   <div class="h-100 w-100 d-block">
     <div class="btn-group d-block">
-      <i
-        class="fa-solid fa-ellipsis-vertical float-end text-center mt-1"
-        style="
-          width: 30px;
-          height: 30px;
-          cursor: pointer !important;
-          color: gray;
-        "
-        v-if="unlocked"
-        data-bs-toggle="dropdown"
-        aria-expanded="false"
-      ></i>
+      <i class="fa-solid fa-ellipsis-vertical float-end text-center mt-1"
+        style="width: 30px; height: 30px; cursor: pointer !important; color: gray;" data-bs-toggle="dropdown"
+        aria-expanded="false"></i>
       <ul class="dropdown-menu dropdown-menu-dark">
         <li v-bind:key="index" v-for="(entry, index) in components[name].menu">
-          <button
-            class="dropdown-item d-flex gap-2 align-items-center"
-            @click="
-              /*$window.alert('Pass click somehow to child:' + entry.title)*/ dispatchEvent(
-                entry
-              )
-            "
-          >
+          <button class="dropdown-item d-flex gap-2 align-items-center" @click="dispatchEvent(entry)">
             {{ entry.title }}
           </button>
         </li>
@@ -102,23 +86,14 @@ export default defineComponent({
           <hr class="dropdown-divider" />
         </li>
         <li>
-          <button
-            class="dropdown-item d-flex gap-2 align-items-center"
-            @click="remove(this.$refs.widget)"
-          >
+          <button class="dropdown-item d-flex gap-2 align-items-center" @click="remove(this.$refs.widget)">
             Remove
           </button>
         </li>
       </ul>
     </div>
 
-    <component
-      class="h-100 w-100 d-block"
-      v-bind:is="name"
-      :uuid="uuid"
-      :action="childAction"
-      ref="widget"
-    />
+    <component class="h-100 w-100 d-block" v-bind:is="name" :uuid="uuid" :action="childAction" ref="widget" />
   </div>
 </template>
 
