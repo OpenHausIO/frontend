@@ -80,7 +80,7 @@ export default defineComponent({
     <div class="btn-group d-block">
       <i class="fa-solid fa-ellipsis-vertical float-end text-center mt-1"
         style="width: 30px; height: 30px; cursor: pointer !important; color: gray;" data-bs-toggle="dropdown"
-        aria-expanded="false"></i>
+        aria-expanded="false" v-if="settings.editDashboardWidgets || components[name].menu.length > 0"></i>
       <ul class="dropdown-menu dropdown-menu-dark">
         <li v-bind:key="index" v-for="(entry, index) in components[name].menu">
           <button class="dropdown-item d-flex gap-2 align-items-center" @click="dispatchEvent(entry)">
@@ -107,4 +107,11 @@ i,
 ul.dropdown-menu {
   z-index: 9999999 !important;
 }
+
+/*
+Draff/fix/implementation of #93
+ul.dropdown-menu-dark {
+  background-color: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity));
+}
+*/
 </style>
