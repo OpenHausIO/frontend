@@ -1,3 +1,8 @@
+<script setup>
+import { settingsStore } from "../store.js";
+const settings = settingsStore();
+</script>
+
 <script>
 import { defineComponent } from "vue";
 
@@ -82,13 +87,13 @@ export default defineComponent({
             {{ entry.title }}
           </button>
         </li>
-        <li v-if="components[name].menu.length > 0">
+        <li v-if="components[name].menu.length > 0 && settings.editDashboardWidgets">
           <hr class="dropdown-divider" />
         </li>
-        <li>
+        <li v-if="settings.editDashboardWidgets">
           <button class="dropdown-item d-flex gap-2 align-items-center" @click="remove(this.$refs.widget)">
             Remove
-          </button>
+          </button>w
         </li>
       </ul>
     </div>
