@@ -93,7 +93,7 @@ export default defineComponent({
         <li v-if="settings.editDashboardWidgets">
           <button class="dropdown-item d-flex gap-2 align-items-center" @click="remove(this.$refs.widget)">
             Remove
-          </button>w
+          </button>
         </li>
       </ul>
     </div>
