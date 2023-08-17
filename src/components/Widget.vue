@@ -71,7 +71,7 @@ export default defineComponent({
 
 
 <template>
-  <div class="h-100 w-100 d-block">
+  <div class="h-100 w-100 d-block widget">
     <div class="btn-group d-block">
       <i class="fa-solid fa-ellipsis-vertical float-end text-center mt-1"
         style="width: 30px; height: 30px; cursor: pointer !important; color: gray;" data-bs-toggle="dropdown"
@@ -101,5 +101,9 @@ export default defineComponent({
 i,
 ul.dropdown-menu {
   z-index: 9999999 !important;
+}
+
+.widget {
+  overflow-y: scroll;
 }
 </style>
