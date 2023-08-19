@@ -91,7 +91,7 @@ export default defineComponent({
           <hr class="dropdown-divider" />
         </li>
         <li v-if="settings.editDashboardWidgets">
-          <button class="dropdown-item d-flex gap-2 align-items-center" @click="remove(this.$refs.widget)">
+          <button class="dropdown-item d-flex gap-2 align-items-center" @click="remove($refs.widget)">
             Remove
           </button>
         </li>
