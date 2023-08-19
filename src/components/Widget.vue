@@ -1,3 +1,8 @@
+<script setup>
+import { settingsStore } from "../store.js";
+const settings = settingsStore();
+</script>
+
 <script>
 import { defineComponent } from "vue";
 
@@ -71,22 +76,22 @@ export default defineComponent({
 
 
 <template>
-  <div class="h-100 w-100 d-block">
+  <div class="h-100 w-100 d-block widget">
     <div class="btn-group d-block">
       <i class="fa-solid fa-ellipsis-vertical float-end text-center mt-1"
         style="width: 30px; height: 30px; cursor: pointer !important; color: gray;" data-bs-toggle="dropdown"
-        aria-expanded="false"></i>
+        aria-expanded="false" v-if="settings.editDashboardWidgets || components[name].menu.length > 0"></i>
       <ul class="dropdown-menu dropdown-menu-dark">
         <li v-bind:key="index" v-for="(entry, index) in components[name].menu">
           <button class="dropdown-item d-flex gap-2 align-items-center" @click="dispatchEvent(entry)">
             {{ entry.title }}
           </button>
         </li>
-        <li v-if="components[name].menu.length > 0">
+        <li v-if="components[name].menu.length > 0 && settings.editDashboardWidgets">
           <hr class="dropdown-divider" />
         </li>
-        <li>
-          <button class="dropdown-item d-flex gap-2 align-items-center" @click="remove(this.$refs.widget)">
+        <li v-if="settings.editDashboardWidgets">
+          <button class="dropdown-item d-flex gap-2 align-items-center" @click="remove($refs.widget)">
             Remove
           </button>
         </li>
@@ -102,4 +107,15 @@ i,
 ul.dropdown-menu {
   z-index: 9999999 !important;
 }
+
+.widget {
+  overflow-y: scroll;
+}
+
+/*
+Draff/fix/implementation of #93
+ul.dropdown-menu-dark {
+  background-color: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity));
+}
+*/
 </style>
