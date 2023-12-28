@@ -1,8 +1,11 @@
 <script setup>
 import Tile from "@/components/Tile.vue";
+import CommandParameter from "@/components/CommandParameter.vue";
 import { useRoute, RouterLink } from "vue-router";
 //import { store } from "@/store";
-import { alert, request } from "@/helper";
+import { alert, request, debounce } from "@/helper";
+import { settingsStore } from "../store.js";
+const settings = settingsStore();
 </script>
 
 <script>
@@ -14,10 +17,12 @@ export default {
   components: {
     Tile,
     RouterLink,
+    CommandParameter
   },
   data() {
     return {
-      data: {},
+      data: {
+      },
     };
   },
   mounted() {
@@ -26,12 +31,16 @@ export default {
     this.data = Array.from(store.endpoints).find((item) => {
       return item._id === $route.params._id;
     });
+
   },
   methods: {
     //getRoomNameById,
     ...mapActions(itemStore, ["getRoomNameById", "getDeviceNameById"]),
     alert,
-    trigger(_id, event) {
+    trigger: debounce(function (_id, event) {
+
+      console.log("Aasdflaksdfleila")
+
       let command = this.data.commands.find((obj) => {
         return obj._id === _id;
       });
@@ -41,22 +50,30 @@ export default {
         return;
       }
 
-      // does not work
-      //event.target.classList.toggle("animate");
-      //event.target.classList.toggle("animate__fadeIn");
+      console.log("command.params", command.params)
 
-      let url = `/api/endpoints/${this.data._id}/commands/${_id}`;
+      let body = [];
 
-      request(
-        url,
-        {
-          method: "POST",
+      if (command.params) {
+        body = command.params.map(({ key, value }) => {
+          return {
+            key,
+            value
+          };
+        });
+      }
+
+      request(`/api/endpoints/${this.data._id}/commands/${_id}`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json"
         },
-        (err, result) => {
-          console.log(err, result);
-        }
-      );
-    },
+        body: JSON.stringify(body)
+      }, (err, result) => {
+        console.log(err, result);
+      });
+
+    }, 10),
     repeat(cmd) {
       this.trigger(cmd._id);
     },
@@ -78,19 +95,15 @@ export default {
 
 <template>
   <div class="container-fluid">
+
     <!-- HEADER -->
-    <div
-      class="row py-4"
-      style="border-top: 1px solid #000; border-bottom: 1px solid #000"
-    >
+    <div class="row py-4" style="border-top: 1px solid #000; border-bottom: 1px solid #000">
+
       <!-- LEFT -->
       <div class="col">
         <div class="d-inline-flex">
           <div class="me-2 pt-1">
-            <i
-              :class="data.icon || 'fa-solid fa-circle-question'"
-              class="fa-3x"
-            ></i>
+            <i :class="data.icon || 'fa-solid fa-circle-question'" class="fa-3x"></i>
           </div>
           <div class="">
             <h3 class="mb-0">
@@ -104,8 +117,9 @@ export default {
         </div>
       </div>
       <!-- LEFT -->
+
       <!-- RIGHT -->
-      <div class="col text-end" style="font-size: 14px">
+      <div class="col text-end" style="font-size: 14px" v-if="settings.showCommandStatesCounter">
         <span class="text-secondary fw-light d-block">
           <!--Commands: {{ Math.round(Math.random() * 10) }}-->
           Commands: {{ commands }}
@@ -120,68 +134,55 @@ export default {
         -->
       </div>
       <!-- RIGHT -->
+
     </div>
     <!-- HEADER -->
+
     <!-- COMMANDS/STATES/SCENES -->
-    <div
-      class="row display-flex text-center"
-      style="height: calc(100% - 109px)"
-    >
+    <div class="row display-flex text-center" style="height: calc(100% - 109px)">
+
       <!-- COMMANDS -->
-      <div
-        class="p-0 col-6 col-md-3 col-xl-2"
-        v-bind:key="command._id"
-        v-for="command in data.commands"
-      >
-        <RouterLink
-          custom
-          :to="{
-            name: '/endpoints/:_id/commands/:_command',
-            params: {
-              _id: $route.params._id,
-              _command: command._id,
-            },
-          }"
-          v-slot="{ href, navigate }"
-          v-if="command.params?.length > 0"
-        >
-          <Tile
-            style="background: transparent; border: 1px solid rgb(0, 0, 0)"
-            :href="href"
-            @click="navigate"
-          >
+      <div class="p-0 col-6 col-md-3 col-xl-2" v-bind:key="command._id" v-for="command in data.commands">
+        <RouterLink custom :to="{
+          name: '/endpoints/:_id/commands/:_command',
+          params: {
+            _id: $route.params._id,
+            _command: command._id,
+          },
+        }" v-slot="{ href, navigate }" v-if="command.params?.length > 0 && !settings.showParameterInCommands">
+          <Tile style="background: transparent; border: 1px solid rgb(0, 0, 0)" :href="href" @click="navigate">
             <template #title>
               <i :class="command.icon || 'fa-regular fa-circle-question'"></i>
             </template>
             {{ command.name }}
           </Tile>
         </RouterLink>
-        <Tile
-          v-else
-          style="background: transparent; border: 1px solid rgb(0, 0, 0)"
-          @click="trigger(command._id, $event)"
-          v-repeat="{ handler: repeat, interval: 300, command }"
-        >
+        <Tile v-else style="background: transparent; border: 1px solid rgb(0, 0, 0)" @click="trigger(command._id, $event)"
+          v-repeat="{ handler: repeat, interval: 300, command }">
           <template #title>
-            <i :class="command.icon"></i>
+            <i :class="command.icon || 'fa-regular fa-circle-question'"></i>
           </template>
-          {{ command.name }}
+          <div>
+            {{ command.name }}
+          </div>
+          <CommandParameter :param="param" v-for="param in command.params" @changed="trigger(command._id, $event)">
+          </CommandParameter>
         </Tile>
       </div>
       <!-- COMMANDS -->
+
       <!-- STATES -->
-      <div
-        class="p-0 col-6 col-md-3 col-xl-2"
-        v-bind:key="state._id"
-        v-for="state in data.states"
-      >
+      <div class="p-0 col-6 col-md-3 col-xl-2" v-bind:key="state._id" v-for="state in data.states">
         <Tile style="background: transparent; border: 1px solid rgb(0, 0, 0)">
+          <!--<h3><i :class="state.icon || 'fa-regular fa-circle-question'"></i></h3>-->
           <div>{{ state.name }}</div>
           <i>{{ state.value ? state.value : "na" }}</i>
         </Tile>
       </div>
       <!-- STATES -->
+
     </div>
     <!-- COMMANDS/STATES/SCENES -->
+
   </div>
 </template>
