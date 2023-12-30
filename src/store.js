@@ -30,13 +30,19 @@ export const settingsStore = defineStore("settings", {
             showGradientBackground: true,
             editDashboardWidgets: false,
             showDashboardWidgets: true,
-            transparentDashboardWidgets: false,
+            transparentDashboardWidgets: true,
             screensaverOverlayDelay: 30,
             enableScreenSaverOverlay: false,
             jumpToOnlyEndpointSet: true,
+            showParameterInCommands: true,
+            showCommandStatesCounter: true,
             dashboardGrid: {
                 cols: 12,
                 rows: 30
+            },
+            urls: {
+                registry: "http://registry.open-haus.io",
+                adminUi: `/admin`
             },
             startpage: "/dashboard",
         }
