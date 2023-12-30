@@ -1,6 +1,6 @@
 <script setup>
-//import { settingsStore, widgetStore } from "../store.js";
-//const settings = settingsStore();
+import { settingsStore, widgetStore } from "../store.js";
+const settings = settingsStore();
 //const widgets = widgetStore();
 </script>
 
@@ -240,7 +240,7 @@ export default defineComponent({
           path: "/auth/login",
         });
       }, 3000);
-    },
+    }
   },
 });
 </script>
@@ -248,10 +248,7 @@ export default defineComponent({
 <template>
   <div class="container-fluid">
     <!-- HEADER -->
-    <div
-      class="row py-4"
-      style="border-top: 1px solid #000; border-bottom: 1px solid #000"
-    >
+    <div class="row py-4" style="border-top: 1px solid #000; border-bottom: 1px solid #000">
       <div class="col">
         <h3 class="mb-0">Settings</h3>
         Version: v{{ version }}
@@ -266,12 +263,7 @@ export default defineComponent({
             <h5 class="card-title">Item Grouping</h5>
 
             <div class="form-check form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="groupItemsCheckbox"
-                v-model="settings.groupItems"
-              />
+              <input class="form-check-input" type="checkbox" id="groupItemsCheckbox" v-model="settings.groupItems" />
               <label class="form-check-label small" for="groupItemsCheckbox">
                 Group Items
               </label>
@@ -280,49 +272,25 @@ export default defineComponent({
             <hr />
 
             <div class="form-check form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="groupItemsRoomCheckbox"
-                v-model="settings.groupRoomItems"
-                :disabled="!settings.groupItems"
-              />
-              <label
-                class="form-check-label small"
-                for="groupItemsRoomCheckbox"
-              >
+              <input class="form-check-input" type="checkbox" id="groupItemsRoomCheckbox"
+                v-model="settings.groupRoomItems" :disabled="!settings.groupItems" />
+              <label class="form-check-label small" for="groupItemsRoomCheckbox">
                 Group Room Items
               </label>
             </div>
 
             <div class="form-check form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="groupItemsEndpointCheckbox"
-                v-model="settings.groupEndpointItems"
-                :disabled="!settings.groupItems"
-              />
-              <label
-                class="form-check-label small"
-                for="groupItemsEndpointCheckbox"
-              >
+              <input class="form-check-input" type="checkbox" id="groupItemsEndpointCheckbox"
+                v-model="settings.groupEndpointItems" :disabled="!settings.groupItems" />
+              <label class="form-check-label small" for="groupItemsEndpointCheckbox">
                 Group Endpoint Items
               </label>
             </div>
 
             <div class="form-check form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="groupItemsDeviceCheckbox"
-                v-model="settings.groupDeviceItems"
-                :disabled="!settings.groupItems"
-              />
-              <label
-                class="form-check-label small"
-                for="groupItemsDeviceCheckbox"
-              >
+              <input class="form-check-input" type="checkbox" id="groupItemsDeviceCheckbox"
+                v-model="settings.groupDeviceItems" :disabled="!settings.groupItems" />
+              <label class="form-check-label small" for="groupItemsDeviceCheckbox">
                 Group Device Items
               </label>
             </div>
@@ -337,53 +305,27 @@ export default defineComponent({
           <div class="card-body">
             <h5 class="card-title">Navigation</h5>
             <div class="form-check form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="showSettingsButtonCheckbox"
-                v-on:click="showSettingsButtonInfo()"
-                v-model="settings.showSettingsButton"
-              />
-              <label
-                class="form-check-label small"
-                for="showSettingsButtonCheckbox"
-              >
+              <input class="form-check-input" type="checkbox" id="showSettingsButtonCheckbox"
+                v-on:click="showSettingsButtonInfo()" v-model="settings.showSettingsButton" />
+              <label class="form-check-label small" for="showSettingsButtonCheckbox">
                 Show Settings buttons
               </label>
             </div>
 
             <div class="form-check form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="showBackButtonCheckbox"
-                v-model="settings.showBackButton"
-              />
-              <label
-                class="form-check-label small"
-                for="showBackButtonCheckbox"
-              >
+              <input class="form-check-input" type="checkbox" id="showBackButtonCheckbox"
+                v-model="settings.showBackButton" />
+              <label class="form-check-label small" for="showBackButtonCheckbox">
                 Show Back button
               </label>
             </div>
 
             <hr />
 
-            <div
-              class="form-check form-switch"
-              v-bind:key="route.path"
-              v-for="route in routes"
-            >
-              <input
-                class="form-check-input"
-                type="checkbox"
-                :id="'show' + route.name + 'ButtonCheck'"
-                v-model="settings['show' + route.name + 'Button']"
-              />
-              <label
-                class="form-check-label small"
-                :for="'show' + route.name + 'ButtonCheck'"
-              >
+            <div class="form-check form-switch" v-bind:key="route.path" v-for="route in routes">
+              <input class="form-check-input" type="checkbox" :id="'show' + route.name + 'ButtonCheck'"
+                v-model="settings['show' + route.name + 'Button']" />
+              <label class="form-check-label small" :for="'show' + route.name + 'ButtonCheck'">
                 Show {{ route.name }} button
               </label>
             </div>
@@ -400,58 +342,29 @@ export default defineComponent({
 
             <!-- CARD CONTENT -->
             <div class="form-check form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="editDashboardWidgetsCheckbox"
-                v-model="settings.editDashboardWidgets"
-              />
-              <label
-                class="form-check-label small"
-                for="editDashboardWidgetsCheckbox"
-              >
+              <input class="form-check-input" type="checkbox" id="editDashboardWidgetsCheckbox"
+                v-model="settings.editDashboardWidgets" />
+              <label class="form-check-label small" for="editDashboardWidgetsCheckbox">
                 Unlock Dashboard widgets
               </label>
             </div>
 
             <div class="form-check form-switch">
-              <label for="dashboardGridColsInput" class="form-label"
-                >Cols</label
-              >
-              <input
-                type="number"
-                id="dashboardGridColsInput"
-                class="form-control bg-dark text-white"
-                v-model="settings.dashboardGrid.cols"
-                :disabled="!settings.editDashboardWidgets"
-              />
+              <label for="dashboardGridColsInput" class="form-label">Cols</label>
+              <input type="number" id="dashboardGridColsInput" class="form-control bg-dark text-white"
+                v-model="settings.dashboardGrid.cols" :disabled="!settings.editDashboardWidgets" />
             </div>
 
             <div class="form-check form-switch">
-              <label for="dashboardGridRowsInput" class="form-label"
-                >Rows</label
-              >
-              <input
-                type="number"
-                id="dashboardGridRowsInput"
-                class="form-control bg-dark text-white"
-                v-model="settings.dashboardGrid.rows"
-                :disabled="!settings.editDashboardWidgets"
-              />
+              <label for="dashboardGridRowsInput" class="form-label">Rows</label>
+              <input type="number" id="dashboardGridRowsInput" class="form-control bg-dark text-white"
+                v-model="settings.dashboardGrid.rows" :disabled="!settings.editDashboardWidgets" />
             </div>
 
             <div class="form-check form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="showDashboardWidgetsCheckbox"
-                v-model="settings.showDashboardWidgets"
-                :disabled="!settings.editDashboardWidgets"
-              />
-              <label
-                class="form-check-label small"
-                for="showDashboardWidgetsCheckbox"
-              >
+              <input class="form-check-input" type="checkbox" id="showDashboardWidgetsCheckbox"
+                v-model="settings.showDashboardWidgets" :disabled="!settings.editDashboardWidgets" />
+              <label class="form-check-label small" for="showDashboardWidgetsCheckbox">
                 Show Dashboard widgets
               </label>
             </div>
@@ -459,24 +372,13 @@ export default defineComponent({
             <hr />
 
             <div class="btn-group d-block">
-              <button
-                type="button"
-                class="btn btn-primary dropdown-toggle w-100"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-                :disabled="!settings.editDashboardWidgets"
-              >
+              <button type="button" class="btn btn-primary dropdown-toggle w-100" data-bs-toggle="dropdown"
+                aria-expanded="false" :disabled="!settings.editDashboardWidgets">
                 Add Widget
               </button>
               <ul class="dropdown-menu dropdown-menu-dark">
-                <li
-                  v-bind:key="index"
-                  v-for="(widget, index) in Widget.components"
-                >
-                  <button
-                    class="dropdown-item d-flex gap-2 align-items-center"
-                    @click="addDashboardWidget(widget.name)"
-                  >
+                <li v-bind:key="index" v-for="(widget, index) in Widget.components">
+                  <button class="dropdown-item d-flex gap-2 align-items-center" @click="addDashboardWidget(widget.name)">
                     {{ widget.name }}
                   </button>
                 </li>
@@ -495,16 +397,9 @@ export default defineComponent({
             <h5 class="card-title">Screensaver</h5>
             <!-- CONTENT -->
             <div class="form-check form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="enableScreenSaverOverlayCheckbox"
-                v-model="settings.enableScreenSaverOverlay"
-              />
-              <label
-                class="form-check-label small"
-                for="enableScreenSaverOverlayCheckbox"
-              >
+              <input class="form-check-input" type="checkbox" id="enableScreenSaverOverlayCheckbox"
+                v-model="settings.enableScreenSaverOverlay" />
+              <label class="form-check-label small" for="enableScreenSaverOverlayCheckbox">
                 Screensaver overlay
               </label>
             </div>
@@ -513,22 +408,10 @@ export default defineComponent({
               <label for="screenSaverOVerlayInput" class="form-label">
                 Timeout in Sec.
               </label>
-              <input
-                type="number"
-                id="screenSaverOVerlayInput"
-                class="form-control bg-dark text-white"
-                v-model="settings.screensaverOverlayDelay"
-                :disabled="!settings.enableScreenSaverOverlay"
-              />
-              <input
-                type="range"
-                class="form-range"
-                v-model="settings.screensaverOverlayDelay"
-                min="10"
-                max="60"
-                step="10"
-                :disabled="!settings.enableScreenSaverOverlay"
-              />
+              <input type="number" id="screenSaverOVerlayInput" class="form-control bg-dark text-white"
+                v-model="settings.screensaverOverlayDelay" :disabled="!settings.enableScreenSaverOverlay" />
+              <input type="range" class="form-range" v-model="settings.screensaverOverlayDelay" min="10" max="60"
+                step="10" :disabled="!settings.enableScreenSaverOverlay" />
             </div>
 
             <!-- CONTENT -->
@@ -544,45 +427,38 @@ export default defineComponent({
             <h5 class="card-title">Look & Feel</h5>
             <!-- CONTENT -->
             <div class="form-check form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="showGradientBackgroundCheckbox"
-                v-model="settings.showGradientBackground"
-              />
-              <label
-                class="form-check-label small"
-                for="showGradientBackgroundCheckbox"
-              >
+              <input class="form-check-input" type="checkbox" id="showGradientBackgroundCheckbox"
+                v-model="settings.showGradientBackground" />
+              <label class="form-check-label small" for="showGradientBackgroundCheckbox">
                 Enable Background gardient
               </label>
             </div>
             <div class="form-check form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="transparentDashboardWidgetsCheckbox"
-                v-model="settings.transparentDashboardWidgets"
-              />
-              <label
-                class="form-check-label small"
-                for="transparentDashboardWidgetsCheckbox"
-              >
+              <input class="form-check-input" type="checkbox" id="transparentDashboardWidgetsCheckbox"
+                v-model="settings.transparentDashboardWidgets" />
+              <label class="form-check-label small" for="transparentDashboardWidgetsCheckbox">
                 Transparent Dashboard Widgets
               </label>
             </div>
             <div class="form-check form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="jumpToOnlyEndpointSetCheckbox"
-                v-model="settings.jumpToOnlyEndpointSet"
-              />
-              <label
-                class="form-check-label small"
-                for="jumpToOnlyEndpointSetCheckbox"
-              >
+              <input class="form-check-input" type="checkbox" id="jumpToOnlyEndpointSetCheckbox"
+                v-model="settings.jumpToOnlyEndpointSet" />
+              <label class="form-check-label small" for="jumpToOnlyEndpointSetCheckbox">
                 Jump to only Endpoint set from Device
+              </label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showParameterInCommandsCheckbox"
+                v-model="settings.showParameterInCommands" />
+              <label class="form-check-label small" for="showParameterInCommandsCheckbox">
+                Show/Handle command params in command box
+              </label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showCommandStatesCounterCheckbox"
+                v-model="settings.showCommandStatesCounter" />
+              <label class="form-check-label small" for="showCommandStatesCounterCheckbox">
+                Show command/states counter
               </label>
             </div>
             <!-- CONTENT -->
@@ -599,40 +475,24 @@ export default defineComponent({
             <!-- CONTENT -->
 
             <div class="form-check form-switch hide">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="showVueTourOnNextVisitCheckbox"
-                v-model="settings.showVueTourOnNextVisit"
-              />
-              <label
-                class="form-check-label small"
-                for="showVueTourOnNextVisitCheckbox"
-              >
+              <input class="form-check-input" type="checkbox" id="showVueTourOnNextVisitCheckbox"
+                v-model="settings.showVueTourOnNextVisit" />
+              <label class="form-check-label small" for="showVueTourOnNextVisitCheckbox">
                 Enable Tour on next visit
               </label>
             </div>
 
-            <button
-              class="btn btn-outline-primary d-block w-100 mb-1"
-              @click="toggleFullscreen()"
-            >
+            <button class="btn btn-outline-primary d-block w-100 mb-1" @click="toggleFullscreen()">
               Toggle fullscreen
             </button>
 
-            <button
-              class="btn btn-outline-primary d-block w-100 mb-1"
-              @click="userLogout()"
-            >
+            <button class="btn btn-outline-primary d-block w-100 mb-1" @click="userLogout()">
               Logout
             </button>
 
-            <a
-              href="/"
-              onclick="javascript:event.target.port=3001"
-              class="btn btn-outline-primary d-block"
-              target="_blank"
-              >Administration
+            {{ settings.urls }}
+            <a class="btn btn-outline-primary d-block w-100 mb-1" :href="settings.urls.adminUi" target="_blank">
+              Administration
             </a>
             <!-- CONTENT -->
           </div>
@@ -647,24 +507,15 @@ export default defineComponent({
             <h5 class="card-title">Settings</h5>
             <!-- CONTENT -->
 
-            <button
-              class="btn btn-outline-primary d-block w-100 mb-1"
-              @click="exportSettings()"
-            >
+            <button class="btn btn-outline-primary d-block w-100 mb-1" @click="exportSettings()">
               Export Settings
             </button>
 
-            <button
-              class="btn btn-outline-primary d-block w-100 mb-1"
-              @click="importSettings()"
-            >
+            <button class="btn btn-outline-primary d-block w-100 mb-1" @click="importSettings()">
               Import Settings
             </button>
 
-            <button
-              class="btn btn-outline-primary d-block w-100"
-              @click="clearSettings()"
-            >
+            <button class="btn btn-outline-primary d-block w-100" @click="clearSettings()">
               Clear Settings
             </button>
 
@@ -673,6 +524,33 @@ export default defineComponent({
         </div>
       </div>
       <!-- SETTINGS -->
+
+      <!-- INFORMATION -->
+      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 p-0 hide">
+        <div class="card bg-transparent">
+          <div class="card-body">
+            <h5 class="card-title">Information</h5>
+            <!-- CONTENT -->
+
+            <div clasS="d-block">
+              Backend: vX.X.X
+            </div>
+            <div class="d-block">
+              Frontend: vX.X.X
+            </div>
+            <div class="d-block">
+              Connector: vX.X.X
+            </div>
+            <div class="d-block">
+              Database: vX.X.X
+            </div>
+
+            <!-- CONTENT -->
+          </div>
+        </div>
+      </div>
+      <!-- INFORMATION -->
+
     </div>
   </div>
 </template>
@@ -681,6 +559,7 @@ export default defineComponent({
 .col-2 {
   margin-bottom: var(--bs-gutter-x);
 }
+
 div.card {
   min-height: 100%;
 }
