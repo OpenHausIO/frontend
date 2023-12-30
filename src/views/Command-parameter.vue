@@ -1,7 +1,7 @@
 <script setup>
 import CommandParameter from "@/components/CommandParameter.vue";
 import { useRoute } from "vue-router";
-import { debounce } from "../helper";
+import { debounce, request } from "../helper";
 </script>
 
 <script>
@@ -50,32 +50,27 @@ export default {
   },
   methods: {
     ...mapActions(itemStore, ["getRoomNameById", "getDeviceNameById"]),
-    debounce: debounce((param) => {
-      console.log(
-        "Trigger command",
-        param,
-        this.data.name,
-        this.data.params,
-        useRoute()
-      );
+    trigger: debounce(function (param) {
 
-      // NOTE:
-      // cant use `let $route = useRoute(); here`
-      // it allways returns undefine, thats the reason
-      // for this hacky "this.endpoint" thing
+      console.log("Aasdflaksdfleila", JSON.stringify([{
+        key: param.key,
+        value: param.value
+      }]))
 
       request(`/api/endpoints/${this.endpoint._id}/commands/${this.data._id}`, {
         method: "POST",
-        body: this.data,
-      }, (err, body) => {
-        console.log("Trigger response", err, body);
+        headers: {
+          "content-type": "application/json"
+        },
+        body: JSON.stringify([{
+          key: param.key,
+          value: param.value
+        }])
+      }, (err, result) => {
+        console.log(err, result);
       });
 
-    }, 500),
-    trigger(param) {
-      console.log("trigger called", param);
-      this.debounce(param);
-    },
+    }, 10)
   },
 };
 </script>
@@ -113,7 +108,7 @@ export default {
     <div class="row display-flex text-center" v-bind:key="index" v-for="(param, index) in data.params">
       <div class="p-0 col-6 col-md-3 col-xl-2">
 
-        <CommandParameter :param="param" @changed="trigger(data)"></CommandParameter>
+        <CommandParameter :param="param" @changed="trigger(param)"></CommandParameter>
 
       </div>
     </div>
