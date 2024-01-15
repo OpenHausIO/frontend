@@ -176,7 +176,7 @@ export default {
         <Tile style="background: transparent; border: 1px solid rgb(0, 0, 0)">
           <!--<h3><i :class="state.icon || 'fa-regular fa-circle-question'"></i></h3>-->
           <div>{{ state.name }}</div>
-          <i>{{ state.value ? state.value : "na" }}</i>
+          <i>{{ state.value }}</i>
         </Tile>
       </div>
       <!-- STATES -->
