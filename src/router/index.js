@@ -71,6 +71,10 @@ const router = createRouter({
             name: "/test",
             component: () => import("../views/Test.vue")
         }, {
+            path: "/grid",
+            name: "/grid",
+            component: () => import("../views/Grid.vue")
+        }, {
             path: "/settings",
             name: "Settings",
             icon: "fa fa-gear",
