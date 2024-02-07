@@ -174,7 +174,13 @@ function connectToEvents() {
         let controller = new AbortController();
         let id = setTimeout(() => controller.abort(), 1000);
 
-        let ws = new WebSocket(`ws://${window.location.host}/api/events?x-auth-token=${localStorage.getItem("x-auth-token")}`);
+        // fix #119, see:
+        // https://github.com/OpenHausIO/backend/issues/403
+        let intents = ["add", "update", "remove"].map((intent) => {
+            return `intents[]=${intent}`;
+        }).join("&");
+
+        let ws = new WebSocket(`ws://${window.location.host}/api/events?${intents}&x-auth-token=${localStorage.getItem("x-auth-token")}`);
 
         console.log("connect to", ws.url);
 
