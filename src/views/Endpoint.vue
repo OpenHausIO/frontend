@@ -174,7 +174,7 @@ export default {
       <!-- STATES -->
       <div class="p-0 col-6 col-md-3 col-xl-2" v-bind:key="state._id" v-for="state in data.states">
         <Tile style="background: transparent; border: 1px solid rgb(0, 0, 0)">
-          <!--<h3><i :class="state.icon || 'fa-regular fa-circle-question'"></i></h3>-->
+          <h3><i :class="state.icon || 'fa-regular fa-circle-question'"></i></h3>
           <div>{{ state.name }}</div>
           <i>{{ state.value }}</i>
         </Tile>
