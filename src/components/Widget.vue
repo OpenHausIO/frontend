@@ -18,6 +18,7 @@ import Todo from "../widgets/Todo.vue";
 import Clock from "../widgets/Clock.vue";
 //import Cams from "../widgets/Cams.vue";
 import Empty from "../widgets/Empty.vue";
+import Counter from "../widgets/Counter.vue";
 
 const components = {
   //Weather,
@@ -30,6 +31,7 @@ const components = {
   Clock,
   //Cams,
   Empty,
+  Counter
 };
 
 export default defineComponent({
@@ -69,7 +71,7 @@ export default defineComponent({
     },
   },
   errorCaptured(err) {
-    console.lo("Error captured", err);
+    console.log("Error captured", err);
   },
 });
 </script>
