@@ -108,8 +108,8 @@ pinia.use(({ store }) => {
 // create vue app
 const app = createApp(App);
 
-app.config.globalProperties.$window = window;
-app.config.globalProperties.$console = console;
+app.config.globalProperties.window = window;
+app.config.globalProperties.console = console;
 
 app.use(VueNotificationList);
 app.use(pinia);
@@ -199,7 +199,9 @@ function connectToEvents(options = { retry: 0 }) {
 
             console.warn(`WebSocket connection ${ws.url} closed`);
 
-            common.overlay = true;
+            if (settings.showOverlayForConnectionLost) {
+                common.overlay = true;
+            }
 
             if (options.retry <= 3) {
                 setTimeout(async () => {
@@ -213,7 +215,18 @@ function connectToEvents(options = { retry: 0 }) {
                 }, 1000);
             } else {
 
-                alert("Could not load data, please reload the page");
+                setNotification({
+                    message: "<h5>Initial Error:</h5>Could not connect to WebSocket",
+                    type: "alert",
+                    showIcon: false,
+                    dismiss: {
+                        manually: true,
+                        automatically: false,
+                    },
+                    appearance: "dark",
+                });
+
+                throw new Error("Retry attempts exceede");
 
             }
 
