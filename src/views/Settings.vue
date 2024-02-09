@@ -240,6 +240,49 @@ export default defineComponent({
           path: "/auth/login",
         });
       }, 3000);
+    },
+    askForPermission(feature) {
+
+      // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/getUserMedia?retiredLocale=de
+      navigator.getUserMedia =
+        navigator.getUserMedia ||
+        navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia;
+
+      if (feature === "notifications") {
+        if (settings.permissionsNotifications) {
+
+          Notification.requestPermission().then((granted) => {
+
+            settings.permissionsNotifications = granted === "granted";
+
+            if (settings.permissionsNotifications) {
+              new Notification("Hi there!");
+            }
+
+          }).catch((err) => {
+            console.error("Could not get notifications premission!", err);
+          });
+
+        }
+      }/* else if (feature === "camera") {
+        if (settings.permissionsCamera) {
+
+          navigator.getUserMedia({
+            video: true
+          }, (stream) => {
+
+            settings.permissionsCamera = true;
+
+          }, (err) => {
+
+            settings.permissionsCamera = false;
+
+          });
+
+        }
+      }*/
+
     }
   },
 });
@@ -461,6 +504,13 @@ export default defineComponent({
                 Show command/states counter
               </label>
             </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showOverlayForConnectionLost"
+                v-model="settings.showOverlayForConnectionLost" />
+              <label class="form-check-label small" for="showOverlayForConnectionLost">
+                Display Overlay when connection is lost
+              </label>
+            </div>
             <!-- CONTENT -->
           </div>
         </div>
@@ -490,7 +540,6 @@ export default defineComponent({
               Logout
             </button>
 
-            {{ settings.urls }}
             <a class="btn btn-outline-primary d-block w-100 mb-1" :href="settings.urls.adminUi" target="_blank">
               Administration
             </a>
@@ -524,6 +573,45 @@ export default defineComponent({
         </div>
       </div>
       <!-- SETTINGS -->
+
+      <!-- PERMISSIONS -->
+      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 p-0 hide">
+        <div class="card bg-transparent">
+          <div class="card-body">
+            <h5 class="card-title">Permissions</h5>
+            <!-- CONTENT -->
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="permissionsNotifications"
+                v-model="settings.permissionsNotifications" v-on:change="askForPermission('notifications')" />
+              <label class="form-check-label small" for="permissionsNotifications">
+                Notifications
+              </label>
+            </div>
+
+            <!--
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="permissionsPushNotifications"
+                v-model="settings.permissionsPushNotifications" v-on:change="askForPermission('pushNotifications')" />
+              <label class="form-check-label small" for="permissionsPushNotifications">
+                Push Notification
+              </label>
+            </div>
+            
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="permissionsCamera" v-model="settings.permissionsCamera"
+                v-on:change="askForPermission('camera')" />
+              <label class="form-check-label small" for="permissionsCamera">
+                Camera
+              </label>
+            </div>
+            -->
+
+            <!-- CONTENT -->
+          </div>
+        </div>
+      </div>
+      <!-- PERMISSIONS -->
 
       <!-- INFORMATION -->
       <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 p-0 hide">
