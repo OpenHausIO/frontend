@@ -108,8 +108,13 @@ pinia.use(({ store }) => {
 // create vue app
 const app = createApp(App);
 
-app.config.globalProperties.$window = window;
-app.config.globalProperties.$console = console;
+app.config.globalProperties.window = window;
+app.config.globalProperties.console = console;
+
+app.use(VueNotificationList);
+app.use(pinia);
+app.use(router);
+app.use(GridLayout);
 
 
 app.directive("repeat", {
@@ -136,6 +141,10 @@ app.directive("repeat", {
     }
 });
 
+
+
+const settings = settingsStore();
+const common = commonStore();
 
 
 function fetchData() {
@@ -168,15 +177,18 @@ function fetchData() {
     });
 }
 
-function connectToEvents() {
+function connectToEvents(options = { retry: 0 }) {
     return new Promise((resolve, reject) => {
 
-        let controller = new AbortController();
-        let id = setTimeout(() => controller.abort(), 1000);
+        // fix #119, see:
+        // https://github.com/OpenHausIO/backend/issues/403
+        let intents = ["add", "update", "remove"].map((intent) => {
+            return `intents[]=${intent}`;
+        }).join("&");
 
-        let ws = new WebSocket(`ws://${window.location.host}/api/events?x-auth-token=${localStorage.getItem("x-auth-token")}`);
+        let ws = new WebSocket(`ws://${window.location.host}/api/events?${intents}&x-auth-token=${localStorage.getItem("x-auth-token")}`);
 
-        console.log("connect to", ws.url);
+        console.log("Try to connect:", ws.url);
 
         ws.onerror = (err) => {
             console.error(err);
@@ -184,13 +196,47 @@ function connectToEvents() {
         };
 
         ws.onclose = () => {
+
             console.warn(`WebSocket connection ${ws.url} closed`);
+
+            if (settings.showOverlayForConnectionLost) {
+                common.overlay = true;
+            }
+
+            if (options.retry <= 3) {
+                setTimeout(async () => {
+                    try {
+                        console.log("Retry connection to:", ws.url, options)
+                        options.retry += 1;
+                        await connectToEvents(options);
+                    } catch (err) {
+                        console.error(err);
+                    }
+                }, 1000);
+            } else {
+
+                setNotification({
+                    message: "<h5>Initial Error:</h5>Could not connect to WebSocket",
+                    type: "alert",
+                    showIcon: false,
+                    dismiss: {
+                        manually: true,
+                        automatically: false,
+                    },
+                    appearance: "dark",
+                });
+
+                throw new Error("Retry attempts exceede");
+
+            }
+
         };
 
 
         ws.onopen = () => {
-            console.log(`WebSocket connection ${ws.url} open`);
-            clearTimeout(id);
+            console.warn(`WebSocket connection ${ws.url} open`);
+            options.retry = 0;
+            common.overlay = false;
             resolve();
         };
 
@@ -206,6 +252,7 @@ function connectToEvents() {
                 let data = JSON.parse(msg.data);
                 let valid = 1;
 
+                // TODO: Add "scenes" component
                 valid &= ["add", "remove", "update"].includes(data.event);
                 valid &= ["endpoints", "rooms", "devices"].includes(data.component);
                 valid &= Object.prototype.hasOwnProperty.call(store, data.event);
@@ -216,6 +263,7 @@ function connectToEvents() {
                 if (valid) {
                     store[data.event](data.component, data.args[0]);
                 } else {
+                    // TODO: remove warning
                     console.warn("Handling condition failed. Methods:",
                         ["add", "remove", "update"].includes(data.event),
                         "Component:", ["endpoints", "rooms", "devices"].includes(data.component),
@@ -247,31 +295,13 @@ Promise.all([
         });
     }),
 
-    // mount vue plugins
-    new Promise((resolve, reject) => {
-        try {
-
-            app.use(VueNotificationList);
-            app.use(pinia);
-            app.use(router);
-            app.use(GridLayout);
-
-            resolve();
-
-        } catch (e) {
-
-            reject(e);
-
-        }
-    }),
-
 ]).then(() => {
 
     console.log("Preshit done, mount vue app");
 
     // stores
-    let settings = settingsStore();
-    let common = commonStore();
+    //let settings = settingsStore();
+    //let common = commonStore();
 
     common.authenticated = (sessionStorage.getItem("authenticated") == "true");
 

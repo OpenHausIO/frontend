@@ -36,6 +36,8 @@ export const settingsStore = defineStore("settings", {
             jumpToOnlyEndpointSet: true,
             showParameterInCommands: true,
             showCommandStatesCounter: true,
+            permissionsNotifications: false,
+            showOverlayForConnectionLost: false,
             dashboardGrid: {
                 cols: 12,
                 rows: 30

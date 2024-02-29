@@ -79,6 +79,8 @@ export default {
   <div v-if="common.overlay" id="overlay" class="text-center">
     <div id="inner">
       <h1>Loading...</h1>
+      <button class="btn btn-outline-primary m-1" @click="common.overlay = false">Close</button>
+      <button class="btn btn-outline-primary m-1" @click="window.location.reload()">Reload</button>
     </div>
   </div>
   <!-- OVERLAY -->
