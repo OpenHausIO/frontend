@@ -182,11 +182,15 @@ function connectToEvents(options = { retry: 0 }) {
 
         // fix #119, see:
         // https://github.com/OpenHausIO/backend/issues/403
-        let intents = ["add", "update", "remove"].map((intent) => {
-            return `intents[]=${intent}`;
+        let events = ["add", "update", "remove"].map((intent) => {
+            return `events[]=${intent}`;
         }).join("&");
 
-        let ws = new WebSocket(`ws://${window.location.host}/api/events?${intents}&x-auth-token=${localStorage.getItem("x-auth-token")}`);
+        let components = ["rooms", "scenes", "devices", "endpoints"].map((intent) => {
+            return `components[]=${intent}`;
+        }).join("&");
+
+        let ws = new WebSocket(`ws://${window.location.host}/api/events?${events}&${components}&x-auth-token=${localStorage.getItem("x-auth-token")}`);
 
         console.log("Try to connect:", ws.url);
 
