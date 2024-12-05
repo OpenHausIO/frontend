@@ -10,7 +10,7 @@ import { itemStore, settingsStore, commonStore } from "./store";
 
 // override console log when not on local machine
 if (!["localhost", "127.0.0.1"].includes(window.location.hostname)) {
-    console.log = () => { };
+    //console.log = () => { };
 }
 
 import VueNotificationList from '@dafcoe/vue-notification';
