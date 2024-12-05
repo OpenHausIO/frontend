@@ -3,6 +3,12 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "Demo",
+  props: {
+    uuid: {
+      type: String,
+      required: true,
+    },
+  },  
   data() {
     return {};
   },
