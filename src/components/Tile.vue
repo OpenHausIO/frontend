@@ -27,6 +27,12 @@ export default {
 </template>
 
 <style scoped>
+.card {
+  border: 1px solid #000;
+  /*background: rgba(255, 255, 255, 0.03);*/
+  background: transparent;
+}
+
 /*
 .card {
   opacity: 0.8;
