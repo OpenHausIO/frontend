@@ -71,6 +71,14 @@ const router = createRouter({
             name: "/test",
             component: () => import("../views/Test.vue")
         }, {
+            path: "/test/chart",
+            name: "/test/chart",
+            component: () => import("../views/TestChart.vue")
+        }, {
+            path: "/test/updateIndicator",
+            name: "/test/updateIndicator",
+            component: () => import("../views/TestUpdateIndicator.vue")
+        }, {
             path: "/grid",
             name: "/grid",
             component: () => import("../views/Grid.vue")
