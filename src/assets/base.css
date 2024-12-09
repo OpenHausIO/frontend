@@ -62,3 +62,9 @@ body {
 .notification-list-item--success .notification-list-item__tag[data-v-0730d53e] {
     background-color: var(--bs-green) !important;
 }
+
+hr{
+    background-color: rgba(0, 0, 0, 1) !important;
+    height: 1px !important;
+    opacity: 1;
+}
