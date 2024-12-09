@@ -83,6 +83,10 @@ const router = createRouter({
             name: "/test/grid",
             component: () => import("../views/Grid.vue")
         }, {
+            path: "/test/props",
+            name: "/test/props",
+            component: () => import("../views/Props.vue")
+        }, {
             path: "/settings",
             name: "Settings",
             icon: "fa fa-gear",
