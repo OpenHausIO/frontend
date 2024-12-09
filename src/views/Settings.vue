@@ -421,7 +421,8 @@ export default defineComponent({
               </button>
               <ul class="dropdown-menu dropdown-menu-dark">
                 <li v-bind:key="index" v-for="(widget, index) in Widget.components">
-                  <button class="dropdown-item d-flex gap-2 align-items-center" @click="addDashboardWidget(widget.name)">
+                  <button class="dropdown-item d-flex gap-2 align-items-center"
+                    @click="addDashboardWidget(widget.name)">
                     {{ widget.name }}
                   </button>
                 </li>
@@ -509,6 +510,20 @@ export default defineComponent({
                 v-model="settings.showOverlayForConnectionLost" />
               <label class="form-check-label small" for="showOverlayForConnectionLost">
                 Display Overlay when connection is lost
+              </label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showUpdateTimestampInStates"
+                v-model="settings.showUpdateTimestampInStates" />
+              <label class="form-check-label small" for="showUpdateTimestampInStates">
+                Show formatted update timestamp in states
+              </label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="enableAnimationOnStateUpdate"
+                v-model="settings.enableAnimationOnStateUpdate" />
+              <label class="form-check-label small" for="enableAnimationOnStateUpdate">
+                Enable animation on state update
               </label>
             </div>
             <!-- CONTENT -->

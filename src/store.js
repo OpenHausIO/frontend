@@ -47,6 +47,8 @@ export const settingsStore = defineStore("settings", {
                 adminUi: `/admin`
             },
             startpage: "/dashboard",
+            showUpdateTimestampInStates: true,
+            enableAnimationOnStateUpdate: true
         }
     },
     persistent: true
@@ -243,10 +245,7 @@ const store = reactive({
             let target = Array.from(this[key]).find((item) => {
                 return item._id === data._id;
             });
-
-            if (!target) {
-                return;
-            }
+enableAnimationOnStateUpdate
 
             Object.assign(target, data);
 

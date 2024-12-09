@@ -6,12 +6,15 @@ import { useRoute, RouterLink } from "vue-router";
 import { alert, request, debounce } from "@/helper";
 import { settingsStore } from "../store.js";
 const settings = settingsStore();
+import dateformat from "dateformat";
 </script>
 
 <script>
+import { reactive, watch } from "vue";
 import { mapActions } from "pinia";
-import { itemStore } from "../store.js";
+import { itemStore, settingsStore } from "../store.js";
 const store = itemStore();
+const settings = settingsStore();
 
 export default {
   components: {
@@ -23,6 +26,7 @@ export default {
     return {
       data: {
       },
+      animations: reactive({})
     };
   },
   mounted() {
@@ -30,6 +34,31 @@ export default {
 
     this.data = Array.from(store.endpoints).find((item) => {
       return item._id === $route.params._id;
+    });
+
+    watch(() => {
+      return this.data.states.map(item => item.value);
+    }, (newValues, oldValues) => {
+
+      /*
+      console.group("Watcher");
+      console.log("Old Values:", oldValues);
+      console.log("New Values:", newValues);
+      */
+
+      newValues.forEach((newValue, index) => {
+        if (newValue !== oldValues[index] && settings.enableAnimationOnStateUpdate) {
+
+          //console.log(`Änderung erkannt bei Index ${index}: ${oldValues[index]} -> ${newValue}`);
+          this.animations[index] = true;
+
+        }
+      });
+
+      //console.groupEnd();
+
+    }, {
+      deep: false
     });
 
   },
@@ -77,19 +106,24 @@ export default {
     repeat(cmd) {
       this.trigger(cmd._id);
     },
+    resetAnimation(index) {
+      this.animations[index] = false;
+    }
   },
   computed: {
     commands() {
+      // TODO: add filter "enabled"?
       return this.data.commands?.length || 0;
     },
     states() {
+      // TODO: add filter "enabled"?
       return this.data.states?.length || 0;
     },
     /*
     scenes() {
       return Math.round(Math.random() * 10);
     },*/
-  },
+  }
 };
 </script>
 
@@ -157,8 +191,8 @@ export default {
             {{ command.name }}
           </Tile>
         </RouterLink>
-        <Tile v-else style="background: transparent; border: 1px solid rgb(0, 0, 0)" @click="trigger(command._id, $event)"
-          v-repeat="{ handler: repeat, interval: 300, command }">
+        <Tile v-else style="background: transparent; border: 1px solid rgb(0, 0, 0)"
+          @click="trigger(command._id, $event)" v-repeat="{ handler: repeat, interval: 300, command }">
           <template #title>
             <i :class="command.icon || 'fa-regular fa-circle-question'"></i>
           </template>
@@ -172,11 +206,28 @@ export default {
       <!-- COMMANDS -->
 
       <!-- STATES -->
-      <div class="p-0 col-6 col-md-3 col-xl-2" v-bind:key="state._id" v-for="state in data.states">
+      <div class="p-0 col-6 col-md-3 col-xl-2" v-bind:key="state._id" v-for="(state, index) in data.states">
         <Tile style="background: transparent; border: 1px solid rgb(0, 0, 0)">
+
+          <!-- INFORMATION -->
           <h3><i :class="state.icon || 'fa-regular fa-circle-question'"></i></h3>
           <div>{{ state.name }}</div>
-          <i>{{ state.value }}</i>
+          <i :class="{ 'meine-text-animation': animations[index] }" @animationend="resetAnimation(index)">
+            {{ state.value }}
+          </i>
+          <!-- INFORMATION -->
+
+          <!-- TIMESTAMP -->
+          <small v-if="settings.showUpdateTimestampInStates">
+            Updated:<br>
+            {{ dateformat(data.timestamps.updated, "yyyy.mm.dd - HH:MM:ss") }}
+          </small>
+          <!-- TIMESTAMP -->
+
+          <!-- GRAPH/HISTORY -->
+          <!-- TODO, see <host>/#!/test/chart -->
+          <!-- GRAPH/HISTORY -->
+
         </Tile>
       </div>
       <!-- STATES -->
@@ -186,3 +237,35 @@ export default {
 
   </div>
 </template>
+
+
+<style scope>
+small {
+  margin-top: 20px;
+  display: block;
+  font-size: 10px;
+}
+
+@keyframes textShadowAnimation {
+  0% {
+    text-shadow: 0 0 0 transparent;
+    color: #fff;
+  }
+
+  50% {
+    color: rgba(var(--bs-primary-rgb), 1);
+    /*text-shadow: 0px 0px 100px rgba(var(--bs-primary-rgb), 1);*/
+  }
+
+  100% {
+    text-shadow: 0 0 0 transparent;
+    color: #fff;
+  }
+}
+
+.meine-text-animation {
+  /*animation: textShadowAnimation 0.28s ease-out*/
+  animation: textShadowAnimation 0.70s ease-out;
+  animation-iteration-count: 1;
+}
+</style>
