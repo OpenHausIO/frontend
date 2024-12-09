@@ -218,7 +218,7 @@ export default {
           <!-- INFORMATION -->
 
           <!-- TIMESTAMP -->
-          <small v-if="settings.showUpdateTimestampInStates">
+          <small v-if="settings.showUpdateTimestampInStates" class="text-secondary fw-light">
             Updated:<br>
             {{ dateformat(data.timestamps.updated, "yyyy.mm.dd - HH:MM:ss") }}
           </small>
@@ -248,24 +248,29 @@ small {
 
 @keyframes textShadowAnimation {
   0% {
-    text-shadow: 0 0 0 transparent;
-    color: #fff;
+    /*text-shadow: 0 0 0 transparent;*/
+    color: rgb(230, 230, 230);
+    /*filter: blur(0px);*/
   }
 
   50% {
     color: rgba(var(--bs-primary-rgb), 1);
-    /*text-shadow: 0px 0px 100px rgba(var(--bs-primary-rgb), 1);*/
+    text-shadow: 0px 0px 1px rgba(var(--bs-primary-rgb), 0.3);
+    /*filter: blur(3px);*/
   }
 
+
   100% {
-    text-shadow: 0 0 0 transparent;
-    color: #fff;
+    /*text-shadow: 0 0 0 transparent;*/
+    color: rgb(230, 230, 230);
+    /*filter: blur(0px);*/
   }
+
 }
 
 .meine-text-animation {
   /*animation: textShadowAnimation 0.28s ease-out*/
-  animation: textShadowAnimation 0.70s ease-out;
+  animation: textShadowAnimation 0.8s ease-out;
   animation-iteration-count: 1;
 }
 </style>
