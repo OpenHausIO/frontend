@@ -65,11 +65,14 @@ const router = createRouter({
             path: "/devices/:_id",
             name: "/devices/:_id",
             component: () => import("../views/Device.vue")
-        },
-        {
+        }, {
             path: "/test",
             name: "/test",
             component: () => import("../views/Test.vue")
+        }, {
+            path: "/test/tile",
+            name: "/test/tile",
+            component: () => import("../views/TestTile.vue")
         }, {
             path: "/test/chart",
             name: "/test/chart",
@@ -81,11 +84,15 @@ const router = createRouter({
         }, {
             path: "/test/grid",
             name: "/test/grid",
-            component: () => import("../views/Grid.vue")
+            component: () => import("../views/TestGrid.vue")
         }, {
             path: "/test/props",
             name: "/test/props",
-            component: () => import("../views/Props.vue")
+            component: () => import("../views/TestProps.vue")
+        }, {
+            path: "/test/modal",
+            name: "/test/modal",
+            component: () => import("../views/TestModal.vue")
         }, {
             path: "/settings",
             name: "Settings",
