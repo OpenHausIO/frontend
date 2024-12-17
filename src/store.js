@@ -68,7 +68,7 @@ export const itemStore = defineStore("items", {
         update(key, data) {
             if (Object.prototype.hasOwnProperty.call(this, key)) {
 
-                console.log(`Update property set "${key}"`, data);
+                //console.log(`Update property set "${key}"`, data);
 
                 let target = Array.from(this[key]).find((item) => {
                     return item._id === data._id;
