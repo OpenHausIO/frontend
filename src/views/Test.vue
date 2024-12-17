@@ -13,6 +13,12 @@
       </li>
     </RouterLink>
 
+    <RouterLink custom to="/test/grid2" v-slot="{ href, navigate }">
+      <li :href="href" @click="navigate">
+        <a href="#">Grid2</a>
+      </li>
+    </RouterLink>
+
     <RouterLink custom to="/test/modal" v-slot="{ href, navigate }">
       <li :href="href" @click="navigate">
         <a href="#">Modal</a>
@@ -28,6 +34,12 @@
     <RouterLink custom to="/test/tile" v-slot="{ href, navigate }">
       <li :href="href" @click="navigate">
         <a href="#">Tile</a>
+      </li>
+    </RouterLink>
+
+    <RouterLink custom to="/test/notifications" v-slot="{ href, navigate }">
+      <li :href="href" @click="navigate">
+        <a href="#">Notifications</a>
       </li>
     </RouterLink>
 

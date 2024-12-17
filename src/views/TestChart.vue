@@ -4,7 +4,7 @@
     <!-- ITEM -->
     <div class="row display-flex text-center">
 
-      <div class="p-0 col-6 col-md-3 col-xl-2" v-for="index in 1" :key="index">
+      <div class="p-0 col-6 col-md-3 col-xl-2" v-for="index in 6 * 3" :key="index">
         <Tile style="background: transparent; border: 1px solid #000; padding: 0">
           <template #icon>
             <i class="fa-2xl fa-question"></i>

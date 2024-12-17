@@ -86,6 +86,10 @@ const router = createRouter({
             name: "/test/grid",
             component: () => import("../views/TestGrid.vue")
         }, {
+            path: "/test/notifications",
+            name: "/test/notifications",
+            component: () => import("../views/TestNotifications.vue")
+        }, {
             path: "/test/props",
             name: "/test/props",
             component: () => import("../views/TestProps.vue")
