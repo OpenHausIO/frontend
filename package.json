@@ -1,7 +1,7 @@
 {
   "name": "frontend",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -9,6 +9,7 @@
     "build:docker": "grunt build:docker",
     "docker-nginx": "docker run --rm --name frontend -v $PWD/dist:/usr/share/nginx/html:ro -p 3000:80 -d nginx",
     "release": "grunt release",
+    "publish": "grunt publish",
     "screenshot": "node scripts/screenshot.js"
   },
   "dependencies": {
