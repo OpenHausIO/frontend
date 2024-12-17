@@ -20,7 +20,7 @@ body {
 
     /* Darker background, see #63 */
     background-color: #101418;
-    background-image: radial-gradient(circle, #23282e 0%, rgba(35, 40, 46, 0.5) 15%, #101418 95%), url(/noise.png);
+    background-image: radial-gradient(circle, #23282e 0%, rgba(35, 40, 46, 0.5) 25%, #101418 95%), url("/noise.png");
 
 
     /*
@@ -61,4 +61,10 @@ body {
 
 .notification-list-item--success .notification-list-item__tag[data-v-0730d53e] {
     background-color: var(--bs-green) !important;
+}
+
+hr{
+    background-color: rgba(0, 0, 0, 1) !important;
+    height: 1px !important;
+    opacity: 1;
 }

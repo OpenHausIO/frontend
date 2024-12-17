@@ -46,6 +46,7 @@ export default defineComponent({
           desc: "Einkaufen gehens",
         },
       ],
+      showTextbox: false
     };
   },
   mounted() {
@@ -90,6 +91,9 @@ export default defineComponent({
       });
     },
     closeEdit() {
+
+      this.showTextbox = false;
+
       this.jobs.forEach((job) => {
         job.edit = false;
       });
@@ -101,6 +105,7 @@ export default defineComponent({
           jobs: this.jobs,
         })
       );
+
     },
     deleteJobs() {
       this.jobs = this.jobs.filter(({ done }) => {
@@ -123,32 +128,37 @@ export default defineComponent({
     dispatchEvent(event) {
       console.log("Dispatch event in child called", event);
     },
+    editTitle() {
+      this.showTextbox = true;
+    },
   },
-  menu: [
-    {
-      title: "Add Job",
-      method: "addJob",
-    },
-    {
-      title: "Edit Jobs",
-      method: "editJobs",
-    },
-    {
-      title: "Done editing",
-      method: "closeEdit",
-    },
-    {
-      title: "Delete Jobs",
-      method: "deleteJobs",
-    },
-  ],
+  menu: [{
+    title: "Add Job",
+    method: "addJob"
+  }, {
+    title: "Edit Jobs",
+    method: "editJobs"
+  }, {
+    title: "Edit title",
+    method: "editTitle"
+  }, {
+    title: "Done editing",
+    method: "closeEdit"
+  }, {
+    title: "Delete Jobs",
+    method: "deleteJobs"
+  }],
 });
 </script>
 
 
 <template>
   <div class="p-2">
-    <h3>Todo's: {{ title }}</h3>
+    <h3>Todo's: <input type="text" v-model="title" v-if="showTextbox" />
+      <span v-else>
+        {{ title }}
+      </span>
+    </h3>
     <ul v-if="jobs.length > 0">
       <li v-bind:key="index" v-for="(job, index) in jobs">
         <label @click="toggleDone(job)" class="w-100">

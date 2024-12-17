@@ -19,6 +19,10 @@ import Clock from "../widgets/Clock.vue";
 //import Cams from "../widgets/Cams.vue";
 import Empty from "../widgets/Empty.vue";
 import Counter from "../widgets/Counter.vue";
+import Demo from "../widgets/Demo.vue";
+import Countdown from "../widgets/Countdown.vue";
+import Stopwatch from "../widgets/Stopwatch.vue";
+import States from "../widgets/States.vue";
 
 const components = {
   //Weather,
@@ -31,8 +35,16 @@ const components = {
   Clock,
   //Cams,
   Empty,
-  Counter
+  Counter,
+  Countdown,
+  Stopwatch,
+  States
 };
+
+// make demo Widget only available when we are on spefici domain
+if (window.location.hostname === "demo.open-haus.io") {
+  components.Demo = Demo;
+}
 
 export default defineComponent({
   props: {
@@ -100,7 +112,7 @@ export default defineComponent({
       </ul>
     </div>
 
-    <component class="h-100 w-100 d-block" v-bind:is="name" :uuid="uuid" :action="childAction" ref="widget" />
+    <component v-bind:is="name" :uuid="uuid" ref="widget" />
   </div>
 </template>
 

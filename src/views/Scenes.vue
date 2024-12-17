@@ -44,8 +44,13 @@ export default {
     <div class="row display-flex text-center" style="height: 100%">
       <!-- COMMANDS -->
       <div class="p-0 col-6 col-md-3 col-xl-2" v-bind:key="item._id" v-for="item in items">
-        <Tile style="background: transparent; border: 1px solid rgb(0, 0, 0)" @click="trigger(item, $event)">
-          {{ item.name }}
+        <Tile @click="trigger(item, $event)">
+          <template #icon>
+            <i class="fa-2xl" :class="item.icon || 'fa-regular fa-circle-question'"></i>
+          </template>
+          <template #title>
+            {{ item.name }}
+          </template>
         </Tile>
       </div>
       <!-- COMMANDS -->

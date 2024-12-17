@@ -13,71 +13,85 @@ export default {
       y: 1,
       h: 1,
       w: 1,
-      title: "0",
+      //title: "0",
       icon: "fa-solid fa-0"
     }, {
       x: 1,
       y: 2,
       h: 1,
       w: 1,
-      title: "1",
-      icon: "fa-solid fa-0"
+      //title: "1",
+      icon: "fa-solid fa-1"
     }, {
       x: 1,
       y: 3,
       h: 1,
       w: 1,
-      title: "2",
-      icon: "fa-solid fa-0"
+      //title: "2",
+      icon: "fa-solid fa-2"
     }, {
       x: 2,
       y: 1,
       h: 1,
       w: 1,
-      title: "3",
-      icon: "fa-solid fa-0"
+      //title: "3",
+      icon: "fa-solid fa-3"
     }, {
       x: 2,
       y: 2,
       h: 1,
       w: 1,
-      title: "4",
-      icon: "fa-solid fa-0"
+      //title: "4",
+      icon: "fa-solid fa-4"
     }, {
       x: 2,
       y: 3,
       h: 1,
       w: 1,
-      title: "5",
-      icon: "fa-solid fa-0"
+      //title: "5",
+      icon: "fa-solid fa-5"
     }, {
       x: 3,
       y: 1,
       h: 1,
       w: 1,
-      title: "6",
-      icon: "fa-solid fa-0"
+      //title: "6",
+      icon: "fa-solid fa-6"
     }, {
       x: 3,
       y: 2,
       h: 1,
       w: 1,
-      title: "7",
-      icon: "fa-solid fa-0"
+      //title: "7",
+      icon: "fa-solid fa-7"
     }, {
       x: 3,
       y: 3,
       h: 1,
       w: 1,
-      title: "8",
-      icon: "fa-solid fa-0"
+      //title: "8",
+      icon: "fa-solid fa-8"
+    }, {
+      x: 4,
+      y: 2,
+      h: 1,
+      w: 1,
+      //title: "9",
+      icon: "fa-solid fa-9"
     }, {
       x: 4,
       y: 1,
       h: 1,
-      w: 3,
-      title: "9",
-      icon: "fa-solid fa-0"
+      w: 1,
+      title: "Exit",
+      icon: "fa-regular fa-circle-xmark"
+    }, {
+      x: 4,
+      y: 3,
+      h: 1,
+      w: 1,
+      title: "Enter",
+      icon: "fa-regular fa-circle-check"
     }];
 
     const p2 = [{
@@ -128,19 +142,21 @@ export default {
       active: 1,
       page: null,
       pages: [{
-        title: "Page #1",
+        title: "Numbers",
         show: true,
+        gap: false,
         size: {
           cols: 3,
-          rows: 3
+          rows: 4
         },
         items: p1
       }, {
-        title: "Page #2",
+        title: "Navigation",
         show: true,
+        gap: true,
         size: {
           cols: 3,
-          rows: 3
+          rows: 7
         },
         items: p2
       }, {
@@ -188,6 +204,10 @@ export default {
 
       this.setPage();
 
+    },
+    showPage(index) {
+      this.active = index;
+      this.setPage();
     }
   },
   mounted() {
@@ -223,7 +243,7 @@ export default {
             <template #title>
               <i :class="item?.icon || 'fa-regular fa-circle-question'"></i>
             </template>
-            <h5>{{ item.title }}</h5>
+            <h4>{{ item.title || "Key" }}</h4>
           </Tile>
 
           <!--
@@ -244,7 +264,9 @@ export default {
     </div>
     <div id="indicator">
       <ul class="flexible-list">
-        <li v-for="(page, index) in  carousel " :key="index" :class="{ 'active': index === active }"></li>
+        <li v-for="(page, index) in carousel " :key="index" :class="{ 'active': index === active }"
+          :data-tooltip="page.title" @click="showPage(index)">
+        </li>
       </ul>
     </div>
   </div>
@@ -255,16 +277,16 @@ export default {
 .flexible-list {
   list-style: none;
   display: flex;
-  width: 10%;
+  width: 100%;
   padding: 0;
-  /* Entferne den Standardinnenabstand der UL */
+  justify-content: center;
 }
 
 .flexible-list li {
   flex: 1;
-  /*border-bottom: 2px solid #000;*/
+  max-width: clamp(1%, 25px, 25px);
   background-color: #000;
-  padding: 1px;
+  height: 3px;
   margin: 2px;
 }
 
@@ -289,7 +311,7 @@ export default {
   height: calc(100%);
   grid-auto-rows: 1fr;
   /*see: https://stackoverflow.com/a/44490047/5781499 */
-  /*gap: 1px; /* Optional: Add gap between grid items */
+  gap: 0px;
 }
 
 .grid-item {
@@ -298,5 +320,90 @@ export default {
   align-items: center;
   justify-content: center;
   height: calc(100% - 1px);
+}
+
+/* ==================================================================*/
+
+/* Add this attribute to the element that needs a tooltip */
+[data-tooltip] {
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+}
+
+/* Hide the tooltip content by default 
+ * Show the tooltip, if always-on by data attributes
+ */
+[data-tooltip]:not([data-tooltip-alwayson]):before,
+[data-tooltip]:not([data-tooltip-alwayson]):after {
+  visibility: hidden;
+  opacity: 0.0;
+}
+
+/* Prevent click events */
+[data-tooltip]:before,
+[data-tooltip]:after {
+  pointer-events: none;
+}
+
+/* Show tooltip content on hover */
+[data-tooltip]:hover:before,
+[data-tooltip]:hover:after {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Position tooltip above the element */
+[data-tooltip]:before {
+  position: absolute;
+  transform: translateX(-50%);
+  padding: 7px;
+  border-radius: 3px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  content: attr(data-tooltip);
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.2;
+  left: 50%;
+  margin-bottom: 10px;
+  word-break: keep-all;
+
+  min-width: 100px;
+  bottom: 110%;
+}
+
+/* Triangle hack to make tooltip look like a speech bubble */
+[data-tooltip]:after {
+  position: absolute;
+  content: " ";
+  font-size: 0;
+  line-height: 0;
+  left: 50%;
+  margin-left: -5px;
+  width: 0;
+
+  bottom: 110%;
+  /*border-top: 10px solid hsla(0, 0%, 20%, 1.0);*/
+  border-top: 10px solid rgba(0, 0, 0, 0.5);
+  border-right: 5px solid transparent;
+  border-left: 5px solid transparent;
+}
+
+/* Position tooltip below the element */
+[data-tooltip-pos="bottom"]:before {
+  bottom: initial;
+  top: 120%;
+}
+
+[data-tooltip-pos="bottom"]:after {
+  bottom: initial;
+  top: 120%;
+  margin-top: -5px;
+
+  border-top: none;
+  border-bottom: 5px solid hsla(0, 0%, 20%, 1.0);
+  border-right: 5px solid transparent;
+  border-left: 5px solid transparent;
 }
 </style>

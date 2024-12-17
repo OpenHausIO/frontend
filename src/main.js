@@ -182,11 +182,17 @@ function connectToEvents(options = { retry: 0 }) {
 
         // fix #119, see:
         // https://github.com/OpenHausIO/backend/issues/403
-        let intents = ["add", "update", "remove"].map((intent) => {
-            return `intents[]=${intent}`;
+        let events = ["add", "update", "remove"].map((intent) => {
+            return `events[]=${intent}`;
         }).join("&");
 
-        let ws = new WebSocket(`ws://${window.location.host}/api/events?${intents}&x-auth-token=${localStorage.getItem("x-auth-token")}`);
+        let components = ["rooms", "scenes", "devices", "endpoints"].map((intent) => {
+            return `components[]=${intent}`;
+        }).join("&");
+
+        let proto = window.location.protocol === "https:" ? "wss://" : "ws://";
+
+        let ws = new WebSocket(`${proto}${window.location.host}/api/events?${events}&${components}&x-auth-token=${localStorage.getItem("x-auth-token")}`);
 
         console.log("Try to connect:", ws.url);
 
@@ -252,13 +258,12 @@ function connectToEvents(options = { retry: 0 }) {
                 let data = JSON.parse(msg.data);
                 let valid = 1;
 
-                // TODO: Add "scenes" component
                 valid &= ["add", "remove", "update"].includes(data.event);
-                valid &= ["endpoints", "rooms", "devices"].includes(data.component);
+                valid &= ["endpoints", "rooms", "devices", "scenes"].includes(data.component);
                 valid &= Object.prototype.hasOwnProperty.call(store, data.event);
                 valid &= store[data.event] instanceof Function;
 
-                console.log("Handle websocket message", data, valid)
+                //console.log("Handle websocket message", data, valid)
 
                 if (valid) {
                     store[data.event](data.component, data.args[0]);
@@ -296,91 +301,74 @@ Promise.all([
     }),
 
 ]).then(() => {
+    return new Promise((resolve, reject) => {
 
-    console.log("Preshit done, mount vue app");
+        console.log("[pre] Check authenticated");
 
-    // stores
-    //let settings = settingsStore();
-    //let common = commonStore();
+        // stores
+        //let settings = settingsStore();
+        //let common = commonStore();
 
-    common.authenticated = (sessionStorage.getItem("authenticated") == "true");
+        common.authenticated = (sessionStorage.getItem("authenticated") == "true");
 
-    console.log("main then", common.authenticated, typeof common.authenticated)
+        if (common.authenticated) {
 
-    if (common.authenticated) {
+            // authenticated
+            // fetch stuff & show navbar
+            resolve();
 
-        // authenticated
-        // fetch stuff & show navbar
+            common.navbar = true;
 
-        fetchData();
-        connectToEvents();
+        } else {
 
-        console.log("Common authenticated")
+            // wait for store changes
+            // then proceed with loading stuff
+            console.log("[pre] Wait for store changed");
 
-        common.navbar = true;
+            common.$subscribe((mutation, state) => {
 
-    } else {
+                console.log(mutation, state)
 
-        // wait for store changes
-        // then proceed with loading stuff
+                // TODO Move this to a "global middleware" where set/get local/session-storage
+                sessionStorage.setItem("authenticated", state.authenticated);
+                // localStorage.setItem("x-auth-token", state["x-auth-token"]);
 
-        console.log("Waiut for store changed")
+                if (state.authenticated) {
 
-        common.$subscribe((mutation, state) => {
+                    console.log("[pre] store changed, authenciated", mutation, state);
 
-            console.log(mutation, state)
+                    resolve();
 
-            // TODO Move this to a "global middleware" where set/get local/session-storage
-            sessionStorage.setItem("authenticated", state.authenticated);
-            // localStorage.setItem("x-auth-token", state["x-auth-token"]);
+                    common.navbar = true;
 
-            if (state.authenticated) {
+                }
 
+            });
 
-                fetchData();
-                connectToEvents();
+        }
 
-                console.log("Store changed", mutation, state);
+    });
+}).then(() => {
+    return new Promise(async (resolve, reject) => {
+        try {
 
-                common.navbar = true;
+            console.log("[pre] fetch items data & connection to websocket /events")
 
-            }
+            await fetchData();
+            await connectToEvents();
 
-        });
+            resolve();
 
-    }
+        } catch (err) {
 
+            console.error(err);
+            reject(err);
 
-    /*
-    let authentciated = sessionStorage.getItem("authenticated");
-    let interval = null;
+        }
+    });
+}).then(() => {
 
-    if (authentciated !== "true") {
-        interval = setInterval(() => {
-
-            console.log("Check interval!");
-            authentciated = sessionStorage.getItem("authenticated");
-
-            if (authentciated === "true") {
-
-                clearInterval(interval);
-
-                fetchData();
-                connectToEvents();
-
-            }
-
-        }, 1000);
-    } else {
-
-        fetchData();
-        connectToEvents();
-
-        common.navbar = true;
-
-    }
-    */
-
+    console.log("[pre] mount application");
 
     app.mount("#app");
 
@@ -425,7 +413,7 @@ Promise.all([
 
 }).catch((err) => {
 
-    alert("Could not start: " + err.message);
-    console.warn("Display overlay with error", err);
+    console.error(err);
+    alert("Could not start: " + err);
 
 });
