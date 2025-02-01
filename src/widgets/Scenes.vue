@@ -50,6 +50,14 @@
               <template #title>
                 {{ getScenesById(_id).name }}
               </template>
+              <!--
+              <template #default>
+
+                {{ getScenesById(_id).timestamps }}
+                {{ getScenesById(_id).states }}
+
+              </template>
+              -->
             </Tile>
           </div>
 
