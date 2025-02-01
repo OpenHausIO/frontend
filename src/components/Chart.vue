@@ -20,60 +20,54 @@ export default {
     }
   },
   mounted() {
-    this.renderChart();
+
+    this.createChart();
+
+
+    /*
+    //InternalError: too much recursion
+    setInterval(() => {
+      let d = 80;
+      this.chartData.labels.push(d);
+      this.chartData.datasets[0].data.push(d)
+    }, 3000);
+    */
+
   },
   methods: {
-    renderChart() {
-      // Hole die CSS-Variable und wandle sie in eine RGB-Farbe um
-      const primaryColor = getComputedStyle(document.documentElement)
-        .getPropertyValue('--bs-primary-rgb')
-        .trim(); // Entferne eventuelle Leerzeichen
+    createChart() {
+
+      const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--bs-primary-rgb').trim();
 
       // Setze die Hintergrundfarbe und die Randfarbe der Datensätze
-      this.chartData.datasets.forEach(dataset => {
-        dataset.backgroundColor = `rgba(${primaryColor}, 1)`; // Mit einer Transparenz von 0.5
-        dataset.borderColor = `rgba(${primaryColor}, 0.2)`; // Volle Transparenz für den Rand
-        dataset.borderWidth = 1; // Setze die Dicke der Linie auf 1px
-        dataset.pointRadius = 3;
-      });
+      this.chartData.datasets[0].backgroundColor = `rgba(${primaryColor}, 1)`;
+      this.chartData.datasets[0].borderColor = `rgba(${primaryColor}, 0.2)`;
+      this.chartData.datasets[0].borderWidth = 1;
+      this.chartData.datasets[0].pointRadius = 3;
+
 
       this.chartInstance = new Chart(this.$refs.chartCanvas, {
-        type: 'line', // Kann zu 'line', 'pie' usw. geändert werden
+        type: 'line',
         data: this.chartData,
         options: {
-          ...this.chartOptions,
-  responsive: true,
-  hover: {
-    mode: null // Deaktiviert das Hover-Verhalten
-  },
-  scales: {
-    x: {
-      display: true
-    },
-    y: {
-      display: false
-    }
-  },
-  plugins: {
-    legend: {
-      display: false
-    }
-  }        
+          responsive: true,
+          scales: {
+            x: {
+              display: true
+            },
+            y: {
+              display: false
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
         }
       });
-    }
-  },
-  watch: {
-    chartData(newData) {
-      if (this.chartInstance) {
-        this.chartInstance.data = newData;
-        this.chartInstance.update();
-      }
-    }
-  },
-  beforeDestroy() {
-    if (this.chartInstance) {
-      this.chartInstance.destroy();
+
+
     }
   }
 };
@@ -81,7 +75,7 @@ export default {
 
 <style scoped>
 /* Optional: CSS für die Chart-Komponente */
-div{
+div {
   padding: 0 0 !important;
 }
 </style>
