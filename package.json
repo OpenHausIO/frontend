@@ -7,7 +7,7 @@
     "build": "vite build",
     "preview": "vite preview --port 5050",
     "build:docker": "grunt build:docker",
-    "docker-nginx": "docker run --rm --name frontend -v $PWD/dist:/usr/share/nginx/html:ro -p 3000:80 -d nginx",
+    "docker-nginx": "docker run --rm --name frontend -v $PWD/build:/usr/share/nginx/html:ro -p 3000:80 -d nginx",
     "release": "grunt release",
     "publish": "grunt publish",
     "screenshot": "node scripts/screenshot.js"
