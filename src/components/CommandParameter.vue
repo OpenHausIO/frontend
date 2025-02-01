@@ -23,6 +23,8 @@ export default {
 
       {{ param.name }}
 
+      <br />
+
       <input type="range" :class="param.classes" v-model="param.value" @change="$emit('changed')" :min="param.min"
         :max="param.max" :style="{
           '--pointerBgColor': param.value
@@ -42,11 +44,9 @@ export default {
     </div>
     <div v-else-if="param.type === 'boolean'">
 
-      {{ param.name }}
-
       <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" :id="'booleanCheckboxParameter' + param._id" v-model="param.value"
-          @change="$emit('changed')" />
+        <input class="form-check-input" type="checkbox" :id="'booleanCheckboxParameter' + param._id"
+          v-model="param.value" @change="$emit('changed')" />
         <label class="form-check-label small" :for="'booleanCheckboxParameter' + param._id">
           {{ param.name }}
         </label>
@@ -57,7 +57,7 @@ export default {
       Unsupported type "{{ param.type }}"
     </div>
 
-
+    {{ param.name || param.key }} = {{ param.value }}
 
     <!--
 
