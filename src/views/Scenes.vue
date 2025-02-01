@@ -19,7 +19,9 @@ export default {
   },
   computed: {
     items() {
-      return store.scenes;
+      return store.scenes.filter(({ visible }) => {
+        return visible;
+      });
     },
   },
   methods: {
