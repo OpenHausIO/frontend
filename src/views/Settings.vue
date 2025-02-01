@@ -153,6 +153,7 @@ export default defineComponent({
       }, 3000);
     },
     exportSettings() {
+
       let blob = new Blob([JSON.stringify(window.localStorage, null, 2)], {
         type: "application/json",
       });
@@ -176,6 +177,7 @@ export default defineComponent({
         },
         appearance: "dark",
       });
+
     },
     importSettings() {
       let reader = new FileReader();
@@ -526,6 +528,15 @@ export default defineComponent({
                 Enable animation on state update
               </label>
             </div>
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="useRemoteLayoutPages"
+                v-model="settings.useRemoteLayoutPages" />
+              <label class="form-check-label small" for="useRemoteLayoutPages">
+                Use/Display command layout pages when available
+              </label>
+            </div>
+
             <!-- CONTENT -->
           </div>
         </div>

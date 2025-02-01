@@ -128,7 +128,12 @@ export default {
 </script>
 
 <template>
-  <div class="container-fluid">
+  <div v-if="data?.pages?.length > 0 && settings.useRemoteLayoutPages">
+
+    {{ data.pages }}
+
+  </div>
+  <div v-else class="container-fluid">
 
     <!-- HEADER -->
     <div class="row py-4" style="border-top: 1px solid #000; border-bottom: 1px solid #000">
