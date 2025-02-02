@@ -15,6 +15,7 @@ const {
 
 // https://vitejs.dev/config/
 export default defineConfig({
+    base: "/user/",
     plugins: [
         vue()
     ],
