@@ -566,7 +566,7 @@ export default defineComponent({
               Logout
             </button>
 
-            <a class="btn btn-outline-primary d-block w-100 mb-1" :href="settings.urls.adminUi" target="_blank">
+            <a class="btn btn-outline-primary d-block w-100 mb-1" :href="settings.urls.adminUi">
               Administration
             </a>
             <!-- CONTENT -->
