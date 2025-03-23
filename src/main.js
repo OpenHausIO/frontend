@@ -301,7 +301,7 @@ Promise.all([
     }),
 
 ]).then(() => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
 
         console.log("[pre] Check authenticated");
 
@@ -315,7 +315,8 @@ Promise.all([
 
             // authenticated
             // fetch stuff & show navbar
-            resolve();
+            await fetchData();
+            await connectToEvents();
 
             common.navbar = true;
 
@@ -325,7 +326,7 @@ Promise.all([
             // then proceed with loading stuff
             console.log("[pre] Wait for store changed");
 
-            common.$subscribe((mutation, state) => {
+            common.$subscribe(async (mutation, state) => {
 
                 console.log(mutation, state)
 
@@ -337,7 +338,8 @@ Promise.all([
 
                     console.log("[pre] store changed, authenciated", mutation, state);
 
-                    resolve();
+                    await fetchData();
+                    await connectToEvents();
 
                     common.navbar = true;
 
@@ -345,26 +347,12 @@ Promise.all([
 
             });
 
-        }
 
-    });
-}).then(() => {
-    return new Promise(async (resolve, reject) => {
-        try {
-
-            console.log("[pre] fetch items data & connection to websocket /events")
-
-            await fetchData();
-            await connectToEvents();
-
-            resolve();
-
-        } catch (err) {
-
-            console.error(err);
-            reject(err);
 
         }
+
+        resolve();
+
     });
 }).then(() => {
 

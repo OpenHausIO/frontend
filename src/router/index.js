@@ -136,7 +136,7 @@ router.beforeEach(async (to, from) => {
         // if status code = 200, set authencited = true
         // if != 200 set to false & redirect
 
-        let authenticated = await fetch("/auth", {
+        let authenticated = await fetch("/auth/check", {
             headers: {
                 "x-auth-token": token
             }
