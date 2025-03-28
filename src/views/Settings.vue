@@ -6,7 +6,7 @@ const settings = settingsStore();
 
 <script>
 import { defineComponent, watch, nextTick } from "vue";
-import { toggleFullscreen } from "../helper.js";
+import { toggleFullscreen, request } from "../helper.js";
 import { useNotificationStore } from "@dafcoe/vue-notification";
 //import { v4 as uuid } from "uuid";
 import Widget from "../components/Widget.vue";
@@ -221,27 +221,50 @@ export default defineComponent({
       });
     },
     userLogout() {
-      window.localStorage.removeItem("x-auth-token");
-      window.sessionStorage.removeItem("authenticated");
+      request("/auth/logout", {
+        method: "POST"
+      }, (err, result) => {
+        if (err || !result?.success) {
 
-      setNotification({
-        message: "You haven been logged out",
-        type: "success",
-        showIcon: false,
-        dismiss: {
-          manually: true,
-          automatically: true,
-        },
-        appearance: "dark",
-      });
+          setNotification({
+            message: "Error: " + (err || "Unsuccessful request"),
+            type: "danger",
+            showIcon: false,
+            dismiss: {
+              manually: true,
+              automatically: true,
+            },
+            appearance: "dark",
+          });
 
-      setTimeout(() => {
-        common.navbar = false;
-        common.authenticated = false;
-        router.push({
-          path: "/auth/login",
-        });
-      }, 3000);
+        } else {
+
+          console.log("/auth/logout", err || result)
+
+          window.localStorage.removeItem("x-auth-token");
+          window.sessionStorage.removeItem("authenticated");
+
+          setNotification({
+            message: "You haven been logged out",
+            type: "success",
+            showIcon: false,
+            dismiss: {
+              manually: true,
+              automatically: true,
+            },
+            appearance: "dark",
+          });
+
+          setTimeout(() => {
+            common.navbar = false;
+            common.authenticated = false;
+            router.push({
+              path: "/auth/login",
+            });
+          }, 3000);
+
+        }
+      })
     },
     askForPermission(feature) {
 
