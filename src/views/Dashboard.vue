@@ -52,9 +52,9 @@ export default defineComponent({
       <!--width: width.value-->
       <grid-item v-for="item in widgets" :key="item.uuid" v-bind="gridItemProps" :x="item.x" :y="item.y" :w="item.w"
         :h="item.h" :i="item.i" :class="{
-    'bg-dark': !settings.transparentDashboardWidgets,
-    'bg-transparent': settings.transparentDashboardWidgets,
-  }" style="border: 1px solid #000">
+          'bg-dark': !settings.transparentDashboardWidgets,
+          'bg-transparent': settings.transparentDashboardWidgets,
+        }" style="border: 1px solid #000">
         <Widget :name="item.widget" :uuid="item.uuid" :unlocked="settings.editDashboardWidgets">
           <!--<template #main> Widget #{{ item.i }}</template>-->
         </Widget>
