@@ -238,26 +238,31 @@ export default {
           :style="{ gridTemplateColumns: `repeat(${page.size.cols}, 1fr)`, gridTemplateRows: `repeat(${page.size.rows}, 1fr)` }"
           id="grid-container">
 
+          <!--
           <Tile style="background: transparent; border: 1px solid rgb(0, 0, 0)" v-for="(item, i) in page.items" :key="i"
             class="grid-item" :style="{ gridArea: `${item.x} / ${item.y} / span ${item.h} / span ${item.w}` }">
             <template #title>
               <i :class="item?.icon || 'fa-regular fa-circle-question'"></i>
             </template>
-            <h4>{{ item.title || "Key" }}</h4>
-          </Tile>
+<h4>{{ item.title || "Key" }}</h4>
+</Tile>
+-->
 
-          <!--
-            <h3 style="display: block;">
+          <div v-for="(item, i) in page.items" :key="i" class="grid-item text-center"
+            :style="{ gridArea: `${item.x} / ${item.y} / span ${item.h} / span ${item.w}` }"
+            style="border-left-color: red; border-bottom-color: blue;">
+            <div class="d-block w-100">
               {{ item.title }}
-            </h3>
-            <div style="font-size: 12px;" class="hide">
-              #{{ i }}&nbsp;
-              <span style="color: red;">x</span>= {{ item.x }},&nbsp;
-              <span style="color: blue;">y</span>= {{ item.y }},&nbsp;
-              <span style="color: yellow;">w</span>= {{ item.w }},&nbsp;
-              <span style="color: yellow;">h</span>= {{ item.h }}
             </div>
-          -->
+            <div style="font-size: 12px;" class="d-block w-100">
+              <h5>#{{ i }}&nbsp;</h5>
+              <span style="color: red;">x</span>={{ item.x }},&nbsp;
+              <span style="color: blue;">y</span>={{ item.y }},&nbsp;
+              <span style="color: yellow;">w</span>={{ item.w }},&nbsp;
+              <span style="color: yellow;">h</span>={{ item.h }}
+            </div>
+          </div>
+
         </div>
       </div>
 

@@ -3,6 +3,9 @@ import { fileURLToPath, URL } from "url";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 
+import { config } from "dotenv";
+config();
+
 const {
     BACKEND_HOST,
     BACKEND_PORT,
@@ -13,10 +16,28 @@ const {
     BACKEND_PROTOCOL: "http"
 }, process.env);
 
+
+const redirect = () => ({
+    configureServer(server) {
+        server.middlewares.use("/admin", (req, res, next) => {
+
+            res.writeHead(302, {
+                Location: 'http://localhost:3001/admin/'
+            });
+
+            res.end();
+
+        });
+    },
+});
+
+
 // https://vitejs.dev/config/
 export default defineConfig({
+    base: "/user/",
     plugins: [
-        vue()
+        vue(),
+        redirect()
     ],
     resolve: {
         alias: {

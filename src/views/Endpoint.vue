@@ -128,7 +128,12 @@ export default {
 </script>
 
 <template>
-  <div class="container-fluid">
+  <div v-if="data?.pages?.length > 0 && settings.useRemoteLayoutPages">
+
+    {{ data.pages }}
+
+  </div>
+  <div v-else class="container-fluid">
 
     <!-- HEADER -->
     <div class="row py-4" style="border-top: 1px solid #000; border-bottom: 1px solid #000">
@@ -212,7 +217,7 @@ export default {
           <!-- INFORMATION -->
           <h3><i :class="state.icon || 'fa-regular fa-circle-question'"></i></h3>
           <div>{{ state.name }}</div>
-          <i :class="{ 'meine-text-animation': animations[index] }" @animationend="resetAnimation(index)">
+          <i :class="{ 'update-indicator': animations[index] }" @animationend="resetAnimation(index)">
             {{ state.value }}
           </i>
           <!-- INFORMATION -->
@@ -246,7 +251,7 @@ small {
   font-size: 10px;
 }
 
-@keyframes textShadowAnimation {
+@keyframes updateIndicatorAnimation {
   0% {
     /*text-shadow: 0 0 0 transparent;*/
     color: rgb(230, 230, 230);
@@ -268,9 +273,9 @@ small {
 
 }
 
-.meine-text-animation {
-  /*animation: textShadowAnimation 0.28s ease-out*/
-  animation: textShadowAnimation 0.8s ease-out;
+.update-indicator {
+  /*animation: updateIndicatorAnimation 0.28s ease-out*/
+  animation: updateIndicatorAnimation 0.8s ease-out;
   animation-iteration-count: 1;
 }
 </style>

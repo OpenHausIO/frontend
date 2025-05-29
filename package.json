@@ -1,13 +1,13 @@
 {
   "name": "frontend",
   "private": true,
-  "version": "1.2.0",
+  "version": "1.4.1",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview --port 5050",
     "build:docker": "grunt build:docker",
-    "docker-nginx": "docker run --rm --name frontend -v $PWD/dist:/usr/share/nginx/html:ro -p 3000:80 -d nginx",
+    "docker-nginx": "docker run -it --rm --name frontend -v $PWD/build:/usr/share/nginx/html:ro -v $PWD/docker-nginx.conf:/etc/nginx/conf.d/default.conf:ro -p 6001:80 nginx",
     "release": "grunt release",
     "publish": "grunt publish",
     "screenshot": "node scripts/screenshot.js"
@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.2.2",
+    "dotenv": "^16.4.7",
     "grunt": "^1.5.3",
     "grunt-contrib-compress": "^2.0.0",
     "grunt-env": "^1.0.1",

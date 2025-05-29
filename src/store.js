@@ -37,7 +37,8 @@ export const settingsStore = defineStore("settings", {
             showParameterInCommands: true,
             showCommandStatesCounter: true,
             permissionsNotifications: false,
-            showOverlayForConnectionLost: false,
+            showOverlayForConnectionLost: true,
+            useRemoteLayoutPages: true,
             dashboardGrid: {
                 cols: 12,
                 rows: 30

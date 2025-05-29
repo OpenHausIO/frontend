@@ -6,7 +6,7 @@ const settings = settingsStore();
 
 <script>
 import { defineComponent, watch, nextTick } from "vue";
-import { toggleFullscreen } from "../helper.js";
+import { toggleFullscreen, request } from "../helper.js";
 import { useNotificationStore } from "@dafcoe/vue-notification";
 //import { v4 as uuid } from "uuid";
 import Widget from "../components/Widget.vue";
@@ -153,6 +153,7 @@ export default defineComponent({
       }, 3000);
     },
     exportSettings() {
+
       let blob = new Blob([JSON.stringify(window.localStorage, null, 2)], {
         type: "application/json",
       });
@@ -176,6 +177,7 @@ export default defineComponent({
         },
         appearance: "dark",
       });
+
     },
     importSettings() {
       let reader = new FileReader();
@@ -219,27 +221,50 @@ export default defineComponent({
       });
     },
     userLogout() {
-      window.localStorage.removeItem("x-auth-token");
-      window.sessionStorage.removeItem("authenticated");
+      request("/auth/logout", {
+        method: "POST"
+      }, (err, result) => {
+        if (err || !result?.success) {
 
-      setNotification({
-        message: "You haven been logged out",
-        type: "success",
-        showIcon: false,
-        dismiss: {
-          manually: true,
-          automatically: true,
-        },
-        appearance: "dark",
-      });
+          setNotification({
+            message: "Error: " + (err || "Unsuccessful request"),
+            type: "danger",
+            showIcon: false,
+            dismiss: {
+              manually: true,
+              automatically: true,
+            },
+            appearance: "dark",
+          });
 
-      setTimeout(() => {
-        common.navbar = false;
-        common.authenticated = false;
-        router.push({
-          path: "/auth/login",
-        });
-      }, 3000);
+        } else {
+
+          console.log("/auth/logout", err || result)
+
+          window.localStorage.removeItem("x-auth-token");
+          window.sessionStorage.removeItem("authenticated");
+
+          setNotification({
+            message: "You haven been logged out",
+            type: "success",
+            showIcon: false,
+            dismiss: {
+              manually: true,
+              automatically: true,
+            },
+            appearance: "dark",
+          });
+
+          setTimeout(() => {
+            common.navbar = false;
+            common.authenticated = false;
+            router.push({
+              path: "/auth/login",
+            });
+          }, 3000);
+
+        }
+      })
     },
     askForPermission(feature) {
 
@@ -526,6 +551,15 @@ export default defineComponent({
                 Enable animation on state update
               </label>
             </div>
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="useRemoteLayoutPages"
+                v-model="settings.useRemoteLayoutPages" />
+              <label class="form-check-label small" for="useRemoteLayoutPages">
+                Use/Display command layout pages when available
+              </label>
+            </div>
+
             <!-- CONTENT -->
           </div>
         </div>
@@ -555,7 +589,7 @@ export default defineComponent({
               Logout
             </button>
 
-            <a class="btn btn-outline-primary d-block w-100 mb-1" :href="settings.urls.adminUi" target="_blank">
+            <a class="btn btn-outline-primary d-block w-100 mb-1" :href="settings.urls.adminUi">
               Administration
             </a>
             <!-- CONTENT -->
