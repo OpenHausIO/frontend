@@ -2,6 +2,9 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import { reactive } from "vue";
 import { commonStore } from "../store.js";
 
+const viewSettings = import("../views/Settings.vue");
+/*disable lazy loading of settings page*/ 
+
 const routes = reactive([{
     path: "/dashboard",
     name: "Dashboard",
@@ -101,7 +104,7 @@ const router = createRouter({
             path: "/settings",
             name: "Settings",
             icon: "fa fa-gear",
-            component: () => import("../views/Settings.vue")
+            component: viewSettings
         }, {
             path: "/auth/login",
             name: "Login",
