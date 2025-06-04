@@ -193,4 +193,8 @@ input[type="range"].fader-color-b::-moz-range-thumb {
   border-width: 2px;
   border-radius: 100%;
 }
+
+input[type="range"] {
+  width: 100%;
+}
 </style>
