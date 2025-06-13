@@ -84,14 +84,19 @@
 import { defineComponent } from "vue";
 import Modal from "../components/Modal.vue";
 import Tile from "../components/Tile.vue";
-
 import { itemStore } from "../store.js";
-//const { endpoints, rooms } = itemStore(); // causes problem in startup, not reacive/rendered!
-// "getStateById_asdf24443" is undefined, in production "_ctx.getStateById_asdf24443"...
-const items = itemStore();
 
 export default defineComponent({
   name: "States",
+  setup() {
+
+    const items = itemStore();
+
+    return {
+      items
+    };
+
+  },
   props: {
     uuid: {
       type: String,
@@ -113,14 +118,14 @@ export default defineComponent({
   },
   computed: {
     rooms() {
-      return items.rooms;
+      return this.items.rooms;
     },
     endpoints() {
-      return items.endpoints;
+      return this.items.endpoints;
     },
     endpointStats() {
       return this.endpoints.reduce((acc, item) => {
-        acc[item._id] = item.states;
+        acc[item._id] = this.item.states;
         return acc;
       }, {});
     }

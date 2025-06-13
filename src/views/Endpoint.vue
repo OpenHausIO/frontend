@@ -216,10 +216,15 @@ export default {
 
           <!-- INFORMATION -->
           <h3><i :class="state.icon || 'fa-regular fa-circle-question'"></i></h3>
-          <div>{{ state.name }}</div>
-          <i :class="{ 'update-indicator': animations[index] }" @animationend="resetAnimation(index)">
-            {{ state.value }}
-          </i>
+          <span>{{ state.name }}</span>
+          <p :class="{ 'update-indicator': animations[index] }" @animationend="resetAnimation(index)">
+            <span v-if="state.value === null" class="text-warning">
+              null
+            </span>
+            <span v-else>
+              {{ state.value }}
+            </span>
+          </p>
           <!-- INFORMATION -->
 
           <!-- TIMESTAMP -->

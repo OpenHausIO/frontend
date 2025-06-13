@@ -1,13 +1,6 @@
-<script setup>
-import { settingsStore } from "../store.js";
-const settings = settingsStore();
-</script>
-
 <script>
 import { defineComponent } from "vue";
-
-import { widgetStore } from "../store.js";
-const store = widgetStore();
+import { settingsStore, widgetStore } from "../store.js";
 
 //import Weather from "../widgets/Weather.vue";
 import Notes from "../widgets/Notes.vue";
@@ -49,6 +42,17 @@ if (window.location.hostname === "demo.open-haus.io") {
 }
 
 export default defineComponent({
+  setup() {
+
+    const settings = settingsStore();
+    const store = widgetStore();
+
+    return {
+      settings,
+      store
+    };
+
+  },
   props: {
     unlocked: {
       type: Boolean,
@@ -73,7 +77,7 @@ export default defineComponent({
   },
   methods: {
     remove(widget) {
-      store.remove(widget);
+      this.store.remove(widget);
     },
     dispatchEvent(entry) {
       let widget = this.$refs.widget;

@@ -106,7 +106,7 @@ export default {
 
     <!-- COMMAND PARAMETERS -->
     <div class="row display-flex text-center" v-bind:key="index" v-for="(param, index) in data.params">
-      <div class="p-0 col-6 col-md-3 col-xl-2">
+      <div class="px-4 col-6 col-md-3 col-xl-2">
 
         <CommandParameter :param="param" @changed="trigger(param)"></CommandParameter>
 

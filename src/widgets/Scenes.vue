@@ -75,12 +75,18 @@ import Modal from "../components/Modal.vue";
 import Tile from "../components/Tile.vue";
 import { request } from "@/helper";
 import { itemStore } from "../store.js";
-//const { endpoints, rooms } = itemStore(); // causes problem in startup, not reacive/rendered!
-// "getScenesById_asdf24443" is undefined, in production "_ctx.getScenesById_asdf24443"...
-const items = itemStore();
 
 export default defineComponent({
   name: "Scenes",
+  setup() {
+
+    const items = itemStore();
+
+    return {
+      items
+    };
+
+  },
   props: {
     uuid: {
       type: String,
@@ -102,13 +108,13 @@ export default defineComponent({
   },
   computed: {
     rooms() {
-      return items.rooms;
+      return this.items.rooms;
     },
     endpoints() {
-      return items.endpoints;
+      return this.items.endpoints;
     },
     scenes() {
-      return items.scenes;
+      return this.items.scenes;
     }
   },
   mounted() {
