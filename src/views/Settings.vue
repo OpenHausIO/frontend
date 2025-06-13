@@ -1,31 +1,34 @@
-<script setup>
-import { settingsStore, widgetStore } from "../store.js";
-const settings = settingsStore();
-//const widgets = widgetStore();
-</script>
-
 <script>
-import { defineComponent, watch, nextTick } from "vue";
+import { defineComponent } from "vue";
 import { toggleFullscreen, request } from "../helper.js";
 import { useNotificationStore } from "@dafcoe/vue-notification";
-//import { v4 as uuid } from "uuid";
-import Widget from "../components/Widget.vue";
-// TODO combine import: router, {router} from "../router/index.js"
-import { routes } from "../router/index.js";
-import router from "../router/index.js";
 import { version } from "../../package.json";
+import Widget from "../components/Widget.vue";
+import router, { routes } from "../router/index.js";
+import { settingsStore, widgetStore, commonStore } from "../store.js";
 
 const { setNotification } = useNotificationStore();
 
-import { settingsStore, widgetStore, commonStore } from "../store.js";
-const settings = settingsStore();
-const widgets = widgetStore();
-const common = commonStore();
-
 export default defineComponent({
+  setup() {
+
+    const settings = settingsStore();
+    const widgets = widgetStore();
+    const common = commonStore();
+
+    return {
+      settings,
+      widgets,
+      common
+    };
+
+  },
   data() {
     return {
       //widgets: Widget.components,
+      Widget,
+      version,
+      routes
     };
   },
   mounted() {
@@ -105,7 +108,7 @@ export default defineComponent({
       window.localStorage.setItem("widgets", JSON.stringify(widgets));
       */
 
-      widgets.add(widget);
+      this.widgets.add(widget);
 
       setNotification({
         message: `Widget "${widget}" added to Dashboard`,
@@ -120,13 +123,13 @@ export default defineComponent({
     },
     clearSettings() {
       // works, but not for widgets
-      settings.$reset(); // OK
+      this.settings.$reset(); // OK
       //widgets.$reset(); // BROKEN!
 
       // workaround for `widgets.$reset()`
       // reset does not work, pop works!
-      while (widgets.$state.length > 0) {
-        widgets.$state.pop();
+      while (this.widgets.$state.length > 0) {
+        this.widgets.$state.pop();
       }
 
       // clear local "persistent" storage
@@ -145,8 +148,8 @@ export default defineComponent({
       });
 
       setTimeout(() => {
-        common.authenticated = false;
-        common.navbar = false;
+        this.common.authenticated = false;
+        this.common.navbar = false;
         router.replace({
           path: "/auth/login",
         });
@@ -196,8 +199,8 @@ export default defineComponent({
         }
 
         // make settings & widgets import reactive
-        Object.assign(settings.$state, JSON.parse(data.settings));
-        Object.assign(widgets.$state, JSON.parse(data.widgets));
+        Object.assign(this.settings.$state, JSON.parse(data.settings));
+        Object.assign(this.widgets.$state, JSON.parse(data.widgets));
 
         setNotification({
           message: "Settings have been restored.",
@@ -256,8 +259,8 @@ export default defineComponent({
           });
 
           setTimeout(() => {
-            common.navbar = false;
-            common.authenticated = false;
+            this.common.navbar = false;
+            this.common.authenticated = false;
             router.push({
               path: "/auth/login",
             });
@@ -275,13 +278,13 @@ export default defineComponent({
         navigator.mozGetUserMedia;
 
       if (feature === "notifications") {
-        if (settings.permissionsNotifications) {
+        if (this.settings.permissionsNotifications) {
 
           Notification.requestPermission().then((granted) => {
 
-            settings.permissionsNotifications = granted === "granted";
+            this.settings.permissionsNotifications = granted === "granted";
 
-            if (settings.permissionsNotifications) {
+            if (this.settings.permissionsNotifications) {
               new Notification("Hi there!");
             }
 
