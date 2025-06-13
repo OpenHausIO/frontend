@@ -1,3 +1,5 @@
+import viewSettings from "../views/Settings.vue";
+
 const nested = [{
     path: "/rooms/:_id",
     name: "/rooms/:_id",
@@ -18,7 +20,7 @@ const nested = [{
     path: "/settings",
     name: "Settings",
     icon: "fa fa-gear",
-    component: () => import("../views/Settings.vue")
+    component: viewSettings
 }, {
     path: "/auth/login",
     name: "Login",
