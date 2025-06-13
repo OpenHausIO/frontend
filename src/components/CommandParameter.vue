@@ -25,8 +25,8 @@ export default {
 
       <br />
 
-      <input type="range" :class="param.classes" v-model="param.value" @change="$emit('changed')" :min="param.min"
-        :max="param.max" :style="{
+      <input type="range" class="form-range" :class="param.classes" v-model="param.value" @change="$emit('changed')"
+        :min="param.min" :max="param.max" :style="{
           '--pointerBgColor': param.value
         }">
 
@@ -196,5 +196,16 @@ input[type="range"].fader-color-b::-moz-range-thumb {
 
 input[type="range"] {
   width: 100%;
+}
+
+input[type=range]::-webkit-slider-runnable-track,
+input[type=range]::-moz-range-track {
+  height: 4px;
+}
+
+input[type=range]::-webkit-slider-thumb,
+input[type=range]::-moz-range-thumb {
+  height: 18px;
+  width: 18px;
 }
 </style>
