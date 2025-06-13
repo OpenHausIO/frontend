@@ -46,6 +46,7 @@ export default defineComponent({
           desc: "Einkaufen gehens",
         },
       ],
+      showTextbox: false
     };
   },
   mounted() {
@@ -65,7 +66,7 @@ export default defineComponent({
     this.title = config.title;
     this.jobs = config.jobs || [];
   },
-  created() {},
+  created() { },
   methods: {
     toggleDone(job) {
       if (job.edit) {
@@ -90,6 +91,9 @@ export default defineComponent({
       });
     },
     closeEdit() {
+
+      this.showTextbox = false;
+
       this.jobs.forEach((job) => {
         job.edit = false;
       });
@@ -101,6 +105,7 @@ export default defineComponent({
           jobs: this.jobs,
         })
       );
+
     },
     deleteJobs() {
       this.jobs = this.jobs.filter(({ done }) => {
@@ -123,48 +128,68 @@ export default defineComponent({
     dispatchEvent(event) {
       console.log("Dispatch event in child called", event);
     },
+    editTitle() {
+      this.showTextbox = true;
+    },
   },
-  menu: [
-    {
-      title: "Add Job",
-      method: "addJob",
-    },
-    {
-      title: "Edit Jobs",
-      method: "editJobs",
-    },
-    {
-      title: "Done editing",
-      method: "closeEdit",
-    },
-    {
-      title: "Delete Jobs",
-      method: "deleteJobs",
-    },
-  ],
+  menu: [{
+    title: "Add Job",
+    method: "addJob"
+  }, {
+    title: "Edit Jobs",
+    method: "editJobs"
+  }, {
+    title: "Edit title",
+    method: "editTitle"
+  }, {
+    title: "Done editing",
+    method: "closeEdit"
+  }, {
+    title: "Delete Jobs",
+    method: "deleteJobs"
+  }],
 });
 </script>
 
 
 <template>
   <div class="p-2">
-    <h3>Todo's: {{ title }}</h3>
+    <h3>Todo's: <input type="text" v-model="title" v-if="showTextbox" />
+      <span v-else>
+        {{ title }}
+      </span>
+    </h3>
     <ul v-if="jobs.length > 0">
       <li v-bind:key="index" v-for="(job, index) in jobs">
-        <label @click="toggleDone(job)">
-          <i
-            class="fa-regular fa-circle-check text-success"
-            v-if="job.done"
-          ></i>
+        <label @click="toggleDone(job)" class="w-100">
+          <div class="d-flex">
+            <div>
+              <i class="fa-regular fa-circle-check text-success" v-if="job.done"></i>
+              <i class="fa-regular fa-circle text-primary" v-else></i>
+            </div>
+            &nbsp;
+            <div class="flex-fill">
+              <div class="d-inline flex-fill" v-if="job.edit">
+                <input type="text" class="w-100" v-model="job.desc" />
+              </div>
+              <div class="d-inline" v-else>
+                <del v-if="job.done">{{ job.desc }}</del>
+                <span v-else>{{ job.desc }}</span>
+              </div>
+            </div>
+          </div>
+          <!--
+          <i class="fa-regular fa-circle-check text-success" v-if="job.done"></i>
           <i class="fa-regular fa-circle text-primary" v-else></i>
           &nbsp;
-          <div class="d-inline" v-if="job.edit">
+          <div class="d-inline flex-fill" v-if="job.edit">
             <input type="text" v-model="job.desc" />
           </div>
           <div class="d-inline" v-else>
             <del v-if="job.done">{{ job.desc }}</del>
             <span v-else>{{ job.desc }}</span>
           </div>
+          -->
         </label>
       </li>
     </ul>

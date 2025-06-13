@@ -78,7 +78,15 @@ export default {
   <!-- OVERLAY -->
   <div v-if="common.overlay" id="overlay" class="text-center">
     <div id="inner">
-      <h1>Loading...</h1>
+      <h1>Connection to WebSocket lost</h1>
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden"></span>
+      </div>
+      <h1>Connecting....</h1>
+      <div class="w-25 m-auto">
+        <button class="btn btn-outline-primary m-1 w-25" @click="common.overlay = false">Close</button>
+        <button class="btn btn-outline-primary m-1 w-25" @click="window.location.reload()">Reload</button>
+      </div>
     </div>
   </div>
   <!-- OVERLAY -->

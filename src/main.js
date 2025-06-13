@@ -108,8 +108,13 @@ pinia.use(({ store }) => {
 // create vue app
 const app = createApp(App);
 
-app.config.globalProperties.$window = window;
-app.config.globalProperties.$console = console;
+app.config.globalProperties.window = window;
+app.config.globalProperties.console = console;
+
+app.use(VueNotificationList);
+app.use(pinia);
+app.use(router);
+app.use(GridLayout);
 
 
 app.directive("repeat", {
@@ -136,6 +141,10 @@ app.directive("repeat", {
     }
 });
 
+
+
+const settings = settingsStore();
+const common = commonStore();
 
 
 function fetchData() {
@@ -168,15 +177,24 @@ function fetchData() {
     });
 }
 
-function connectToEvents() {
+function connectToEvents(options = { retry: 0 }) {
     return new Promise((resolve, reject) => {
 
-        let controller = new AbortController();
-        let id = setTimeout(() => controller.abort(), 1000);
+        // fix #119, see:
+        // https://github.com/OpenHausIO/backend/issues/403
+        let events = ["add", "update", "remove"].map((intent) => {
+            return `events[]=${intent}`;
+        }).join("&");
 
-        let ws = new WebSocket(`ws://${window.location.host}/api/events?x-auth-token=${localStorage.getItem("x-auth-token")}`);
+        let components = ["rooms", "scenes", "devices", "endpoints"].map((intent) => {
+            return `components[]=${intent}`;
+        }).join("&");
 
-        console.log("connect to", ws.url);
+        let proto = window.location.protocol === "https:" ? "wss://" : "ws://";
+
+        let ws = new WebSocket(`${proto}${window.location.host}/api/events?${events}&${components}&x-auth-token=${localStorage.getItem("x-auth-token")}`);
+
+        console.log("Try to connect:", ws.url);
 
         ws.onerror = (err) => {
             console.error(err);
@@ -184,13 +202,47 @@ function connectToEvents() {
         };
 
         ws.onclose = () => {
+
             console.warn(`WebSocket connection ${ws.url} closed`);
+
+            if (settings.showOverlayForConnectionLost) {
+                common.overlay = true;
+            }
+
+            if (options.retry <= 3) {
+                setTimeout(async () => {
+                    try {
+                        console.log("Retry connection to:", ws.url, options)
+                        options.retry += 1;
+                        await connectToEvents(options);
+                    } catch (err) {
+                        console.error(err);
+                    }
+                }, 1000);
+            } else {
+
+                setNotification({
+                    message: "<h5>Initial Error:</h5>Could not connect to WebSocket",
+                    type: "alert",
+                    showIcon: false,
+                    dismiss: {
+                        manually: true,
+                        automatically: false,
+                    },
+                    appearance: "dark",
+                });
+
+                throw new Error("Retry attempts exceede");
+
+            }
+
         };
 
 
         ws.onopen = () => {
-            console.log(`WebSocket connection ${ws.url} open`);
-            clearTimeout(id);
+            console.warn(`WebSocket connection ${ws.url} open`);
+            options.retry = 0;
+            common.overlay = false;
             resolve();
         };
 
@@ -207,15 +259,16 @@ function connectToEvents() {
                 let valid = 1;
 
                 valid &= ["add", "remove", "update"].includes(data.event);
-                valid &= ["endpoints", "rooms", "devices"].includes(data.component);
+                valid &= ["endpoints", "rooms", "devices", "scenes"].includes(data.component);
                 valid &= Object.prototype.hasOwnProperty.call(store, data.event);
                 valid &= store[data.event] instanceof Function;
 
-                console.log("Handle websocket message", data, valid)
+                //console.log("Handle websocket message", data, valid)
 
                 if (valid) {
                     store[data.event](data.component, data.args[0]);
                 } else {
+                    // TODO: remove warning
                     console.warn("Handling condition failed. Methods:",
                         ["add", "remove", "update"].includes(data.event),
                         "Component:", ["endpoints", "rooms", "devices"].includes(data.component),
@@ -247,110 +300,63 @@ Promise.all([
         });
     }),
 
-    // mount vue plugins
-    new Promise((resolve, reject) => {
-        try {
+]).then(() => {
+    return new Promise(async (resolve, reject) => {
 
-            app.use(VueNotificationList);
-            app.use(pinia);
-            app.use(router);
-            app.use(GridLayout);
+        console.log("[pre] Check authenticated");
 
-            resolve();
+        // stores
+        //let settings = settingsStore();
+        //let common = commonStore();
 
-        } catch (e) {
+        common.authenticated = (sessionStorage.getItem("authenticated") == "true");
 
-            reject(e);
+        if (common.authenticated) {
+
+            // authenticated
+            // fetch stuff & show navbar
+            await fetchData();
+            await connectToEvents();
+
+            common.navbar = true;
+
+        } else {
+
+            // wait for store changes
+            // then proceed with loading stuff
+            console.log("[pre] Wait for store changed");
+
+            common.$subscribe(async (mutation, state) => {
+
+                console.log(mutation, state)
+
+                // TODO Move this to a "global middleware" where set/get local/session-storage
+                sessionStorage.setItem("authenticated", state.authenticated);
+                // localStorage.setItem("x-auth-token", state["x-auth-token"]);
+
+                if (state.authenticated) {
+
+                    console.log("[pre] store changed, authenciated", mutation, state);
+
+                    await fetchData();
+                    await connectToEvents();
+
+                    common.navbar = true;
+
+                }
+
+            });
+
+
 
         }
-    }),
 
-]).then(() => {
+        resolve();
 
-    console.log("Preshit done, mount vue app");
+    });
+}).then(() => {
 
-    // stores
-    let settings = settingsStore();
-    let common = commonStore();
-
-    common.authenticated = (sessionStorage.getItem("authenticated") == "true");
-
-    console.log("main then", common.authenticated, typeof common.authenticated)
-
-    if (common.authenticated) {
-
-        // authenticated
-        // fetch stuff & show navbar
-
-        fetchData();
-        connectToEvents();
-
-        console.log("Common authenticated")
-
-        common.navbar = true;
-
-    } else {
-
-        // wait for store changes
-        // then proceed with loading stuff
-
-        console.log("Waiut for store changed")
-
-        common.$subscribe((mutation, state) => {
-
-            console.log(mutation, state)
-
-            // TODO Move this to a "global middleware" where set/get local/session-storage
-            sessionStorage.setItem("authenticated", state.authenticated);
-            // localStorage.setItem("x-auth-token", state["x-auth-token"]);
-
-            if (state.authenticated) {
-
-
-                fetchData();
-                connectToEvents();
-
-                console.log("Store changed", mutation, state);
-
-                common.navbar = true;
-
-            }
-
-        });
-
-    }
-
-
-    /*
-    let authentciated = sessionStorage.getItem("authenticated");
-    let interval = null;
-
-    if (authentciated !== "true") {
-        interval = setInterval(() => {
-
-            console.log("Check interval!");
-            authentciated = sessionStorage.getItem("authenticated");
-
-            if (authentciated === "true") {
-
-                clearInterval(interval);
-
-                fetchData();
-                connectToEvents();
-
-            }
-
-        }, 1000);
-    } else {
-
-        fetchData();
-        connectToEvents();
-
-        common.navbar = true;
-
-    }
-    */
-
+    console.log("[pre] mount application");
 
     app.mount("#app");
 
@@ -395,7 +401,7 @@ Promise.all([
 
 }).catch((err) => {
 
-    alert("Could not start: " + err.message);
-    console.warn("Display overlay with error", err);
+    console.error(err);
+    alert("Could not start: " + err);
 
 });

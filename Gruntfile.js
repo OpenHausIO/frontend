@@ -53,7 +53,7 @@ module.exports = (grunt) => {
             stdio: "inherit"
         });
 
-        cp.execSync(`docker build . -t openhaus/${pkg.name}:latest ${buildArgs}`, {
+        cp.execSync(`docker tag openhaus/${pkg.name}:${pkg.version} openhaus/${pkg.name}:latest`, {
             env: process.env,
             stdio: "inherit"
         });

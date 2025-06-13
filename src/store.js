@@ -30,15 +30,26 @@ export const settingsStore = defineStore("settings", {
             showGradientBackground: true,
             editDashboardWidgets: false,
             showDashboardWidgets: true,
-            transparentDashboardWidgets: false,
+            transparentDashboardWidgets: true,
             screensaverOverlayDelay: 30,
             enableScreenSaverOverlay: false,
             jumpToOnlyEndpointSet: true,
+            showParameterInCommands: true,
+            showCommandStatesCounter: true,
+            permissionsNotifications: false,
+            showOverlayForConnectionLost: true,
+            useRemoteLayoutPages: true,
             dashboardGrid: {
                 cols: 12,
                 rows: 30
             },
+            urls: {
+                registry: "http://registry.open-haus.io",
+                adminUi: `/admin`
+            },
             startpage: "/dashboard",
+            showUpdateTimestampInStates: true,
+            enableAnimationOnStateUpdate: true
         }
     },
     persistent: true
@@ -58,7 +69,7 @@ export const itemStore = defineStore("items", {
         update(key, data) {
             if (Object.prototype.hasOwnProperty.call(this, key)) {
 
-                console.log(`Update property set "${key}"`, data);
+                //console.log(`Update property set "${key}"`, data);
 
                 let target = Array.from(this[key]).find((item) => {
                     return item._id === data._id;
@@ -235,10 +246,7 @@ const store = reactive({
             let target = Array.from(this[key]).find((item) => {
                 return item._id === data._id;
             });
-
-            if (!target) {
-                return;
-            }
+enableAnimationOnStateUpdate
 
             Object.assign(target, data);
 
