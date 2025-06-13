@@ -28,7 +28,15 @@ export default defineComponent({
       //widgets: Widget.components,
       Widget,
       version,
-      routes
+      routes,
+      dateformats: [
+        "yyyy.mm.dd - HH:MM",
+        "yyyy.mm.dd - HH:MM:ss",
+        "yyyy.mm.dd - HH:MM:ss.l",
+        "dd.mm.yyyy - HH:MM",
+        "dd.mm.yyyy - HH:MM:ss",
+        "dd.mm.yyyy - HH:MM:ss.l"
+      ]
     };
   },
   mounted() {
@@ -595,6 +603,17 @@ export default defineComponent({
             <a class="btn btn-outline-primary d-block w-100 mb-1" :href="settings.urls.adminUi">
               Administration
             </a>
+
+            <hr>
+
+            Dateformat
+
+            <select class="form-select bg-transparent text-white border-primary" v-model="settings.dateformat">
+              <option v-for="format in dateformats">
+                {{ format }}
+              </option>
+            </select>
+
             <!-- CONTENT -->
           </div>
         </div>

@@ -49,7 +49,8 @@ export const settingsStore = defineStore("settings", {
             },
             startpage: "/dashboard",
             showUpdateTimestampInStates: true,
-            enableAnimationOnStateUpdate: true
+            enableAnimationOnStateUpdate: true,
+            dateformat: "yyyy.mm.dd - HH:MM:ss"
         }
     },
     persistent: true

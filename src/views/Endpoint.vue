@@ -230,7 +230,7 @@ export default {
           <!-- TIMESTAMP -->
           <small v-if="settings.showUpdateTimestampInStates" class="text-secondary fw-light">
             Updated:<br>
-            {{ dateformat(data.timestamps.updated, "yyyy.mm.dd - HH:MM:ss") }}
+            {{ dateformat(data.timestamps.updated, settings.dateformat) }}
           </small>
           <!-- TIMESTAMP -->
 
