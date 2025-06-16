@@ -56,15 +56,15 @@
           <div class="p-0 col" v-for="_id in wantedStates">
             <Tile>
 
-              <h5>{{ getStateById_asdf24443(_id).name }}</h5>
-              <h6>{{ getStateById_asdf24443(_id).value }}</h6>
+              <h5>{{ getStateById_asdf24443(_id)?.name || "undefined" }}</h5>
+              <h6>{{ getStateById_asdf24443(_id)?.value || "undefined" }}</h6>
 
               <!-- INFO -->
               <span class="text-secondary fw-light">
-                {{ getEndpointByState(_id).name }}
+                {{ getEndpointByState(_id)?.name || "undefined" }}
                 <br />
                 <small>
-                  ({{ getRoomById(getEndpointByState(_id).room)?.name || "room not set" }})
+                  ({{ getRoomById(getEndpointByState(_id)?.room)?.name || "room not set" }})
                 </small>
               </span>
               <!-- INFO -->
