@@ -99,7 +99,7 @@ export default {
 
   <!-- NAVBAR -->
   <!--       border-bottom border-secondary -->
-  <nav class="navbar navbar-expand navbar-dark bg-dark sticky-top p-0" style="border-bottom: 1px solid #000"
+  <nav class="navbar navbar-expand navbar-dark sticky-top p-0" style="border-bottom: 1px solid #000; background-color: #93006c;"
     v-if="common.navbar">
     <div class="collapse navbar-collapse w-100">
       <ul class="navbar-nav w-100 row m-0">

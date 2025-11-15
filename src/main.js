@@ -66,10 +66,10 @@ pinia.use(({ store }) => {
             }
 
             if (store.showGradientBackground) {
-                document.getElementById("app").classList.remove("bg-dark");
+                document.getElementById("app").classList.remove("flat-background");
                 document.getElementById("app").classList.add("gardien-background");
             } else {
-                document.getElementById("app").classList.add("bg-dark");
+                document.getElementById("app").classList.add("flat-background");
                 document.getElementById("app").classList.remove("gardien-background");
             }
 
@@ -94,10 +94,10 @@ pinia.use(({ store }) => {
 
         // initial background settings
         if (store.showGradientBackground) {
-            document.getElementById("app").classList.remove("bg-dark");
+            document.getElementById("app").classList.remove("flat-background");
             document.getElementById("app").classList.add("gardien-background");
         } else {
-            document.getElementById("app").classList.add("bg-dark");
+            document.getElementById("app").classList.add("flat-background");
             document.getElementById("app").classList.remove("gardien-background");
         }
 

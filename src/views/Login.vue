@@ -137,7 +137,7 @@ export default defineComponent({
     <div class="row h-100">
       <!-- LEFT -->
       <div
-        class="col-3 bg-dark border-end"
+        class="col-3 flat-background border-end"
         style="border-color: #000 !important"
       >
         <div class="login-main-text">
@@ -172,7 +172,7 @@ export default defineComponent({
                     >
                     <input
                       type="email"
-                      class="form-control bg-dark text-white"
+                      class="form-control flat-background text-white"
                       style="border-color: #000"
                       name="email"
                       id="loginEmail"
@@ -184,7 +184,7 @@ export default defineComponent({
                     >
                     <input
                       type="password"
-                      class="form-control bg-dark text-white"
+                      class="form-control flat-background text-white"
                       style="border-color: #000"
                       name="password"
                       id="loginPassword"

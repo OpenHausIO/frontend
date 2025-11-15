@@ -79,7 +79,7 @@ export default {
               <Tile
                 :href="href"
                 @click="navigate"
-                class="bg-dark border-secondary"
+                class="flat-background border-secondary"
               >
                 <template #icon>
                   <i class="fa-2xl" :class="item.icon"></i>
