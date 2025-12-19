@@ -20,14 +20,14 @@ export default {
   <div>
 
     <div v-if="param.type === 'number'">
+      
+      {{ param.key }}
+      <br />  
 
-      {{ param.name }}
-
-      <br />
-
-      <input type="range" :class="param.classes" v-model="param.value" @change="$emit('changed')" :min="param.min"
+      <input type="range" :class="{ 'hsv-fader': param.colorGradient && param.colorGradient.length > 0 }" v-model="param.value" @change="$emit('changed')" :min="param.min"
         :max="param.max" :style="{
-          '--pointerBgColor': param.value
+          '--pointerBgColor': param.value, 
+          '--colorGradient': param.colorGradient?.toString(), 
         }">
 
     </div>
@@ -101,6 +101,8 @@ export default {
 https://codepen.io/stoumann/full/QWKdKxJ
 https://codepen.io/adrianparr/pen/MYmrdJ
 https://codepen.io/stoumann/pen/QWKdKxJ
+
+background-image: linear-gradient(to right, red, #ff8000, #ff0, #80ff00, lime, #00ff80, cyan, #007fff, blue, #7f00ff, #f0f, #ff0080, red);
 */
 input[type="range"].hsv-fader {
   -webkit-appearance: none;
@@ -108,18 +110,18 @@ input[type="range"].hsv-fader {
   cursor: pointer;
   width: 100%;
   height: 6px;
-  background-image: linear-gradient(to right, red, #ff8000, #ff0, #80ff00, lime, #00ff80, cyan, #007fff, blue, #7f00ff, #f0f, #ff0080, red);
+  background-image: linear-gradient(to right, var(--colorGradient)); 
 }
 
 input[type="range"].hsv-fader::-webkit-slider-thumb,
 input[type="range"].hsv-fader::-moz-range-thumb {
-  background-color: hsl(var(--pointerBgColor), 100%, 50%);
+  background-color: hsl(var(--pointerBgColor), 0%, 15%);
   /*rgba(0, 0, 0, 0.5);*/
   border-color: black;
   border-width: 2px;
   border-radius: 100%;
   /*-webkit-box-shadow: 0px 0px 4px 0px hsl(var(--pointerBgColor), 100%, 50%);*/
-  box-shadow: 0px 0px 8px 0px hsl(var(--pointerBgColor), 100%, 30%);
+  box-shadow: 0px 0px 8px 0px hsl(var(--pointerBgColor), 0%, 15%);
 }
 
 input[type="range"].brightness-fader {
