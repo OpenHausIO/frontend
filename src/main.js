@@ -217,7 +217,8 @@ function connectToEvents(options = { retry: 0 }) {
 
         // fix #119, see:
         // https://github.com/OpenHausIO/backend/issues/403
-        let events = ["add", "update", "remove"].map((intent) => {
+        // command = draft for sync between browsers / clients
+        let events = ["add", "update", "remove"/*, "command"*/].map((intent) => {
             return `events[]=${intent}`;
         }).join("&");
 
@@ -293,7 +294,7 @@ function connectToEvents(options = { retry: 0 }) {
                 let data = JSON.parse(msg.data);
                 let valid = 1;
 
-                valid &= ["add", "remove", "update"].includes(data.event);
+                valid &= ["add", "remove", "update", "command"].includes(data.event);
                 valid &= ["endpoints", "rooms", "devices", "scenes"].includes(data.component);
                 valid &= Object.prototype.hasOwnProperty.call(store, data.event);
                 valid &= store[data.event] instanceof Function;

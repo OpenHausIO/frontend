@@ -123,6 +123,46 @@ export const itemStore = defineStore("items", {
 
             }
         },
+        /*
+        // draft for sync between browsers/clients
+        command(key, data) {
+            if (Object.prototype.hasOwnProperty.call(this, key)) {
+
+                console.log("Command", data);
+
+                let { commands } = this.endpoints.find((endpoint) => {
+                    return !!endpoint.commands.find(({ _id }) => {
+                        return data._id === _id;
+                    });
+                });
+
+                let command = commands.find(({ _id }) => {
+                    return data._id === _id;
+                });
+
+
+                data.params.forEach((param) => {
+
+                    let pa = command.params.find((p) => {
+                        return p.key === param.key;
+                    });
+
+                    pa.value = param.value;
+
+                });
+
+                console.log("Params via events", data.params);
+                console.log("Params via command", command.params);
+
+                //Object.assign(command, data);
+
+            } else {
+
+                console.warn(`Could not handle command on property "${key}" in store`);
+
+            }
+        },
+        */
         getDeviceNameById(_id) {
 
             //TODO convert to array

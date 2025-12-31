@@ -1,5 +1,6 @@
 <script>
 import Tile from "./Tile.vue";
+import { watch } from "vue";
 
 const CLASS_TO_SHARED = {
   "hue-fader": "hue",
@@ -49,6 +50,13 @@ export default {
     // debugging fallback fader colors
     //this.shared.hue = 40;
     //this.shared.hue = undefined;
+
+    /*
+    // draft for sync between browsers/clients
+    watch(this.param, (value) => {
+      this.updateSharedFromClasses(value.value);
+    });
+    */
 
     let value = this.param.value ?? 0;
     this.updateSharedFromClasses(value);
