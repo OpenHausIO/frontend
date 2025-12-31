@@ -571,6 +571,13 @@ export default defineComponent({
               </label>
             </div>
 
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="repeatCommand" v-model="settings.repeatCommand" />
+              <label class="form-check-label small" for="repeatCommand">
+                Repeat command when hold pressed
+              </label>
+            </div>
+
             <!-- CONTENT -->
           </div>
         </div>
