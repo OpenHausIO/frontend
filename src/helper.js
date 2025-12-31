@@ -71,7 +71,13 @@ export function request(url, options, cb) {
             ...options,
             signal: controller.signal
         }).then((response) => {
-            return response.json();
+
+            if (response.headers.get("content-type")?.includes("application/json")) {
+                return response.json();
+            } else {
+                return response.blob();
+            }
+
         }).then((data) => {
             done(null, data);
         }).catch(done);
