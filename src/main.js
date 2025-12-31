@@ -1,4 +1,5 @@
-import { createApp, watch } from "vue";
+import { createApp } from "vue";
+import * as Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import { routes } from "./router";
@@ -116,35 +117,69 @@ app.use(pinia);
 app.use(router);
 app.use(GridLayout);
 
+window.Vue = Vue;
+window.app = app;
+window.pinia = pinia;
+
+
+const settings = settingsStore();
+const common = commonStore();
+
 
 app.directive("repeat", {
-    mounted(el, binding, vnode, prevVnode) {
+    mounted(el, binding) {
 
         let timeout = null;
         let interval = null;
+        let isPressed = false;
 
-        el.addEventListener("mousedown", () => {
+        const clearTimers = () => {
+            clearTimeout(timeout);
+            clearInterval(interval);
+            timeout = null;
+            interval = null;
+        };
+
+        const onMouseDown = () => {
+
+            isPressed = true;
+
+            if (!settings.repeatCommand) {
+                binding.value.handler(binding.value.command);
+                return;
+            }
+
             timeout = setTimeout(() => {
+                if (!isPressed) return;
 
                 interval = setInterval(() => {
                     binding.value.handler(binding.value.command);
                 }, binding.value.interval || 1000);
 
             }, 1000);
-        });
 
-        el.addEventListener("mouseup", () => {
-            clearInterval(interval);
-            clearTimeout(timeout);
-        });
+        };
 
+        const onMouseUp = () => {
+            isPressed = false;
+            clearTimers();
+        };
+
+        el.addEventListener("mousedown", onMouseDown);
+        window.addEventListener("mouseup", onMouseUp);
+
+        el._repeatCleanup = () => {
+            clearTimers();
+            el.removeEventListener("mousedown", onMouseDown);
+            window.removeEventListener("mouseup", onMouseUp);
+        };
+
+    },
+    unmounted(el) {
+        el?._repeatCleanup();
     }
 });
 
-
-
-const settings = settingsStore();
-const common = commonStore();
 
 
 function fetchData() {
@@ -354,6 +389,69 @@ Promise.all([
         resolve();
 
     });
+}).then(() => {
+
+    return Promise.resolve();
+
+    // THIS LODS PLUGINS SCRIPTS DYNMACLIY FROM THE BACKEND
+    // DO NOT ENABLE IN PRODUCTION!
+    // THIS IS A DRAFT - AND NOT PRODUCTION READY
+    return request("/api/plugins/manifests").then((manifests) => {
+
+        let prmoises = manifests.map(({ url, components }) => {
+            return new Promise(async (resolve, reject) => {
+
+                console.log("Load externe JS", url);
+
+                /*
+                import(url).then((module) => {
+
+                    console.log("Module", module);
+
+                    const CounterComponent = module.default
+                    app.component('CounterComponent', CounterComponent);
+
+                })
+                */
+
+                let load = (url) => {
+                    return new Promise((resolve, reject) => {
+
+                        if (document.querySelector(`script[src="${url}"]`)) {
+                            resolve();
+                            return;
+                        }
+
+                        const script = document.createElement('script');
+
+                        script.type = 'text/javascript';
+                        //script.type = "module";
+                        script.src = url;
+                        script.onload = resolve;
+                        script.onerror = reject;
+
+                        document.head.appendChild(script);
+
+                    });
+                }
+
+                await load(url);
+
+                components.forEach((url) => {
+                    load(url);
+                });
+
+                resolve();
+
+
+            });
+
+        })
+
+        return Promise.all(prmoises);
+
+    });
+
 }).then(() => {
 
     console.log("[pre] mount application");

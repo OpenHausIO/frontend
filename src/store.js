@@ -39,6 +39,7 @@ export const settingsStore = defineStore("settings", {
             permissionsNotifications: false,
             showOverlayForConnectionLost: true,
             useRemoteLayoutPages: true,
+            repeatCommand: false,
             dashboardGrid: {
                 cols: 12,
                 rows: 30
