@@ -17,6 +17,7 @@ export default {
     return {
       data: {},
       endpoint: null,
+      shared: {}
     };
   },
   mounted() {
@@ -106,9 +107,10 @@ export default {
 
     <!-- COMMAND PARAMETERS -->
     <div class="row display-flex text-center" v-bind:key="index" v-for="(param, index) in data.params">
-      <div class="px-4 col-6 col-md-3 col-xl-2">
+      <!--<div class="px-4 col-6 col-md-3 col-xl-2">-->
+      <div>
 
-        <CommandParameter :param="param" @changed="trigger(param)"></CommandParameter>
+        <CommandParameter :param="param" :command="data" :shared="shared" @changed="trigger(param)" />
 
       </div>
     </div>
@@ -161,7 +163,7 @@ export default {
   </div>
 </template>
 
-
+<!--
 <style scoped>
 /*
 https://codepen.io/stoumann/full/QWKdKxJ
@@ -179,13 +181,13 @@ input[type="range"].hsv-fader {
 
 input[type="range"].hsv-fader::-webkit-slider-thumb,
 input[type="range"].hsv-fader::-moz-range-thumb {
-  background-color: hsl(var(--pointerBgColor), 100%, 50%);
+  background-color: hsl(var(--pointerBgColor), 100%, 50%) !important;
   /*rgba(0, 0, 0, 0.5);*/
   border-color: black;
   border-width: 2px;
   border-radius: 100%;
   /*-webkit-box-shadow: 0px 0px 4px 0px hsl(var(--pointerBgColor), 100%, 50%);*/
-  box-shadow: 0px 0px 6px 0px hsl(var(--pointerBgColor), 100%, 30%);
+  /*box-shadow: 0px 0px 6px 0px hsl(var(--pointerBgColor), 100%, 30%);*/
 }
 
 input[type="range"].brightness-fader {
@@ -208,3 +210,4 @@ input[type="range"].brightness-fader::-moz-range-thumb {
   box-shadow: 0px 0px 6px 0px hsl(var(--pointerBgColor), 100%, 30%);
 }
 </style>
+-->

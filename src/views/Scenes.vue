@@ -26,9 +26,9 @@ export default {
         return visible;
       }).map((item) => {
 
-        // if item does not have .input array
+        // if item does not have .inputs array
         // monkey patch empty one to keep app working
-        item.inputs = item?.input ?? [];
+        item.inputs = item?.inputs || [];
         return item;
 
       });

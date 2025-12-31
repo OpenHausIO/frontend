@@ -45,10 +45,10 @@
           <div class="p-0 col" v-for="_id in wantedScenes">
             <Tile @click="trigger(getScenesById(_id), $event)" style="cursor: pointer;">
               <template #icon>
-                <i class="fa-2xl" :class="getScenesById(_id).icon || 'fa-regular fa-circle-question'"></i>
+                <i class="fa-2xl" :class="getScenesById(_id)?.icon || 'fa-regular fa-circle-question'"></i>
               </template>
               <template #title>
-                {{ getScenesById(_id).name }}
+                {{ getScenesById(_id)?.name || "undefined" }}
               </template>
               <!--
               <template #default>
