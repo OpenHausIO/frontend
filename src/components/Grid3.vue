@@ -37,8 +37,8 @@ export default {
 <style>
 .grid {
   display: grid;
-  gap: 2px;
-  border: 2px solid #000;
+  gap: 0px;
+  border: 2px solid yellow;
   position: relative;
   background-color: #000;
 }
