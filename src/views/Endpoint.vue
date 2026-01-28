@@ -111,7 +111,7 @@ export default {
 
     }, 50),
     repeat(cmd) {
-      this.trigger(cmd._id);
+      //this.trigger(cmd._id);
     },
     resetAnimation(index) {
       this.animations[index] = false;
@@ -196,15 +196,14 @@ export default {
             _command: command._id,
           },
         }" v-slot="{ href, navigate }" v-if="command.params?.length > 0 && !settings.showParameterInCommands">
-          <Tile style="background: transparent; border: 1px solid rgb(0, 0, 0)" :href="href" @click="navigate">
+          <Tile :href="href" @click="navigate">
             <template #title>
               <i :class="command.icon || 'fa-regular fa-circle-question'"></i>
             </template>
             {{ command.name }}
           </Tile>
         </RouterLink>
-        <Tile v-else style="background: transparent; border: 1px solid rgb(0, 0, 0)" @click="trigger(command._id)"
-          v-repeat="{ handler: repeat, interval: 300, command }">
+        <Tile v-else @click="trigger(command._id)" v-repeat="{ handler: repeat, interval: 300, command }">
           <template #title>
             <i :class="command.icon || 'fa-regular fa-circle-question'"></i>
           </template>
@@ -221,7 +220,7 @@ export default {
 
       <!--STATES -->
       <div class=" p-0 col-6 col-md-3 col-xl-2" v-bind:key="state._id" v-for="(state, index) in data.states">
-        <Tile style="background: transparent; border: 1px solid rgb(0, 0, 0)">
+        <Tile>
 
           <!-- INFORMATION -->
           <h3><i :class="state.icon || 'fa-regular fa-circle-question'"></i></h3>
