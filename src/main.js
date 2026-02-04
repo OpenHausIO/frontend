@@ -1,4 +1,5 @@
-import { createApp, watch } from "vue";
+import { createApp } from "vue";
+import * as Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import { routes } from "./router";
@@ -6,7 +7,7 @@ import { routes } from "./router";
 import { createPinia } from 'pinia';
 const pinia = createPinia();
 
-import { itemStore, settingsStore, commonStore } from "./store";
+import { itemStore, settingsStore, commonStore, userStore } from "./store";
 
 // override console log when not on local machine
 if (!["localhost", "127.0.0.1"].includes(window.location.hostname)) {
@@ -116,35 +117,69 @@ app.use(pinia);
 app.use(router);
 app.use(GridLayout);
 
+window.Vue = Vue;
+window.app = app;
+window.pinia = pinia;
+
+
+const settings = settingsStore();
+const common = commonStore();
+const user = userStore();
 
 app.directive("repeat", {
-    mounted(el, binding, vnode, prevVnode) {
+    mounted(el, binding) {
 
         let timeout = null;
         let interval = null;
+        let isPressed = false;
 
-        el.addEventListener("mousedown", () => {
+        const clearTimers = () => {
+            clearTimeout(timeout);
+            clearInterval(interval);
+            timeout = null;
+            interval = null;
+        };
+
+        const onMouseDown = () => {
+
+            isPressed = true;
+
+            if (!settings.repeatCommand) {
+                binding.value.handler(binding.value.command);
+                return;
+            }
+
             timeout = setTimeout(() => {
+                if (!isPressed) return;
 
                 interval = setInterval(() => {
                     binding.value.handler(binding.value.command);
                 }, binding.value.interval || 1000);
 
             }, 1000);
-        });
 
-        el.addEventListener("mouseup", () => {
-            clearInterval(interval);
-            clearTimeout(timeout);
-        });
+        };
 
+        const onMouseUp = () => {
+            isPressed = false;
+            clearTimers();
+        };
+
+        el.addEventListener("mousedown", onMouseDown);
+        window.addEventListener("mouseup", onMouseUp);
+
+        el._repeatCleanup = () => {
+            clearTimers();
+            el.removeEventListener("mousedown", onMouseDown);
+            window.removeEventListener("mouseup", onMouseUp);
+        };
+
+    },
+    unmounted(el) {
+        el?._repeatCleanup();
     }
 });
 
-
-
-const settings = settingsStore();
-const common = commonStore();
 
 
 function fetchData() {
@@ -169,6 +204,9 @@ function fetchData() {
 
         }).catch((err) => {
 
+            // THIS IS NEVER REACHED!!!!
+            // TODO: redirect here to login page or show error message (based on http response)?
+
             console.error("Could not fetch api resources", err);
 
             reject(err);
@@ -182,7 +220,8 @@ function connectToEvents(options = { retry: 0 }) {
 
         // fix #119, see:
         // https://github.com/OpenHausIO/backend/issues/403
-        let events = ["add", "update", "remove"].map((intent) => {
+        // command = draft for sync between browsers / clients
+        let events = ["add", "update", "remove"/*, "command"*/].map((intent) => {
             return `events[]=${intent}`;
         }).join("&");
 
@@ -258,7 +297,7 @@ function connectToEvents(options = { retry: 0 }) {
                 let data = JSON.parse(msg.data);
                 let valid = 1;
 
-                valid &= ["add", "remove", "update"].includes(data.event);
+                valid &= ["add", "remove", "update", "command"].includes(data.event);
                 valid &= ["endpoints", "rooms", "devices", "scenes"].includes(data.component);
                 valid &= Object.prototype.hasOwnProperty.call(store, data.event);
                 valid &= store[data.event] instanceof Function;
@@ -303,15 +342,15 @@ Promise.all([
 ]).then(() => {
     return new Promise(async (resolve, reject) => {
 
-        console.log("[pre] Check authenticated");
+        await user.checkAuth();
+
+        console.log("[pre] Check authenticated", user.isAuthenticated);
 
         // stores
         //let settings = settingsStore();
         //let common = commonStore();
 
-        common.authenticated = (sessionStorage.getItem("authenticated") == "true");
-
-        if (common.authenticated) {
+        if (user.isAuthenticated) {
 
             // authenticated
             // fetch stuff & show navbar
@@ -326,15 +365,11 @@ Promise.all([
             // then proceed with loading stuff
             console.log("[pre] Wait for store changed");
 
-            common.$subscribe(async (mutation, state) => {
+            user.$subscribe(async (mutation, state) => {
 
                 console.log(mutation, state)
 
-                // TODO Move this to a "global middleware" where set/get local/session-storage
-                sessionStorage.setItem("authenticated", state.authenticated);
-                // localStorage.setItem("x-auth-token", state["x-auth-token"]);
-
-                if (state.authenticated) {
+                if (state.authenticated.value) {
 
                     console.log("[pre] store changed, authenciated", mutation, state);
 
@@ -344,16 +379,76 @@ Promise.all([
                     common.navbar = true;
 
                 }
-
             });
-
-
 
         }
 
         resolve();
 
     });
+}).then(() => {
+
+    return Promise.resolve();
+
+    // THIS LODS PLUGINS SCRIPTS DYNMACLIY FROM THE BACKEND
+    // DO NOT ENABLE IN PRODUCTION!
+    // THIS IS A DRAFT - AND NOT PRODUCTION READY
+    return request("/api/plugins/manifests").then((manifests) => {
+
+        let prmoises = manifests.map(({ url, components }) => {
+            return new Promise(async (resolve, reject) => {
+
+                console.log("Load externe JS", url);
+
+                /*
+                import(url).then((module) => {
+
+                    console.log("Module", module);
+
+                    const CounterComponent = module.default
+                    app.component('CounterComponent', CounterComponent);
+
+                })
+                */
+
+                let load = (url) => {
+                    return new Promise((resolve, reject) => {
+
+                        if (document.querySelector(`script[src="${url}"]`)) {
+                            resolve();
+                            return;
+                        }
+
+                        const script = document.createElement('script');
+
+                        script.type = 'text/javascript';
+                        //script.type = "module";
+                        script.src = url;
+                        script.onload = resolve;
+                        script.onerror = reject;
+
+                        document.head.appendChild(script);
+
+                    });
+                }
+
+                await load(url);
+
+                components.forEach((url) => {
+                    load(url);
+                });
+
+                resolve();
+
+
+            });
+
+        })
+
+        return Promise.all(prmoises);
+
+    });
+
 }).then(() => {
 
     console.log("[pre] mount application");

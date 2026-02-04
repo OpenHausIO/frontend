@@ -26,7 +26,8 @@ export default {
     return {
       data: {
       },
-      animations: reactive({})
+      animations: reactive({}),
+      shareds: {}
     };
   },
   mounted() {
@@ -34,6 +35,12 @@ export default {
 
     this.data = Array.from(store.endpoints).find((item) => {
       return item._id === $route.params._id;
+    });
+
+    // create for each command
+    // a shared params object
+    this.data.commands.forEach(({ _id }) => {
+      this.shareds[_id] = {};
     });
 
     watch(() => {
@@ -66,7 +73,7 @@ export default {
     //getRoomNameById,
     ...mapActions(itemStore, ["getRoomNameById", "getDeviceNameById"]),
     alert,
-    trigger: debounce(function (_id, event) {
+    trigger: debounce(function (_id) {
 
       console.log("Aasdflaksdfleila")
 
@@ -102,9 +109,9 @@ export default {
         console.log(err, result);
       });
 
-    }, 10),
+    }, 50),
     repeat(cmd) {
-      this.trigger(cmd._id);
+      //this.trigger(cmd._id);
     },
     resetAnimation(index) {
       this.animations[index] = false;
@@ -189,30 +196,31 @@ export default {
             _command: command._id,
           },
         }" v-slot="{ href, navigate }" v-if="command.params?.length > 0 && !settings.showParameterInCommands">
-          <Tile style="background: transparent; border: 1px solid rgb(0, 0, 0)" :href="href" @click="navigate">
+          <Tile :href="href" @click="navigate">
             <template #title>
               <i :class="command.icon || 'fa-regular fa-circle-question'"></i>
             </template>
             {{ command.name }}
           </Tile>
         </RouterLink>
-        <Tile v-else style="background: transparent; border: 1px solid rgb(0, 0, 0)"
-          @click="trigger(command._id, $event)" v-repeat="{ handler: repeat, interval: 300, command }">
+        <Tile v-else @click="trigger(command._id)" v-repeat="{ handler: repeat, interval: 300, command }">
           <template #title>
             <i :class="command.icon || 'fa-regular fa-circle-question'"></i>
           </template>
           <div>
             {{ command.name }}
           </div>
-          <CommandParameter :param="param" v-for="param in command.params" @changed="trigger(command._id, $event)">
-          </CommandParameter>
+
+          <CommandParameter :param="param" :command="command" :shared="shareds[command._id]"
+            v-for="param in command.params" @changed="trigger(command._id)" />
+
         </Tile>
       </div>
-      <!-- COMMANDS -->
+      <!--COMMANDS -->
 
-      <!-- STATES -->
-      <div class="p-0 col-6 col-md-3 col-xl-2" v-bind:key="state._id" v-for="(state, index) in data.states">
-        <Tile style="background: transparent; border: 1px solid rgb(0, 0, 0)">
+      <!--STATES -->
+      <div class=" p-0 col-6 col-md-3 col-xl-2" v-bind:key="state._id" v-for="(state, index) in data.states">
+        <Tile>
 
           <!-- INFORMATION -->
           <h3><i :class="state.icon || 'fa-regular fa-circle-question'"></i></h3>
@@ -230,7 +238,7 @@ export default {
           <!-- TIMESTAMP -->
           <small v-if="settings.showUpdateTimestampInStates" class="text-secondary fw-light">
             Updated:<br>
-            {{ dateformat(data.timestamps.updated, "yyyy.mm.dd - HH:MM:ss") }}
+            {{ dateformat(data.timestamps.updated, settings.dateformat) }}
           </small>
           <!-- TIMESTAMP -->
 

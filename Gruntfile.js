@@ -1,3 +1,4 @@
+const fs = require("fs");
 const cp = require("child_process");
 const pkg = require("./package.json");
 const path = require("path");
@@ -41,6 +42,17 @@ module.exports = (grunt) => {
     grunt.loadNpmTasks("grunt-contrib-compress");
     grunt.loadNpmTasks("grunt-env");
 
+    grunt.registerTask("generate-about-json", () => {
+
+        let about = {
+            version: pkg.version
+        };
+
+        let json = JSON.stringify(about, null, 2);
+        fs.writeFileSync(path.join(PATH_BUILD, "about.json"), json);
+
+    });
+
     grunt.registerTask("build:docker", () => {
 
         let buildArgs = [
@@ -74,6 +86,7 @@ module.exports = (grunt) => {
             `rm -rf ${PATH_BUILD}/*`,
             `rm -rf ${PATH_DIST}/*`,
             "npm run build",
+            "grunt generate-about-json",
             "npm run build:docker",
             `docker save openhaus/${pkg.name}:latest | gzip > ${path.join(PATH_DIST, `${pkg.name}-v${pkg.version}-docker.tgz`)}`,
             "grunt compress"

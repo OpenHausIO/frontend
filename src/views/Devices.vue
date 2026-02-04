@@ -58,29 +58,16 @@ export default {
   <div class="container-fluid">
     <!-- DONT GROUP -->
     <div class="row h-100 display-flex text-center">
-      <RouterLink
-        v-bind:key="item._id"
-        v-for="item in items"
-        custom
-        :to="{
-          name: '/devices/:_id',
-          params: {
-            _id: item._id,
-          },
-        }"
-        v-slot="{ href, navigate }"
-      >
+      <RouterLink v-bind:key="item._id" v-for="item in items" custom :to="{
+        name: '/devices/:_id',
+        params: {
+          _id: item._id,
+        },
+      }" v-slot="{ href, navigate }">
         <div class="p-0 col-6 col-md-4 col-xl-2">
-          <Tile
-            :href="href"
-            @click="navigate"
-            style="background: transparent; border: 1px solid #000"
-          >
+          <Tile :href="href" @click="navigate">
             <template #icon>
-              <i
-                class="fa-2xl"
-                :class="item.icon || 'fa-solid fa-question'"
-              ></i>
+              <i class="fa-2xl" :class="item.icon || 'fa-solid fa-question'"></i>
             </template>
             <template #title>{{ item.name }} </template>
             <span class="text-secondary fw-light">

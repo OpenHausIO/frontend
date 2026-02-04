@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import { commonStore } from "../store.js";
+import { commonStore, userStore } from "../store.js";
 
 import { navigation } from "./navigation.js";
 import { nested } from "./nested.js";
@@ -17,49 +17,32 @@ const router = createRouter({
     routes
 });
 
-// https://router.vuejs.org/guide/advanced/navigation-guards.html
-router.beforeEach(async (to, from) => {
+router.beforeEach(async (to, from, next) => {
 
-    // https://pinia.vuejs.org/core-concepts/outside-component-usage.html#single-page-applications
-    let common = commonStore();
-    let checked = sessionStorage.getItem("authenticated");
-    let token = localStorage.getItem("x-auth-token");
+    console.log("Bevore enter", to);
 
-    if (checked !== "true" && to.fullPath !== "/auth/login") {
+    const user = userStore();
+    //const common = commonStore();
 
-        // do http request to /auth and check response code
-        // if status code = 200, set authencited = true
-        // if != 200 set to false & redirect
+    const isAuthRoute = to.fullPath.startsWith("/auth");
+    const isLoginRoute = to.fullPath === "/auth/login";
 
-        let authenticated = await fetch("/auth/check", {
-            headers: {
-                "x-auth-token": token
-            }
-        }).then((response) => {
-            console.log(response.status)
-            return response.status === 200 || response.status === 404;
-        });
+    await user.checkAuth();
 
-        if (authenticated) {
-
-            common.authenticated = true;
-            sessionStorage.setItem("authenticated", true);
-            return true;
-
-        } else {
-
-            localStorage.removeItem("x-auth-token");
-            sessionStorage.removeItem("authenticated");
-
-            router.replace({
-                path: "/auth/login"
-            });
-
-        }
-
-    } else {
-        return true;
+    if (isLoginRoute && to.query.clean === "true") {
+        return next();
     }
+    if (isAuthRoute) {
+        return next();
+    }
+
+    console.log("isAuthenticated", user.isAuthenticated);
+
+    if (user.isAuthenticated) {
+        return next();
+    }
+
+    next("/auth/login");
 
 });
 

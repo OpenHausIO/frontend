@@ -5,7 +5,7 @@ import { useNotificationStore } from "@dafcoe/vue-notification";
 import { version } from "../../package.json";
 import Widget from "../components/Widget.vue";
 import router, { routes } from "../router/index.js";
-import { settingsStore, widgetStore, commonStore } from "../store.js";
+import { settingsStore, widgetStore, commonStore, userStore } from "../store.js";
 
 const { setNotification } = useNotificationStore();
 
@@ -15,11 +15,13 @@ export default defineComponent({
     const settings = settingsStore();
     const widgets = widgetStore();
     const common = commonStore();
+    const user = userStore();
 
     return {
       settings,
       widgets,
-      common
+      common,
+      user
     };
 
   },
@@ -28,7 +30,15 @@ export default defineComponent({
       //widgets: Widget.components,
       Widget,
       version,
-      routes
+      routes,
+      dateformats: [
+        "yyyy.mm.dd - HH:MM",
+        "yyyy.mm.dd - HH:MM:ss",
+        "yyyy.mm.dd - HH:MM:ss.l",
+        "dd.mm.yyyy - HH:MM",
+        "dd.mm.yyyy - HH:MM:ss",
+        "dd.mm.yyyy - HH:MM:ss.l"
+      ],
     };
   },
   mounted() {
@@ -121,7 +131,7 @@ export default defineComponent({
         appearance: "dark",
       });
     },
-    clearSettings() {
+    async clearSettings() {
       // works, but not for widgets
       this.settings.$reset(); // OK
       //widgets.$reset(); // BROKEN!
@@ -147,9 +157,9 @@ export default defineComponent({
         appearance: "dark",
       });
 
+      this.user.logout();
+
       setTimeout(() => {
-        this.common.authenticated = false;
-        this.common.navbar = false;
         router.replace({
           path: "/auth/login",
         });
@@ -223,51 +233,46 @@ export default defineComponent({
         reader.readAsText(input.files[0]);
       });
     },
-    userLogout() {
-      request("/auth/logout", {
-        method: "POST"
-      }, (err, result) => {
-        if (err || !result?.success) {
+    async userLogout() {
 
-          setNotification({
-            message: "Error: " + (err || "Unsuccessful request"),
-            type: "danger",
-            showIcon: false,
-            dismiss: {
-              manually: true,
-              automatically: true,
-            },
-            appearance: "dark",
+      if (await this.user.logout()) {
+
+        setNotification({
+          message: "You haven been logged out",
+          type: "success",
+          showIcon: false,
+          dismiss: {
+            manually: true,
+            automatically: true,
+          },
+          appearance: "dark",
+        });
+
+        setTimeout(() => {
+
+          this.common.navbar = false;
+
+          router.replace({
+            path: "/auth/login",
           });
 
-        } else {
+        }, 3000);
 
-          console.log("/auth/logout", err || result)
+      } else {
 
-          window.localStorage.removeItem("x-auth-token");
-          window.sessionStorage.removeItem("authenticated");
+        setNotification({
+          message: "Could not logout!",
+          type: "danger",
+          showIcon: false,
+          dismiss: {
+            manually: true,
+            automatically: true,
+          },
+          appearance: "dark",
+        });
 
-          setNotification({
-            message: "You haven been logged out",
-            type: "success",
-            showIcon: false,
-            dismiss: {
-              manually: true,
-              automatically: true,
-            },
-            appearance: "dark",
-          });
+      }
 
-          setTimeout(() => {
-            this.common.navbar = false;
-            this.common.authenticated = false;
-            router.push({
-              path: "/auth/login",
-            });
-          }, 3000);
-
-        }
-      })
     },
     askForPermission(feature) {
 
@@ -563,6 +568,13 @@ export default defineComponent({
               </label>
             </div>
 
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="repeatCommand" v-model="settings.repeatCommand" />
+              <label class="form-check-label small" for="repeatCommand">
+                Repeat command when hold pressed
+              </label>
+            </div>
+
             <!-- CONTENT -->
           </div>
         </div>
@@ -592,9 +604,20 @@ export default defineComponent({
               Logout
             </button>
 
-            <a class="btn btn-outline-primary d-block w-100 mb-1" :href="settings.urls.adminUi">
+            <a class="btn btn-outline-primary d-block w-100 mb-1" :href="settings.urls.adminUi" v-if="user.isAdmin">
               Administration
             </a>
+
+            <hr>
+
+            Dateformat
+
+            <select class="form-select bg-transparent text-white border-primary" v-model="settings.dateformat">
+              <option v-for="format in dateformats">
+                {{ format }}
+              </option>
+            </select>
+
             <!-- CONTENT -->
           </div>
         </div>

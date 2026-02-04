@@ -1,6 +1,7 @@
 //import { reactive } from "vue";
 import { defineStore } from "pinia";
 import { v4 as uuid } from "uuid";
+import { ref, computed } from "vue";
 
 export const commonStore = defineStore("common", {
     state() {
@@ -39,6 +40,7 @@ export const settingsStore = defineStore("settings", {
             permissionsNotifications: false,
             showOverlayForConnectionLost: true,
             useRemoteLayoutPages: true,
+            repeatCommand: false,
             dashboardGrid: {
                 cols: 12,
                 rows: 30
@@ -49,7 +51,8 @@ export const settingsStore = defineStore("settings", {
             },
             startpage: "/dashboard",
             showUpdateTimestampInStates: true,
-            enableAnimationOnStateUpdate: true
+            enableAnimationOnStateUpdate: true,
+            dateformat: "yyyy.mm.dd - HH:MM:ss"
         }
     },
     persistent: true
@@ -121,6 +124,46 @@ export const itemStore = defineStore("items", {
 
             }
         },
+        /*
+        // draft for sync between browsers/clients
+        command(key, data) {
+            if (Object.prototype.hasOwnProperty.call(this, key)) {
+
+                console.log("Command", data);
+
+                let { commands } = this.endpoints.find((endpoint) => {
+                    return !!endpoint.commands.find(({ _id }) => {
+                        return data._id === _id;
+                    });
+                });
+
+                let command = commands.find(({ _id }) => {
+                    return data._id === _id;
+                });
+
+
+                data.params.forEach((param) => {
+
+                    let pa = command.params.find((p) => {
+                        return p.key === param.key;
+                    });
+
+                    pa.value = param.value;
+
+                });
+
+                console.log("Params via events", data.params);
+                console.log("Params via command", command.params);
+
+                //Object.assign(command, data);
+
+            } else {
+
+                console.warn(`Could not handle command on property "${key}" in store`);
+
+            }
+        },
+        */
         getDeviceNameById(_id) {
 
             //TODO convert to array
@@ -231,6 +274,151 @@ export const widgetStore = defineStore("widgets", {
     },
     persistent: true
 });
+
+
+export const userStore = defineStore('user', () => {
+    // State
+    const user = ref(null)
+    const token = ref(localStorage.getItem('x-auth-token') || null)
+    const authChecked = ref(false)
+    const authenticated = ref(false)
+
+    // User aus localStorage wiederherstellen
+    if (localStorage.getItem('user')) {
+        try {
+            user.value = JSON.parse(localStorage.getItem('user'))
+        } catch (err) {
+            console.warn('Could not parse user object from local storage')
+        }
+    }
+
+    // Sync Getters
+    const isAuthenticated = computed(() => authenticated.value)
+    const isAdmin = computed(() => {
+        if (user.value) {
+            return user.value?.admin || false;
+        } else {
+            return true;
+        }
+    });
+
+    // Actions
+    async function checkAuth() {
+        try {
+            // Schneller Check mit sessionStorage
+            const sessionAuth = sessionStorage.getItem('authenticated')
+
+            if (sessionAuth === 'true' && token.value) {
+                authenticated.value = true
+                authChecked.value = true
+                return true
+            }
+
+            const response = await fetch('/auth/check', {
+                method: 'GET',
+                headers: {
+                    'x-auth-token': token.value
+                }
+            });
+
+            authenticated.value = response.ok && response.status === 200
+            authChecked.value = true
+
+            if (authenticated.value) {
+                sessionStorage.setItem('authenticated', 'true')
+            } else {
+
+                sessionStorage.removeItem('authenticated')
+                localStorage.removeItem('x-auth-token')
+                localStorage.removeItem('user')
+
+            }
+
+            return authenticated.value
+
+        } catch (err) {
+            console.warn('Could not check if authenticated', err)
+            authenticated.value = false
+            authChecked.value = true
+            return false
+        }
+    }
+
+    async function login(credentials) {
+        try {
+            const response = await fetch('/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(credentials)
+            })
+
+            if (response.ok && response.status === 200) {
+                const data = await response.json()
+
+                user.value = data.user
+                token.value = data.token
+                authenticated.value = true
+                authChecked.value = true
+
+                sessionStorage.setItem('authenticated', 'true')
+                localStorage.setItem('x-auth-token', data.token)
+                localStorage.setItem('user', JSON.stringify(data.user))
+
+                return true
+            } else {
+                return false
+            }
+
+        } catch (err) {
+            console.warn('Could not login', err)
+            return false
+        }
+    }
+
+    async function logout() {
+
+        sessionStorage.removeItem('authenticated')
+        localStorage.removeItem('x-auth-token')
+        localStorage.removeItem('user')
+
+        if (token.value) {
+            fetch('/auth/logout', {
+                method: 'POST',
+                headers: {
+                    'x-auth-token': token.value
+                }
+            }).catch(() => {
+                // Ignoriere Fehler beim Logout
+            })
+        }
+
+        user.value = null
+        token.value = null
+        authenticated.value = false
+        authChecked.value = false
+
+        return true;
+    }
+
+    return {
+        // State
+        user,
+        token,
+        authChecked,
+
+        // Getters (sync!)
+        isAuthenticated,
+        isAdmin,
+
+        // Actions
+        checkAuth,
+        login,
+        logout
+    }
+})
+
 
 
 /*

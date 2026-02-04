@@ -1,5 +1,27 @@
+<script>
+import { test } from "../router/test.js";
+
+export default {
+  data() {
+    return {
+      routes: test
+    }
+  }
+}
+</script>
+
 <template>
   <ul>
+
+    <RouterLink custom v-bind:to="route.path" v-slot="{ href, navigate }" v-bind:key="index"
+      v-for="(route, index) in routes">
+      <li class="nav-item" :href="href" @click="navigate">
+        <a class="nav-link">
+          <i class="d-block" :class="route.icon"></i>
+          <span>{{ route.name }}</span>
+        </a>
+      </li>
+    </RouterLink>
 
     <RouterLink custom to="/test/chart" v-slot="{ href, navigate }">
       <li :href="href" @click="navigate">
