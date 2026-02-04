@@ -38,6 +38,10 @@ const test = [{
     path: "/test/modal",
     name: "/test/modal",
     component: () => import("../views/TestModal.vue")
+}, {
+    path: "/test/pages",
+    name: "/test/pages",
+    component: () => import("../views/TestPages.vue")
 }];
 
 export {

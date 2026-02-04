@@ -12,6 +12,7 @@ export default {
   components: {
     Tile
   },
+  emits: ['changed'],
   props: {
     param: {
       type: Object,
@@ -72,18 +73,18 @@ export default {
     '--hue': shared.hue,
     '--sat': shared.sat,
     '--bri': shared.bri
-  }">
+  }" class="py-3" @click.stop>
 
     <div v-if="param.type === 'number'">
 
       {{ param.name }}
 
-      <br />
-
       <input type="range"
         :class="[param.classes?.length > 0 ? param.classes : ['form-range'], shared.hue ? 'has-hue' : '']"
         v-model="param.value" @input="$emit('changed'); updateSharedFromClasses(param.value)" :min="param.min"
         :max="param.max" />
+
+      {{ param.name || param.key }} = {{ param.value }}
 
     </div>
     <div v-else-if="param.type === 'string'">
@@ -94,15 +95,34 @@ export default {
       </Tile>
       -->
 
+      <!--
       <div class="btn btn-outline-primary w-100 mb-2" @click="$emit('changed')">
         {{ param.name || param.value }}
+      </div>
+      -->
+
+      <div v-if="param?.enum?.length > 0">
+
+        <select class="form-select bg-transparent text-white" v-model="param.value" @change="$emit('changed')"
+          style="border-color: #000">
+          <option :value="option.value" :selected="option.value === param.value" v-for="option in param.enum">
+            {{ option.name }}
+          </option>
+        </select>
+
+      </div>
+      <div v-else>
+
+        <input type="text" class="form-control bg-transparent text-white" placeholder="Insert text..."
+          v-model="param.value" />
+
       </div>
 
     </div>
     <div v-else-if="param.type === 'boolean'">
 
-      <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" :id="'booleanCheckboxParameter' + param._id"
+      <div class="form-check form-switch d-flex justify-content-center">
+        <input class="form-check-input " type="checkbox" :id="'booleanCheckboxParameter' + param._id"
           v-model="param.value" @change="$emit('changed')" />
         <label class="form-check-label small" :for="'booleanCheckboxParameter' + param._id">
           {{ param.name }}
@@ -113,8 +133,6 @@ export default {
     <div v-else>
       Unsupported type "{{ param.type }}"
     </div>
-
-    {{ param.name || param.key }} = {{ param.value }}
 
     <!--
 

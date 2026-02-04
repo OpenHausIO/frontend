@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import Grid from "../components/Gird3.vue";
+import Grid from "../components/Grid3.vue";
 import GridItem from '../components/GridItem.vue';
 
 export default {

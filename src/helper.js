@@ -72,15 +72,55 @@ export function request(url, options, cb) {
             signal: controller.signal
         }).then((response) => {
 
-            if (response.headers.get("content-type")?.includes("application/json")) {
-                return response.json();
-            } else {
-                return response.blob();
+            console.log("REsponse fetch", response)
+
+            if (!response.ok) {
+
+                let error = new Error(`HTTP ${response.status}: ${response.statusText}`);
+                console.warn("Fetch request not ok", error);
+
+                error.response = response;
+                error.status = response.status;
+                throw error;
+
             }
+
+            clearTimeout(id);
+
+            if (response.headers.get("content-type").match(/json/)) {
+                //console.log("content type container 'json'", response.headers);
+                return response.json();
+            }
+
+            return response.blob();
 
         }).then((data) => {
             done(null, data);
-        }).catch(done);
+        }).catch((err) => {
+
+            console.error("[REQUEST] Error", err.response.status, options);
+
+            if (err?.response) {
+
+                let { status } = err.response;
+
+                if (status !== 200) {
+
+                    localStorage.removeItem("x-auth-token");
+                    localStorage.removeItem("user");
+                    sessionStorage.removeItem("authenticated");
+
+                    this.$router.push({
+                        path: "/auth/login"
+                    });
+
+                }
+
+            }
+
+            done(err);
+
+        });
 
         clearTimeout(id);
 

@@ -16,13 +16,22 @@ const {
     BACKEND_PROTOCOL: "http"
 }, process.env);
 
+const aboutJson = () => ({
+    configureServer(server) {
+        server.middlewares.use("/user/about.json", (req, res, next) => {
+            const { version } = require("./package.json");
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ version }));
+        });
+    },
+});
 
 const redirect = () => ({
     configureServer(server) {
         server.middlewares.use("/admin", (req, res, next) => {
 
             res.writeHead(302, {
-                Location: 'http://localhost:3001/admin/'
+                Location: "http://localhost:3002/admin/"
             });
 
             res.end();
@@ -37,6 +46,7 @@ export default defineConfig({
     base: "/user/",
     plugins: [
         vue(),
+        aboutJson(),
         redirect()
     ],
     resolve: {
@@ -46,15 +56,26 @@ export default defineConfig({
     },
     server: {
         host: "0.0.0.0",
+        port: 3001,
         proxy: {
             "/api": {
                 target: `${BACKEND_PROTOCOL}://${BACKEND_HOST}:${BACKEND_PORT}`,
                 ws: true,
-                xfwd: true
+                xfwd: true,
+                configure: (proxy) => {
+                    proxy.on("proxyReq", (proxyReq) => {
+                        proxyReq.setHeader("Host", `${BACKEND_HOST}:${BACKEND_PORT}`);
+                    });
+                }
             },
             "/auth": {
                 target: `${BACKEND_PROTOCOL}://${BACKEND_HOST}:${BACKEND_PORT}`,
-                xfwd: true
+                xfwd: true,
+                configure: (proxy) => {
+                    proxy.on("proxyReq", (proxyReq) => {
+                        proxyReq.setHeader("Host", `${BACKEND_HOST}:${BACKEND_PORT}`);
+                    });
+                }
             }
         }
     },
