@@ -7,7 +7,7 @@ import { routes } from "./router";
 import { createPinia } from 'pinia';
 const pinia = createPinia();
 
-import { itemStore, settingsStore, commonStore } from "./store";
+import { itemStore, settingsStore, commonStore, userStore } from "./store";
 
 // override console log when not on local machine
 if (!["localhost", "127.0.0.1"].includes(window.location.hostname)) {
@@ -124,7 +124,7 @@ window.pinia = pinia;
 
 const settings = settingsStore();
 const common = commonStore();
-
+const user = userStore();
 
 app.directive("repeat", {
     mounted(el, binding) {
@@ -203,6 +203,9 @@ function fetchData() {
             resolve();
 
         }).catch((err) => {
+
+            // THIS IS NEVER REACHED!!!!
+            // TODO: redirect here to login page or show error message (based on http response)?
 
             console.error("Could not fetch api resources", err);
 
@@ -339,15 +342,15 @@ Promise.all([
 ]).then(() => {
     return new Promise(async (resolve, reject) => {
 
-        console.log("[pre] Check authenticated");
+        await user.checkAuth();
+
+        console.log("[pre] Check authenticated", user.isAuthenticated);
 
         // stores
         //let settings = settingsStore();
         //let common = commonStore();
 
-        common.authenticated = (sessionStorage.getItem("authenticated") == "true");
-
-        if (common.authenticated) {
+        if (user.isAuthenticated) {
 
             // authenticated
             // fetch stuff & show navbar
@@ -362,15 +365,11 @@ Promise.all([
             // then proceed with loading stuff
             console.log("[pre] Wait for store changed");
 
-            common.$subscribe(async (mutation, state) => {
+            user.$subscribe(async (mutation, state) => {
 
                 console.log(mutation, state)
 
-                // TODO Move this to a "global middleware" where set/get local/session-storage
-                sessionStorage.setItem("authenticated", state.authenticated);
-                // localStorage.setItem("x-auth-token", state["x-auth-token"]);
-
-                if (state.authenticated) {
+                if (state.authenticated.value) {
 
                     console.log("[pre] store changed, authenciated", mutation, state);
 
@@ -380,10 +379,7 @@ Promise.all([
                     common.navbar = true;
 
                 }
-
             });
-
-
 
         }
 

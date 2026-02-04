@@ -13,16 +13,21 @@ const { setNotification } = useNotificationStore();
 
 import router from "../router/index.js";
 
-import { commonStore, settingsStore } from "../store.js";
+import { commonStore, settingsStore, userStore } from "../store.js";
 const common = commonStore();
 const settings = settingsStore();
+const user = userStore();
 
 export default defineComponent({
   components: {
     //Widget,
   },
+  mounted() {
+    common.navbar = false;
+  },
   methods: {
-    login(event) {
+    async login(event) {
+
       let { email, password } = event.target.elements;
 
       if (!email.value || !password.value) {
@@ -40,93 +45,56 @@ export default defineComponent({
         return;
       }
 
-      fetch(`/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email.value,
-          password: password.value,
-        }),
-      })
-        .then((response) => {
-          if (response.status === 401) {
-            setNotification({
-              message: `Login attempt invalid!`,
-              type: "alert",
-              showIcon: false,
-              dismiss: {
-                manually: true,
-                automatically: true,
-              },
-              appearance: "dark",
-            });
+      let result = await user.login({
+        email: email.value,
+        password: password.value
+      });
 
-            return Promise.reject();
-          } else if (response.status === 404) {
-            setNotification({
-              message: `Login endpoint not found`,
-              type: "alert",
-              showIcon: false,
-              dismiss: {
-                manually: true,
-                automatically: true,
-              },
-              appearance: "dark",
-            });
-            return Promise.reject();
-          } else if (response.status === 200) {
-            return response.json();
-          } else {
-            return Promise.reject();
-          }
-        })
-        .then((data) => {
-          console.log("Success:", data);
+      if (result) {
 
-          window.sessionStorage.setItem("authenticated", true);
-          window.localStorage.setItem("x-auth-token", data.token);
+        setNotification({
+          message: `Login successfull!`,
+          type: "success",
+          showIcon: false,
+          dismiss: {
+            manually: true,
+            automatically: true,
+          },
+          appearance: "dark",
+        });
 
-          //common.$state.defineComponentnavbar = true;
+        setTimeout(() => {
 
-          setNotification({
-            message: `Login successfull!`,
-            type: "success",
-            showIcon: false,
-            dismiss: {
-              manually: true,
-              automatically: true,
-            },
-            appearance: "dark",
+          console.log("Redirect to dashboard");
+
+          // unset only password field
+          // keep the E-Mail after logout
+          // after a page refresh you have to re enter it anyways
+          //email.value = "";
+          password.value = "";
+          common.navbar = true;
+
+          router.push({
+            path: "/dashboard",
           });
 
-          setTimeout(() => {
-            console.log("Redirect to dashboard");
+        }, 3000);
 
-            // unset only password field
-            // keep the E-Mail after logout
-            // after a page refresh you have to re enter it anyways
-            //email.value = "";
-            password.value = "";
+      } else {
 
-            common.navbar = true;
-            common.authenticated = true;
-
-            router.replace({
-              path: "/dashboard",
-              //path: settings.startpage,
-              // TODO: Use startpage from settings store
-              // useing startpage from settings work semi good
-              // redirect works, but its not rendred
-              // because of missing routing parameters setted from <RouterLink>?!
-              // with a page refresh the page is rendered, why?!
-            });
-          }, 3000);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
+        setNotification({
+          message: `Login attempt invalid!`,
+          type: "alert",
+          showIcon: false,
+          dismiss: {
+            manually: true,
+            automatically: true,
+          },
+          appearance: "dark",
         });
+
+      }
+
     },
   },
 });
@@ -136,21 +104,15 @@ export default defineComponent({
   <div class="container-fluid">
     <div class="row h-100">
       <!-- LEFT -->
-      <div
-        class="col-3 bg-dark border-end"
-        style="border-color: #000 !important"
-      >
+      <div class="col-3 bg-dark border-end" style="border-color: #000 !important">
         <div class="login-main-text">
           <h2>OpenHaus</h2>
           <p>SmartHome/IoT solution</p>
           <p>
             Website:
-            <a href="https://open-haus.io" target="_blank">open-haus.io</a
-            ><br />
+            <a href="https://open-haus.io" target="_blank">open-haus.io</a><br />
             GitHub:
-            <a href="https://github.com/OpenHausIO" target="_blank"
-              >OpenHausIO</a
-            ><br />
+            <a href="https://github.com/OpenHausIO" target="_blank">OpenHausIO</a><br />
           </p>
           <p class="hide">
             Login to your existing account.<br />
@@ -167,33 +129,16 @@ export default defineComponent({
               <div class="login-form">
                 <form @submit.prevent="login">
                   <div class="mb-3">
-                    <label for="loginEmail" class="form-label"
-                      >E-Mail address</label
-                    >
-                    <input
-                      type="email"
-                      class="form-control bg-dark text-white"
-                      style="border-color: #000"
-                      name="email"
-                      id="loginEmail"
-                    />
+                    <label for="loginEmail" class="form-label">E-Mail address</label>
+                    <input type="email" class="form-control bg-dark text-white" style="border-color: #000" name="email"
+                      id="loginEmail" />
                   </div>
                   <div class="mb-3">
-                    <label for="loginPassword" class="form-label"
-                      >Password</label
-                    >
-                    <input
-                      type="password"
-                      class="form-control bg-dark text-white"
-                      style="border-color: #000"
-                      name="password"
-                      id="loginPassword"
-                    />
+                    <label for="loginPassword" class="form-label">Password</label>
+                    <input type="password" class="form-control bg-dark text-white" style="border-color: #000"
+                      name="password" id="loginPassword" />
                   </div>
-                  <button
-                    type="submit"
-                    class="btn btn-outline-primary w-100 d-block"
-                  >
+                  <button type="submit" class="btn btn-outline-primary w-100 d-block">
                     Submit
                   </button>
                 </form>
