@@ -35,13 +35,18 @@ export default defineComponent({
     showGrid: {
       type: Boolean,
       default: false
+    },
+    gap: {
+      type: Number,
+      default: 0
     }
   },
   computed: {
     gridStyle() {
       return {
-        '--grid-cols': this.cols,
-        '--grid-rows': this.rows,
+        "--grid-cols": this.cols,
+        "--grid-rows": this.rows,
+        "--grid-gap": this.gap
       }
     }
   },
@@ -77,7 +82,7 @@ export default defineComponent({
   display: grid;
   grid-template-columns: repeat(var(--grid-cols), 1fr);
   grid-template-rows: repeat(var(--grid-rows), 1fr);
-  gap: 0;
+  gap: var(--grid-gap);
 }
 
 .grid.show-grid {
