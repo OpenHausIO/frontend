@@ -17,7 +17,7 @@ const router = createRouter({
     routes
 });
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, from) => {
 
     console.log("Bevore enter", to);
 
@@ -30,19 +30,19 @@ router.beforeEach(async (to, from, next) => {
     await user.checkAuth();
 
     if (isLoginRoute && to.query.clean === "true") {
-        return next();
+        return true;
     }
     if (isAuthRoute) {
-        return next();
+        return true;
     }
 
     console.log("isAuthenticated", user.isAuthenticated);
 
     if (user.isAuthenticated) {
-        return next();
+        return true;
     }
 
-    next("/auth/login");
+    return "/auth/login";
 
 });
 
