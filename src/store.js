@@ -55,7 +55,17 @@ export const settingsStore = defineStore("settings", {
             dateformat: "yyyy.mm.dd - HH:MM:ss",
             showWidgetTitleBar: true,
             showNotifications: true,
-            sendSystemNotifications: false
+            sendSystemNotifications: false,
+            layout: {
+                gap: "10",
+                borderRadius: "5",
+                itemTransparancy: "20"
+            },
+            pin: {
+                enabled: false,
+                value: ""
+            },
+            widgetsApplyLayoutStyling: true
         }
     },
     persistent: true
