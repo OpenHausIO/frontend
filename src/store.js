@@ -407,9 +407,21 @@ export const userStore = defineStore('user', () => {
         login,
         logout
     }
-})
+});
 
 
+export const useCollapsablesStore = defineStore("collapsables", {
+    state: () => ({ states: {} }),
+    actions: {
+        setOpen(key, value) {
+            this.states[key] = value;
+        },
+        getOpen(key, fallback = false) {
+            return key in this.states ? this.states[key] : fallback;
+        },
+    },
+    persistent: true
+});
 
 /*
 const store = reactive({
