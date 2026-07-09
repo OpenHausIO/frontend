@@ -257,3 +257,21 @@ export function useEventListener(target, event, callback) {
     });
 
 };
+
+
+export function openDatabase() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open("app", 1);
+
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+
+            if (!db.objectStoreNames.contains("images")) {
+                db.createObjectStore("images");
+            }
+        };
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}

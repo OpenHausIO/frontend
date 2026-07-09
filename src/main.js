@@ -9,7 +9,7 @@ const pinia = createPinia();
 
 import { itemStore, settingsStore, commonStore, userStore } from "./store";
 import { addNotification } from "./components/Notifications.vue";
-import { request } from "./helper.js";
+import { request, openDatabase } from "./helper.js";
 
 import { visibility, statusText } from "./components/Splashscreen.vue";
 
@@ -633,7 +633,43 @@ Promise.all([
         minDelay
     ]);
 
-}).then(() => {
+}).then(async () => {
+
+    //const elem = document.getElementById("app");
+    //elem.style.backgroundImage = `url(${this.imageUrl})`;
+    //elem.style.backgroundSize = "cover";
+    //elem.style.backgroundPosition = "center";
+    //elem.style.backgroundAttachment = "fixed";
+
+    const db = await openDatabase();
+
+    const file = await new Promise((resolve, reject) => {
+
+        const tx = db.transaction("images", "readonly");
+        const store = tx.objectStore("images");
+
+        const request = store.get("background");
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+
+    });
+
+    if (file instanceof File) {
+
+        let imageUrl = URL.createObjectURL(file);
+        const elem = document.getElementById("app");
+
+        elem.style.backgroundImage = `url(${imageUrl})`;
+        elem.style.backgroundSize = "cover";
+        elem.style.backgroundPosition = "center";
+        elem.style.backgroundAttachment = "fixed";
+
+    }
+
+    // set tile background transparancy
+    document.documentElement.style.setProperty("--item-alpha", settings.layout.itemTransparancy / 100);
+
 
     // init navbar visibility
     // not reactive, this happens in settings
