@@ -46,7 +46,7 @@ export default defineComponent({
       return {
         "--grid-cols": this.cols,
         "--grid-rows": this.rows,
-        "--grid-gap": this.gap
+        "--grid-gap": this.gap + "px"
       }
     }
   },

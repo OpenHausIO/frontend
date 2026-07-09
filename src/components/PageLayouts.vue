@@ -1,3 +1,8 @@
+<script setup>
+import { settingsStore } from "../store.js";
+const settings = settingsStore();
+</script>
+
 <script>
 import { defineComponent } from "vue";
 
@@ -155,14 +160,15 @@ export default defineComponent({
 <template>
   <div class="h-100">
     <div class="h-100" ref="touchplace">
-      <div class="h-100" v-if="page">
+      <div class="h-100" v-if="page" :style="{ 'padding': `${settings.layout.gap}px` }">
 
-        <Grid :items="gridItems(page)" :cols="page.size.w" :rows="page.size.h">
+        <Grid :items="gridItems(page)" :cols="page.size.w" :rows="page.size.h" :gap="Number(settings.layout.gap * 2)">
           <template #item="{ item, index, cmd }">
 
             <div v-if="item.type === 'command'"
-              class="h-100 w-100 text-center d-flex flex-column justify-content-center align-items-center"
-              style="border: 1px solid #000" @click="$emit('trigger', cmd._id)">
+              class="h-100 w-100 text-center d-flex flex-column justify-content-center align-items-center card"
+              style="border: 1px solid #000 !important" @click=" $emit('trigger', cmd._id)"
+              :style="{ 'border-radius': `${settings.layout.borderRadius}px` }">
 
               <h3 class="mt-4 d-block">
                 <i class="fa-regular" :class="cmd?.icon || 'fa-circle-question'" />

@@ -5,15 +5,17 @@
       <div class="draggable" :class="{ 'dashed-border': unlocked, 'is-draggable': unlocked }"
         @mousedown="unlocked ? startDrag($event, data.index) : null"
         @touchstart="unlocked ? startDrag($event, data.index) : null">
+        <Card class="h-100 w-100">
 
-        <slot name="item" :item="data.item" :index="data.index" v-bind="data">
-          Draggable Item #{{ data.index + 1 }}
-        </slot>
+          <slot name="item" :item="data.item" :index="data.index" v-bind="data">
+            Draggable Item #{{ data.index + 1 }}
+          </slot>
 
-        <div v-if="unlocked" class="resize-handle" @mousedown.stop="startResize($event, data.index)"
-          @touchstart.stop="startResize($event, data.index)">
-        </div>
+          <div v-if="unlocked" class="resize-handle" @mousedown.stop="startResize($event, data.index)"
+            @touchstart.stop="startResize($event, data.index)">
+          </div>
 
+        </Card>
       </div>
 
     </template>
@@ -23,10 +25,14 @@
 <script>
 import { defineComponent } from "vue";
 import Grid from "./Grid.vue";
+import { settingsStore } from "../store.js";
+import Card from "./Card.vue";
+const settings = settingsStore();
 
 export default defineComponent({
   name: "GridDraggable",
   components: {
+    Card,
     Grid
   },
   props: {
@@ -167,12 +173,18 @@ export default defineComponent({
       document.removeEventListener("touchend", this.stopDrag);
     }
   },
-
   beforeUnmount() {
     document.removeEventListener("mousemove", this.onDrag);
     document.removeEventListener("mouseup", this.stopDrag);
     document.removeEventListener("touchmove", this.onDrag);
     document.removeEventListener("touchend", this.stopDrag);
+  },
+  computed: {
+    gap() {
+      if (settings.widgetsApplyLayoutStyling) {
+        return Number(settings.layout.gap);
+      }
+    }
   }
 });
 </script>
