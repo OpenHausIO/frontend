@@ -19,7 +19,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from) => {
 
-    console.log("Bevore enter", to);
+    //console.log("Bevore enter", to);
 
     const user = userStore();
     //const common = commonStore();
@@ -36,7 +36,7 @@ router.beforeEach(async (to, from) => {
         return true;
     }
 
-    console.log("isAuthenticated", user.isAuthenticated);
+    //console.log("isAuthenticated", user.isAuthenticated);
 
     if (user.isAuthenticated) {
         return true;
