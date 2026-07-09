@@ -2,6 +2,8 @@
 import Collapsable from "@/components/Collapsable.vue";
 import Tile from "@/components/Tile.vue";
 import { request } from "@/helper";
+import { settingsStore } from "../store.js";
+const settings = settingsStore();
 </script>
 
 <script>
@@ -59,7 +61,8 @@ export default {
     <!-- COMMANDS/STATES/SCENES -->
     <div class="row display-flex text-center" style="height: 100%">
       <!-- COMMANDS -->
-      <div class="p-0 col-6 col-md-3 col-xl-2" v-bind:key="item._id" v-for="item in items">
+      <div class="col-6 col-md-3 col-xl-2" v-bind:key="item._id" v-for="item in items"
+        :style="{ 'padding': `${settings.layout.gap}px` }">
         <Tile @click="item?.inputs?.length === 0 && trigger(item, $event)">
 
           <template #icon>

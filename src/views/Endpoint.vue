@@ -135,6 +135,11 @@ export default {
     scenes() {
       return Math.round(Math.random() * 10);
     },*/
+    containerHeight() {
+      const settings = settingsStore();
+      const gap = Number(settings.layout.gap);
+      return { height: `calc(100% - ${94 + gap * 2}px)` };
+    }
   }
 };
 </script>
@@ -148,7 +153,58 @@ export default {
   <div v-else class="container-fluid">
 
     <!-- HEADER -->
-    <div class="row py-4" style="border-top: 1px solid #000; border-bottom: 1px solid #000">
+    <div class="row">
+      <div class="col-12" :style="{ 'padding': `${settings.layout.gap}px` }">
+        <div class="card bg-transparent w-100" :style="{ 'border-radius': `${settings.layout.borderRadius}px` }"
+          style="border: 1px solid #000">
+          <div class="card-body">
+
+            <div class="row">
+              <!-- LEFT -->
+              <div class="col">
+                <div class="d-inline-flex">
+                  <div class="me-2 pt-1">
+                    <i :class="data.icon || 'fa-solid fa-circle-question'" class="fa-3x"></i>
+                  </div>
+                  <div class="">
+                    <h3 class="mb-0">
+                      {{ data.name }}
+                      <!--<sup class="text-secondary">•</sup>-->
+                    </h3>
+                    <span class="text-secondary fw-light d-block">
+                      {{ getRoomNameById(data.room) }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <!-- LEFT -->
+
+              <!-- RIGHT -->
+              <div class="col text-end" style="font-size: 14px" v-if="settings.showCommandStatesCounter">
+                <span class="text-secondary fw-light d-block">
+                  <!--Commands: {{ Math.round(Math.random() * 10) }}-->
+                  Commands: {{ commands }}
+                </span>
+                <span class="text-secondary fw-light d-block">
+                  States: {{ states }}
+                </span>
+                <!--
+        <span class="text-secondary fw-light d-block">
+          Scenes: {{ scenes }}
+        </span>
+        -->
+              </div>
+              <!-- RIGHT -->
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- HEADER -->
+
+    <!-- HEADER -->
+    <div class="row py-4 hide" style="border-top: 1px solid #000; border-bottom: 1px solid #000">
 
       <!-- LEFT -->
       <div class="col">
@@ -190,10 +246,11 @@ export default {
     <!-- HEADER -->
 
     <!-- COMMANDS/STATES/SCENES -->
-    <div class="row display-flex text-center" style="height: calc(100% - 109px)">
+    <div class="row display-flex text-center" :style="containerHeight">
 
       <!-- COMMANDS -->
-      <div class="p-0 col-6 col-md-3 col-xl-2" v-bind:key="command._id" v-for="command in data.commands">
+      <div class="col-6 col-md-3 col-xl-2" v-bind:key="command._id" v-for="command in data.commands"
+        :style="{ 'padding': `${settings.layout.gap}px` }">
         <RouterLink custom :to="{
           name: '/endpoints/:_id/commands/:_command',
           params: {

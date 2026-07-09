@@ -70,24 +70,14 @@ export default {
     <div class="h-100">
       <!-- DONT GROUP -->
       <div class="row h-100 display-flex text-center">
-        <RouterLink
-          v-bind:key="item._id"
-          v-for="item in endpoints"
-          custom
-          :to="{
-            name: '/endpoints/:_id',
-            params: {
-              _id: item._id,
-            },
-          }"
-          v-slot="{ href, navigate }"
-        >
-          <div class="p-0 col-6 col-md-3 col-xl-2">
-            <Tile
-              :href="href"
-              @click="navigate"
-              style="background: transparent; border: 1px solid #000"
-            >
+        <RouterLink v-bind:key="item._id" v-for="item in endpoints" custom :to="{
+          name: '/endpoints/:_id',
+          params: {
+            _id: item._id,
+          },
+        }" v-slot="{ href, navigate }">
+          <div class="col-6 col-md-4 col-xl-2" :style="{ 'padding': `${settings.layout.gap}px` }">
+            <Tile :href="href" @click="navigate" style="background: transparent; border: 1px solid #000">
               <template #icon>
                 <i class="fa-2xl" :class="item.icon"></i>
               </template>

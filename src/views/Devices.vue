@@ -25,7 +25,7 @@ export default {
   computed: {
     items() {
       return store.devices.filter(({ enabled }, index) => {
-        console.log("Computed devices filter", enabled, index);
+        //console.log("Computed devices filter", enabled, index);
         return enabled;
       });
     },
@@ -64,13 +64,13 @@ export default {
           _id: item._id,
         },
       }" v-slot="{ href, navigate }">
-        <div class="p-0 col-6 col-md-4 col-xl-2">
+        <div class="col-6 col-md-4 col-xl-2" :style="{ 'padding': `${settings.layout.gap}px` }">
           <Tile :href="href" @click="navigate">
             <template #icon>
               <i class="fa-2xl" :class="item.icon || 'fa-solid fa-question'"></i>
             </template>
             <template #title>{{ item.name }} </template>
-            <span class="text-secondary fw-light">
+            <span class="text-secondary fw-light" style="position: absolute; bottom: 15px; left: 0; right: 0;">
               ({{ getRoomNameById(item.room) }})
             </span>
           </Tile>
