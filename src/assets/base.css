@@ -1,3 +1,11 @@
+@font-face {
+    font-family: "Orbitron";
+    src: url("/webfonts/Orbitron-VariableFont_wght.ttf") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
 ::root {
     --item-alpha: 0.5;
 }
@@ -88,4 +96,15 @@ BELOW STYLING FROM BOOTSTRAP v5.1.3
 .form-control::placeholder {
     color: #6c757d;
     opacity: 1;
+}
+
+
+/*
+Without this, in the dashboard widgetes are everywhere scrollbars/overflow
+https://claude.ai/chat/cb6ad1e9-5bc3-41cb-9bc6-1d3362456110
+*/
+.grid-item,
+.card,
+.card-body {
+    min-height: 0;
 }

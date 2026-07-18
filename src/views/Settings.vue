@@ -747,30 +747,6 @@ export default defineComponent({
       </Panel>
       <!-- WIDGETS -->
 
-      <!-- SCREENSAVER -->
-      <Panel title="Screensaver" class="hide">
-
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="enableScreenSaverOverlayCheckbox"
-            v-model="settings.enableScreenSaverOverlay" />
-          <label class="form-check-label small" for="enableScreenSaverOverlayCheckbox">
-            Screensaver overlay
-          </label>
-        </div>
-
-        <div class="form-check form-switch">
-          <label for="screenSaverOVerlayInput" class="form-label">
-            Timeout in Sec.
-          </label>
-          <input type="number" id="screenSaverOVerlayInput" class="form-control bg-dark text-white"
-            v-model="settings.screensaverOverlayDelay" :disabled="!settings.enableScreenSaverOverlay" />
-          <input type="range" class="form-range" v-model="settings.screensaverOverlayDelay" min="10" max="60" step="10"
-            :disabled="!settings.enableScreenSaverOverlay" />
-        </div>
-
-      </Panel>
-      <!-- SCREENSAVER -->
-
       <!-- LOOK & FEEL -->
       <Panel title="Look & Feel">
 
@@ -1064,6 +1040,36 @@ export default defineComponent({
 
       </Panel>
       <!-- PIN -->
+
+      <!-- SCREENSAVER -->
+      <Panel title="Screensaver">
+
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="enableScreenSaverOverlayCheckbox"
+            v-model="settings.screensaver.enabled" />
+          <label class="form-check-label small" for="enableScreenSaverOverlayCheckbox">
+            Enable Screensaver
+          </label>
+        </div>
+
+        <div class="form-check form-switch">
+          <label for="screenSaverOVerlayInput" class="form-label">
+            Timeout in Sec.
+          </label>
+          <input type="number" id="screenSaverOVerlayInput" class="form-control bg-dark text-white"
+            v-model="settings.screensaver.timeout" :disabled="!settings.screensaver.enabled" />
+        </div>
+
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="screensaveruseBlackBackground"
+            v-model="settings.screensaver.blackBackground" :disabled="!settings.screensaver.enabled" />
+          <label class="form-check-label small" for="screensaveruseBlackBackground">
+            Black Background
+          </label>
+        </div>
+
+      </Panel>
+      <!-- SCREENSAVER -->
 
       <!-- INFORMATION -->
       <Panel title="Information" class="hide">

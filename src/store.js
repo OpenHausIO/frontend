@@ -65,7 +65,13 @@ export const settingsStore = defineStore("settings", {
                 enabled: false,
                 value: ""
             },
-            widgetsApplyLayoutStyling: true
+            widgetsApplyLayoutStyling: true,
+            screensaver: {
+                enabled: false,
+                timeout: 10,
+                blackBackground: false,
+                glitching: true
+            }
         }
     },
     persistent: true

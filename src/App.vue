@@ -10,6 +10,7 @@ import { routes } from "./router";
 
 import { settingsStore } from "./store.js";
 import Splashscreen from "./components/Splashscreen.vue";
+import Screensaver from "./components/Screensaver.vue";
 const settings = settingsStore();
 
 import { commonStore } from "./store.js";
@@ -24,7 +25,8 @@ export default {
   name: "Frontend",
   components: {
     Notifications,
-    Splashscreen
+    Splashscreen,
+    Screensaver
   },
   data() {
     return {
@@ -98,12 +100,16 @@ export default {
   </div>
   <!-- OVERLAY -->
 
-  <!-- NOTIFICATIONS -->
+  <!-- SCREENSAVER -->
+  <Screensaver />
+  <!-- SCREENSAVER -->
+
+  <!-- SPLASHSCREEN -->
   <Splashscreen />
-  <!-- NOTIFICATIONS -->
+  <!-- SPLASHSCREEN -->
 
   <!-- NOTIFICATIONS -->
-  <Notifications></Notifications>
+  <Notifications />
   <!-- NOTIFICATIONS -->
 
   <!-- NAVBAR -->
