@@ -5,7 +5,7 @@
 
       <div class="screensaver-text-group" ref="textGroup" :class="{ 'is-visible': isTextVisible }" :style="textStyle">
         <h1 class="screensaver-heading " :data-text="title"
-          :class="{ 'bf3-text': isGlitching || settings.screensaver.glitching }"
+          :class="{ 'bf3-text': isGlitching && settings.screensaver.glitching }"
           :style="{ '--glitch-glow': glitchColor }">{{ title }}
         </h1>
         <p class="screensaver-sub">{{ subtitle }}</p>
