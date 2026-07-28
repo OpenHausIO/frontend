@@ -281,7 +281,8 @@ export default {
       <!--COMMANDS -->
 
       <!--STATES -->
-      <div class=" p-0 col-6 col-md-3 col-xl-2" v-bind:key="state._id" v-for="(state, index) in data.states">
+      <div class="col-6 col-md-3 col-xl-2" v-bind:key="state._id" v-for="(state, index) in data.states"
+        :style="{ 'padding': `${settings.layout.gap}px` }">
         <Tile>
 
           <!-- INFORMATION -->
