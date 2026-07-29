@@ -1,3 +1,8 @@
+<script setup>
+import { settingsStore } from "../store.js";
+const settings = settingsStore();
+</script>
+
 <script>
 export default {
   //props: ["href"],
@@ -12,7 +17,7 @@ export default {
 
 <template>
   <!-- 1) Remove h-100 to shrink tiles -->
-  <div class="card rounded-0 h-100">
+  <div class="card h-100" :style="{ 'border-radius': `${settings.layout.borderRadius}px` }">
     <div class="card-body text-center">
       <div style="padding: 10% 0">
         <slot name="icon"></slot>

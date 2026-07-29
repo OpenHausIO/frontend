@@ -125,18 +125,10 @@ export default defineComponent({
 <style scoped>
 /*@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Exo+2:wght@300;400&display=swap');*/
 
-@font-face {
-  font-family: "Orbitron";
-  src: url("/webfonts/Orbitron-VariableFont_wght.ttf") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
 .splash-overlay {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: 999999;
   /*background: radial-gradient(ellipse at 30% 40%, #212529 0%, #040d1a 70%);*/
   /*background: #212529;*/
   background: #101418;
