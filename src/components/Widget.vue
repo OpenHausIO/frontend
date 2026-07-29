@@ -322,4 +322,8 @@ ul.dropdown-menu-dark {
   background-color: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity));
 }
 */
+
+div.menu {
+  touch-action: manipulation;
+}
 </style>

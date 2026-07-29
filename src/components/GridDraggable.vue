@@ -71,6 +71,10 @@ export default defineComponent({
     startDrag(e, index) {
       if (!this.unlocked) return;
 
+      if (e.target.closest(".menu") || e.target.closest(".dropdown-menu")) {
+        return;
+      }
+
       e.preventDefault();
       const item = this.items[index];
 
