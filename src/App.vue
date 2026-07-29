@@ -168,9 +168,7 @@ export default {
 
   <!-- VIEW -->
   <RouterView v-slot="{ Component }" class="h-100" :class="{ 'force-max-height': !common.navbar }" id="view">
-    <keep-alive include="Dashboard">
-      <component :is="Component" />
-    </keep-alive>
+    <component :is="Component" />
   </RouterView>
   <!-- VIEW -->
 
