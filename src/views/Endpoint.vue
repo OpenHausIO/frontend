@@ -80,8 +80,6 @@ export default {
     alert,
     trigger: debounce(function (_id) {
 
-      console.log("Aasdflaksdfleila")
-
       let command = this.data.commands.find((obj) => {
         return obj._id === _id;
       });
@@ -90,8 +88,6 @@ export default {
         console.warn("Could not find command with _id: ", _id);
         return;
       }
-
-      console.log("command.params", command.params)
 
       let body = [];
 
