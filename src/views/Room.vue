@@ -60,7 +60,7 @@ export default {
     containerHeight() {
       const settings = settingsStore();
       const gap = Number(settings.layout.gap);
-      return { height: `calc(100% - ${86 + gap * 2}px)` };
+      return { height: `calc(100% - ${92 + gap * 2}px)` };
     }
   }
 };
