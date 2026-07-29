@@ -1,5 +1,7 @@
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, defineAsyncComponent } from "vue";
+
+const Widget = defineAsyncComponent(() => import("../components/Widget.vue"));
 
 export const menu = [];
 
@@ -11,15 +13,21 @@ export default defineComponent({
       required: true,
     },
   },
+  components: {
+    Widget
+  },
   data() {
-    return {};
+    return {
+      options: {
+        showTitleboxCheckbox: false
+      }
+    };
   },
   menu: [],
 });
 </script>
 
 
-<template></template>
-
-<style scope>
-</style>
+<template>
+  <Widget name="Empty" :uuid="uuid" :options="options" />
+</template>

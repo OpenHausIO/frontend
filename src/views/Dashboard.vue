@@ -1,14 +1,14 @@
 <script>
 import { defineComponent } from "vue";
-import Widget from "../components/Widget.vue";
+import { widgetComponents } from "../components/Widget.vue";
 import GridDraggable from "../components/GridDraggable.vue";
 import { settingsStore, widgetStore } from "../store.js";
 
 export default defineComponent({
   name: "Dashboard",
   components: {
-    Widget,
-    GridDraggable
+    GridDraggable,
+    ...widgetComponents
   },
   data() {
     return {
@@ -49,10 +49,12 @@ export default defineComponent({
   <GridDraggable :items="gridItems" :cols="settings.dashboardGrid.cols" :rows="settings.dashboardGrid.rows"
     :unlocked="settings.editDashboardWidgets" @update:position="handlePositionUpdate" @update:size="handleSizeUpdate">
     <template #item="{ widget }">
-      <Widget :name="widget.widget" :uuid="widget.uuid" :unlocked="settings.editDashboardWidgets" :class="{
+
+      <component :is="widget.widget" :uuid="widget.uuid" :class="{
         'bg-dark': !settings.transparentDashboardWidgets,
         'bg-transparent': settings.transparentDashboardWidgets,
-      }" style="border: 1px solid #000" />
+      }" class="h-100 w-100 d-block" />
+
     </template>
   </GridDraggable>
 

@@ -2,7 +2,7 @@
 import { defineComponent } from "vue";
 import { toggleFullscreen, request, openDatabase } from "../helper.js";
 import { version } from "../../package.json";
-import Widget from "../components/Widget.vue";
+import Widget, { widgetComponents } from "../components/Widget.vue";
 import router, { routes } from "../router/index.js";
 import { settingsStore, widgetStore, commonStore, userStore } from "../store.js";
 
@@ -26,7 +26,8 @@ export default defineComponent({
       settings,
       widgets,
       common,
-      user
+      user,
+      widgetComponents
     };
 
   },
@@ -735,8 +736,8 @@ export default defineComponent({
             aria-expanded="false" :disabled="!settings.editDashboardWidgets">
             Add Widget
           </button>
-          <ul class="dropdown-menu dropdown-menu-dark">
-            <li v-bind:key="index" v-for="(widget, index) in Widget.components">
+          <ul class="dropdown-menu dropdown-menu-dark w-100">
+            <li v-bind:key="index" v-for="(widget, index) in widgetComponents">
               <button class="dropdown-item d-flex gap-2 align-items-center" @click="addDashboardWidget(widget.name)">
                 {{ widget.name }}
               </button>

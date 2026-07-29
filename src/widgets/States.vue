@@ -1,90 +1,13 @@
-<template>
-
-  <Modal :visible="isModalVisible" @close="onCloseModal" @confirm="onModalConfirm" title="Select states to display">
-    <template #body>
-      <div class="row" v-for="(states, endpoint, index) in endpointStats" :key="index">
-        <div class="col">
-
-          <h6> {{ getNameById(endpoint) }}</h6>
-
-          <ul v-if="states.length > 0">
-            <li v-for="(state, i) in states" :key="i">
-
-              <div class="form-check form-switch">
-                <label>
-
-                  <input class="form-check-input" type="checkbox" role="switch" :value="state._id"
-                    v-model="wantedStates">
-                  {{ state.name }}
-
-                </label>
-              </div>
-              <!--
-              <label>
-                <input type="checkbox" :value="state._id" v-model="wantedStates"> 
-                {{ state.name }}
-              </label>
-            -->
-            </li>
-          </ul>
-          <span v-else>
-            <i class="text-secondary fw-light">no states</i>
-          </span>
-
-          <!-- VISUAL BARRIER (skip for last entry) -->
-          <hr v-if="index + 1 < Object.keys(endpointStats).length" />
-          <!-- VISUAL BARRIER (skip for last entry) -->
-
-        </div>
-      </div>
-    </template>
-  </Modal>
-
-  <div class="p-2 h-100">
-
-    <h3>
-      States: <input type="text" v-model="title" v-if="showTitleTextbox" />
-      <span v-else>
-        {{ title }}
-      </span>
-    </h3>
-
-    <div class="container-fluid p-0">
-      <div class="h-100">
-        <div class="row h-100 display-flex text-center">
-
-          <div class="p-0 col" v-for="_id in wantedStates">
-            <Tile>
-
-              <h5>{{ getStateById_asdf24443(_id)?.name || "undefined" }}</h5>
-              <h6>{{ getStateById_asdf24443(_id)?.value || "undefined" }}</h6>
-
-              <!-- INFO -->
-              <span class="text-secondary fw-light">
-                {{ getEndpointByState(_id)?.name || "undefined" }}
-                <br />
-                <small>
-                  ({{ getRoomById(getEndpointByState(_id)?.room)?.name || "room not set" }})
-                </small>
-              </span>
-              <!-- INFO -->
-
-            </Tile>
-          </div>
-
-
-        </div>
-      </div>
-    </div>
-
-  </div>
-</template>
-
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, defineAsyncComponent } from "vue";
 import Modal from "../components/Modal.vue";
-import Tile from "../components/Tile.vue";
+import Frame from "../components/Frame.vue";
 import { itemStore } from "../store.js";
+import WidgetGrid from "../components/WidgetGrid.vue";
+import Item from "../components/Item.vue";
+import Tile from "../components/Tile.vue";
+
+const Widget = defineAsyncComponent(() => import("../components/Widget.vue"));
 
 export default defineComponent({
   name: "States",
@@ -105,15 +28,24 @@ export default defineComponent({
   },
   components: {
     Modal,
+    Frame,
+    Widget,
+    WidgetGrid,
+    Item,
     Tile
   },
   data() {
     return {
-      title: "",
       isModalVisible: false,
-      showTitleTextbox: false,
-      endpoint: "",
-      wantedStates: []
+      menu: [{
+        title: "Select stats",
+        method: "selectStats",
+      }],
+      data: {
+        wantedStates: [],
+        showRoomName: true,
+        showEndpointName: true
+      },
     };
   },
   computed: {
@@ -132,12 +64,25 @@ export default defineComponent({
         return acc;
 
       }, {});
-    }
+    },
+    wantedStateItems() {
+      return this.data.wantedStates.map((_id) => {
+
+        const state = this.getStateById_asdf24443(_id);
+        if (!state) return null;
+
+        const endpoint = this.getEndpointByState(_id);
+        const room = endpoint ? this.getRoomById(endpoint.room) : null;
+
+        return {
+          state,
+          endpointName: endpoint?.name || "undefined",
+          roomName: room?.name || "room not set",
+        };
+
+      }).filter(Boolean);
+    },
   },
-  mounted() {
-    this.loadLocalStorage();
-  },
-  created() { },
   methods: {
     selectStats() {
       this.isModalVisible = true;
@@ -146,13 +91,7 @@ export default defineComponent({
       this.isModalVisible = false;
     },
     onModalConfirm() {
-
       this.isModalVisible = false;
-      this.saveLocalStorage();
-
-    },
-    dispatchEvent(event) {
-      console.log("Dispatch event in child called", event);
     },
     getStateById_asdf24443(_id) {
       return this.endpoints.map(({ states }) => {
@@ -181,61 +120,121 @@ export default defineComponent({
         });
       });
     },
-    editTitle() {
-      this.showTitleTextbox = true;
+    selectedMenu(menu) {
+      this[menu.method]();
     },
-    closeEdit() {
-      this.showTitleTextbox = false;
-      this.saveLocalStorage();
-    },
-    saveLocalStorage() {
-
-      let str = JSON.stringify({
-        title: this.title,
-        wantedStates: this.wantedStates
-      });
-
-      window.localStorage.setItem(`widget-${this.uuid}`, str);
-
-    },
-    loadLocalStorage() {
-
-      let str = window.localStorage.getItem(`widget-${this.uuid}`);
-
-      if (!str) {
-        return;
-      }
-
-      let data = JSON.parse(str);
-
-      this.title = data.title;
-      this.wantedStates = data.wantedStates;
-
+    loaded(data) {
+      Object.assign(this.data, data);
     }
   },
-  menu: [{
-    title: "Select stats",
-    method: "selectStats",
-  }, {
-    title: "Edit title",
-    method: "editTitle",
-  }, {
-    title: "Done editing",
-    method: "closeEdit",
-  }]
 });
 </script>
 
+<template>
+  <Widget name="States" :menu="menu" @menu="selectedMenu" :uuid="uuid" :data="data" @loaded="loaded">
+
+    <!-- OPTIONS -->
+    <template #options>
+
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="showRoomName" v-model="data.showRoomName" />
+        <label class="form-check-label small" for="showRoomName">
+          Show Room name
+        </label>
+      </div>
+
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="showEndpointName" v-model="data.showEndpointName" />
+        <label class="form-check-label small" for="showEndpointName">
+          Show Endpoint name
+        </label>
+      </div>
+
+    </template>
+    <!-- OPTIONS -->
+
+    <Modal :visible="isModalVisible" @close="onCloseModal" @confirm="onModalConfirm" title="Select states to display">
+      <template #body>
+        <div class="row" v-for="(states, endpoint, index) in endpointStats" :key="index">
+          <div class="col">
+
+            <h6> {{ getNameById(endpoint) }}</h6>
+
+            <ul v-if="states.length > 0">
+              <li v-for="(state, i) in states" :key="i">
+
+                <div class="form-check form-switch">
+                  <label>
+
+                    <input class="form-check-input" type="checkbox" role="switch" :value="state._id"
+                      v-model="data.wantedStates">
+                    {{ state.name }}
+
+                  </label>
+                </div>
+
+              </li>
+            </ul>
+            <span v-else>
+              <i class="text-secondary fw-light">no states</i>
+            </span>
+
+            <!-- VISUAL BARRIER (skip for last entry) -->
+            <hr v-if="index + 1 < Object.keys(endpointStats).length" />
+            <!-- VISUAL BARRIER (skip for last entry) -->
+
+          </div>
+        </div>
+      </template>
+    </Modal>
+
+    <!--
+    <WidgetGrid :items="data.wantedStates">
+      <template #default="{ item: _id }">
+        <Frame style="position: relative;" class="h-100">
+          <div class="d-flex flex-column align-items-center justify-content-center h-100 pb-4">
+            <h5>{{ getStateById_asdf24443(_id)?.name || "undefined" }}</h5>
+            <h6>{{ getStateById_asdf24443(_id)?.value || "undefined" }}</h6>
+          </div>
+          <span class="text-secondary fw-light"
+            style="position: absolute; bottom: 10px; left: 0; right: 0; text-align: center;"
+            v-if="data.showEndpointName">
+            {{ getEndpointByState(_id)?.name || "undefined" }}
+          </span>
+          <small v-if="data.showRoomName">
+            ({{ getRoomById(getEndpointByState(_id)?.room)?.name || "room not set" }})
+          </small>
+        </Frame>
+      </template>
+    </WidgetGrid>
+  -->
+
+    <WidgetGrid :items="wantedStateItems">
+      <template #default="{ item }">
+        <Item :title="item.state.name || 'undefined'" :subtitle="item.state.value || 'undefined'"
+          :footer="data.showEndpointName ? item.endpointName : null" :icon="item.state.icon || 'fa-solid fa-question'"
+          :room="data.showRoomName ? item.roomName : null" />
+      </template>
+    </WidgetGrid>
+
+  </Widget>
+</template>
+
 <style scoped>
-.row.display-flex {
-  display: flex;
-  flex-wrap: wrap;
+.dashboard-widget {
+  height: 100%;
 }
 
-.row.display-flex>[class*="col-"] {
-  flex-grow: 0;
-  /* 1) set max-height to shrink tiles */
-  /*max-height: 300px;*/
+.scene-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0;
+  height: 100%;
+  text-align: center;
+}
+
+.scene-item {
+  min-height: 100px;
 }
 
 small {

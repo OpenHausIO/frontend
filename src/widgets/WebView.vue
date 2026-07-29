@@ -1,7 +1,9 @@
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, defineAsyncComponent } from "vue";
 import Iframe from "../components/Iframe.vue";
 import Modal from "../components/Modal.vue";
+
+const Widget = defineAsyncComponent(() => import("../components/Widget.vue"));
 
 export default defineComponent({
   name: "WebView",
@@ -19,14 +21,19 @@ export default defineComponent({
   },
   components: {
     Iframe,
-    Modal
+    Modal,
+    Widget
   },
   data() {
     return {
-      showTextbox: false,
       isModalVisible: false,
-      url: "http://example.com",
-      title: ""
+      data: {
+        url: "http://example.com",
+      },
+      menu: [{
+        title: "Edit URL",
+        method: "editURL",
+      }]
     };
   },
   mounted() {
@@ -47,70 +54,40 @@ export default defineComponent({
     editURL() {
       this.isModalVisible = true;
     },
-    saveSettings() {
-
-      let data = JSON.stringify({
-        url: this.url,
-        title: this.title,
-      });
-
-      window.localStorage.setItem(`widget-${this.uuid}`, data);
-
-    },
     onModalConfirm() {
-
-      this.url = this.$refs.url.value;
-
-      this.saveSettings();
-
+      this.data.url = this.$refs.url.value;
       this.isModalVisible = false;
-
     },
     onCloseModal() {
       this.isModalVisible = false;
     },
-    closeEdit() {
-      this.showTextbox = false;
-      this.saveSettings();
+    selectedMenu(menu) {
+      this[menu.method]();
     },
-    editTitle() {
-      this.showTextbox = true;
+    loaded(data) {
+      Object.assign(this.data, data);
     }
   },
-  menu: [{
-    title: "Edit URL",
-    method: "editURL",
-  }, {
-    title: "Edit Title",
-    method: "editTitle",
-  }, {
-    title: "Done editing",
-    method: "closeEdit",
-  }]
 });
 </script>
 
 
 <template>
+  <Widget name="WebView" :menu="menu" @menu="selectedMenu" :uuid="uuid" :data="data" @loaded="loaded">
 
-  <Modal :visible="isModalVisible" @close="onCloseModal" @confirm="onModalConfirm" title="Set URL to display">
-    <template #body>
-      <div>
+    <Modal :visible="isModalVisible" @close="onCloseModal" @confirm="onModalConfirm" title="Set URL to display">
+      <template #body>
+        <div>
 
-        <input type="text" :value="url" placeholder="http://example.com" ref="url" class="w-100" />
+          <input type="text" :value="data.url" placeholder="http://example.com" ref="url" class="w-100" />
 
-      </div>
-    </template>
-  </Modal>
+        </div>
+      </template>
+    </Modal>
 
-  <h3> WebView: <input type="text" v-model="title" v-if="showTextbox" />
-    <span v-else>
-      {{ title }}
-    </span>
-  </h3>
+    <Iframe :src="data.url" />
 
-  <Iframe :src="url" />
-
+  </Widget>
 </template>
 
-<style scope></style>
+<style scoped></style>

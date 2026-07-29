@@ -1,5 +1,7 @@
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, defineAsyncComponent } from "vue";
+
+const Widget = defineAsyncComponent(() => import("../components/Widget.vue"));
 
 export default defineComponent({
   name: "Stopwatch",
@@ -9,6 +11,9 @@ export default defineComponent({
       required: true,
     },
   },
+  components: {
+    Widget
+  },
   data() {
     return {
       title: "",
@@ -16,7 +21,14 @@ export default defineComponent({
       counter: 0,
       showTitleTextbox: false,
       showDurationTextbox: false,
-      interval: null
+      interval: null,
+      menu: [{
+        title: "Edit Title",
+        method: "editTitle",
+      }, {
+        title: "Done editing",
+        method: "closeEdit",
+      }]
     };
   },
   mounted() {
@@ -78,6 +90,9 @@ export default defineComponent({
     pauseCounter() {
       clearInterval(this.interval);
       this.interval = null;
+    },
+    selectedMenu(menu) {
+      this[menu.method]();
     }
   },
   computed: {
@@ -93,47 +108,28 @@ export default defineComponent({
       return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
 
     }
-  },
-  menu: [{
-    title: "Edit Title",
-    method: "editTitle",
-  }, {
-    title: "Done editing",
-    method: "closeEdit",
-  }],
+  }
 });
 </script>
 
 
 <template>
-  <div class="p-2">
-    <h3>
-      Stopwatch: <input type="text" v-model="title" v-if="showTitleTextbox" />
-      <span v-else>
-        {{ title }}
-      </span>
-    </h3>
-    <div class="w-100">
-      <div class="container text-center">
-        <div class="row">
-          <div class="col h-100">
-            <button class="btn btn-outline-primary btn-block" @click="pauseCounter()" v-if="interval">Pause</button>
-            <button class="btn btn-outline-primary btn-block" @click="startCounter()" v-if="!interval">Start</button>
-          </div>
-          <div class="col">
-            <div class="container">
+  <Widget name="Stopwatch" :menu="menu" @menu="selectedMenu" :uuid="uuid">
+    <div class="p-2">
+      <div class="row align-items-center g-2">
+        <div class="col">
+          <button class="btn btn-outline-primary w-100" @click="pauseCounter()" v-if="interval">Pause</button>
+          <button class="btn btn-outline-primary w-100" @click="startCounter()" v-if="!interval">Start</button>
+        </div>
 
-              <div class="row" v-if="!showDurationTextbox">
-                <h3>{{ time }}</h3>
-              </div>
+        <div class="col-auto text-center px-3">
+          <h3 class="mb-0" v-if="!showDurationTextbox">{{ time }}</h3>
+        </div>
 
-            </div>
-          </div>
-          <div class="col">
-            <button class="btn btn-outline-primary btn-block" @click="stopCounter()">Stop</button>
-          </div>
+        <div class="col">
+          <button class="btn btn-outline-primary w-100" @click="stopCounter()">Stop</button>
         </div>
       </div>
     </div>
-  </div>
+  </Widget>
 </template>

@@ -1,5 +1,9 @@
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, defineAsyncComponent } from "vue";
+
+//import Widget from "../components/Widget.vue";
+
+const Widget = defineAsyncComponent(() => import("../components/Widget.vue"));
 
 export default defineComponent({
   name: "Notes",
@@ -9,91 +13,57 @@ export default defineComponent({
       required: true,
     },
   },
+  components: {
+    Widget
+  },
   data() {
     return {
-      title: "",
-      content: "",
-      showTextbox: false,
-      placeholder: "Click & type to add notes",
+      data: {
+        content: "",
+      },
+      placeholder: "Click & type to add notes"
     };
   },
   mounted() {
-    let str = window.localStorage.getItem(`widget-${this.uuid}`);
 
-    if (!str) {
-      str = JSON.stringify({
-        title: "",
-        content: "",
-      });
-
-      window.localStorage.setItem(`widget-${this.uuid}`, str);
-    }
-
-    let config = JSON.parse(str);
-
-    this.title = config.title;
-    this.content = config.content || "";
   },
   methods: {
-    keyUp() {
-      window.localStorage.setItem(
-        `widget-${this.uuid}`,
-        JSON.stringify({
-          content: this.content,
-          title: this.title,
-        })
-      );
+    loaded(data) {
+      Object.assign(this.data, data);
     },
-    editTitle() {
-      this.showTextbox = true;
-    },
-    closeEdit() {
-      this.showTextbox = false;
-      this.saveLocalStorage();
-    },
-    dispatchEvent(event) {
-      console.log("diuspatchEvent called in notes.vue", event);
-    },
-    saveLocalStorage() {
-
-      let str = JSON.stringify({
-        content: this.content,
-        title: this.title
-      });
-
-      window.localStorage.setItem(`widget-${this.uuid}`, str);
-    },
-  },
-  menu: [{
-    title: "Edit title",
-    method: "editTitle",
-  }, {
-    title: "Done editing",
-    method: "closeEdit",
-  }]
+    save() {
+      // this is no neede, because of the watcher in the Widget.vue
+      // but i keep this as documentation/reference how you could clal methods
+      // of child components directly in js
+      //this.$refs.widget.saveToStorage();
+    }
+  }
 });
 </script>
 
 
 <template>
-  <div class="p-2 h-100">
-    <h3>
-      Notes: <input type="text" v-model="title" v-if="showTextbox" />
-      <span v-else>
-        {{ title }}
-      </span>
-    </h3>
-    <div class="h-100 w-100">
-      <textarea class="form-control bg-transparent w-100 p-0 border-0 text-white border border-0" v-model="content"
-        spellcheck="false" :placeholder="placeholder" @keyup="keyUp()">
-      </textarea>
-    </div>
-  </div>
+  <Widget name="Notes" :uuid="uuid" :data="data" @loaded="loaded" ref="widget">
+
+    <textarea class="form-control bg-transparent text-white p-0" v-model="data.content" spellcheck="false"
+      :placeholder="placeholder" @keyup="save()">
+    </textarea>
+
+  </Widget>
 </template>
 
-<style scope>
+<style scoped>
 textarea {
+  display: block;
+  box-sizing: border-box;
+  width: calc(100% - 1rem);
+  height: calc(100% - 1rem);
+  margin: 0.5rem;
+  border: none;
   resize: none;
-  min-height: calc(100% - 40px) !important;
+}
+
+textarea:focus {
+  outline: none;
 }
 </style>
