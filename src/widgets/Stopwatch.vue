@@ -16,19 +16,10 @@ export default defineComponent({
   },
   data() {
     return {
-      title: "",
-      duration: 0,
       counter: 0,
-      showTitleTextbox: false,
       showDurationTextbox: false,
       interval: null,
-      menu: [{
-        title: "Edit Title",
-        method: "editTitle",
-      }, {
-        title: "Done editing",
-        method: "closeEdit",
-      }]
+      menu: []
     };
   },
   mounted() {
@@ -47,28 +38,6 @@ export default defineComponent({
 
   },
   methods: {
-    editTitle() {
-      this.showTitleTextbox = true;
-    },
-    closeEdit() {
-
-      this.showTitleTextbox = false;
-      this.save();
-
-    },
-    dispatchEvent(event) {
-      console.log("diuspatchEvent called in notes.vue", event);
-    },
-    save() {
-
-      let data = JSON.stringify({
-        title: this.title,
-        counter: this.counter
-      });
-
-      window.localStorage.setItem(`widget-${this.uuid}`, data);
-
-    },
     resetCounter() {
       this.counter = 0;
       clearInterval(this.interval);
