@@ -4,12 +4,24 @@ import { commonStore, userStore } from "../store.js";
 import { navigation } from "./navigation.js";
 import { nested } from "./nested.js";
 import { test } from "./test.js";
+import { watch } from "vue";
 
 const routes = [
     ...navigation,
     ...nested,
     ...test
 ];
+
+
+watch(navigation, () => {
+    navigation.forEach((route) => {
+        if (!router.hasRoute(route.name)) {
+            router.addRoute(route);
+        }
+    });
+}, {
+    deep: true
+});
 
 
 const router = createRouter({

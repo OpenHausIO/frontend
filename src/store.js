@@ -20,13 +20,24 @@ export const settingsStore = defineStore("settings", {
             groupRoomItems: false,
             groupEndpointItems: false,
             groupDeviceItems: false,
-            showSettingsButton: true,
-            showBackButton: true,
-            showDashboardButton: true,
-            showRoomsButton: true,
-            showEndpointsButton: true,
-            showDevicesButton: true,
-            showScenesButton: true,
+            //showSettingsButton: true,
+            //showBackButton: true,
+            //showDashboardButton: true,
+            //showRoomsButton: true,
+            //showEndpointsButton: true,
+            //showDevicesButton: true,
+            //showScenesButton: true,
+            navigation: {
+                showSettingsButton: true,
+                showBackButton: true,
+                showDashboardButton: true,
+                showRoomsButton: true,
+                showEndpointsButton: true,
+                showDevicesButton: true,
+                showScenesButton: true
+                // dynamische Buttons (z.B. showMusicButton) kommen künftig
+                // einfach hier zur Laufzeit dazu - reaktiv, ohne Timing-Risiko
+            },
             showVueTourOnNextVisit: true,
             showGradientBackground: true,
             editDashboardWidgets: false,
@@ -59,7 +70,8 @@ export const settingsStore = defineStore("settings", {
             layout: {
                 gap: "10",
                 borderRadius: "5",
-                itemTransparancy: "20"
+                itemTransparancy: "20",
+                itemSize: "150"
             },
             pin: {
                 enabled: false,

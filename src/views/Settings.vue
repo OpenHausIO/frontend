@@ -644,7 +644,7 @@ export default defineComponent({
 
         <div class="form-check form-switch">
           <input class="form-check-input" type="checkbox" id="showSettingsButtonCheckbox"
-            v-on:click="showSettingsButtonInfo()" v-model="settings.showSettingsButton" />
+            v-on:click="showSettingsButtonInfo()" v-model="settings.navigation.showSettingsButton" />
           <label class="form-check-label small" for="showSettingsButtonCheckbox">
             Show Settings buttons
           </label>
@@ -652,7 +652,7 @@ export default defineComponent({
 
         <div class="form-check form-switch">
           <input class="form-check-input" type="checkbox" id="showBackButtonCheckbox"
-            v-model="settings.showBackButton" />
+            v-model="settings.navigation.showBackButton" />
           <label class="form-check-label small" for="showBackButtonCheckbox">
             Show Back button
           </label>
@@ -662,7 +662,7 @@ export default defineComponent({
 
         <div class="form-check form-switch" v-bind:key="route.path" v-for="route in routes">
           <input class="form-check-input" type="checkbox" :id="'show' + route.name + 'ButtonCheck'"
-            v-model="settings['show' + route.name + 'Button']" />
+            v-model="settings.navigation['show' + route.name + 'Button']" />
           <label class="form-check-label small" :for="'show' + route.name + 'ButtonCheck'">
             Show {{ route.name }} button
           </label>

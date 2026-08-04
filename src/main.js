@@ -2,7 +2,7 @@ import { createApp } from "vue";
 import * as Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
-import { routes } from "./router";
+import { routes, navigation } from "./router";
 //import router from "./router";
 import { createPinia } from 'pinia';
 const pinia = createPinia();
@@ -36,6 +36,7 @@ window.addEventListener("beforeinstallprompt", (e) => {
 // monkey patch ws
 window.events = null;
 window.notifications = null;
+window.settings = {};
 
 // persistent handle
 // (in localStorage)
@@ -61,21 +62,18 @@ pinia.use(({ store, options }) => {
 pinia.use(({ store }) => {
     if (store.$id === "settings") {
 
-        // listen for changes
-        // `.watch()` in Settings.vue does not work.
-        // see #42
         store.$subscribe((mutation, state) => {
 
             console.log("mutation", mutation);
             console.log("state", state);
 
-            if (!store.groupItems) {
-                store.groupRoomItems = false;
-                store.groupEndpointItems = false;
-                store.groupDeviceItems = false;
+            if (!state.groupItems) {
+                state.groupRoomItems = false;
+                state.groupEndpointItems = false;
+                state.groupDeviceItems = false;
             }
 
-            if (store.showGradientBackground) {
+            if (state.showGradientBackground) {
                 document.getElementById("app").classList.remove("bg-dark");
                 document.getElementById("app").classList.add("gardien-background");
             } else {
@@ -83,15 +81,16 @@ pinia.use(({ store }) => {
                 document.getElementById("app").classList.remove("gardien-background");
             }
 
-            if (!store.showSettingsButton) {
+            if (!state.navigation.showSettingsButton) {
                 addNotification("Tap 10x times on any empty space to go to this page again when the settings button is hidden.", {
                     type: "primary",
                     dismiss: 3000
                 });
             }
 
+            // GEÄNDERT: liest jetzt aus state.navigation
             routes.forEach((route) => {
-                route.visible = store[`show${route.name}Button`];
+                route.visible = state.navigation[`show${route.name}Button`];
             });
 
         });
@@ -402,14 +401,15 @@ function connectToNotifications(options = { retry: 0 }) {
                     let type = "info";
 
                     switch (data.type) {
-                        case "info": type = "info"; break;
+                        case "info": type = "primary"; break;
                         case "warn": type = "warning"; break;
-                        case "error": type = "alert"; break;
+                        case "error": type = "danger"; break;
+                        case "success": type = "success"; break;
                         default: type = "info"; break;
                     }
 
                     let obj = {
-                        message: `${data.title}<br />${data.message}`,
+                        message: `<b>${data.title}</b><br />${data.message}`,
                         type,
                         dismiss: false
                     };
@@ -464,7 +464,68 @@ Promise.all([
         });
     }),
 
+    // fetch settings.json
+    new Promise(async (resolve, reject) => {
+        try {
+
+            // spashscreen status text
+            statusText("Load settings.json");
+
+            const url = new URL("settings.json", window.location.href);
+            const res = await fetch(url, {
+                cache: "no-store"
+            });
+
+            if (res.status === 404) {
+                console.log("[pre] Keine settings.json gefunden, überspringe custom config");
+                resolve();
+            }
+
+            if (!res.ok) {
+                console.warn("[pre] settings.json konnte nicht geladen werden:", res.status, res.statusText);
+            }
+
+            window.settings = await res.json();
+
+            resolve();
+
+        } catch (err) {
+            console.warn("[pre] settings.json konnte nicht geladen/geparsed werden", err);
+            resolve();
+        }
+    }),
+
 ]).then(() => {
+    return new Promise((resolve) => {
+
+        statusText("Apply Server Settings");
+
+        if (window.settings?.navigation) {
+            window.settings.navigation.forEach((route) => {
+
+                //settings[`show${route.name}Button`] = route.visible ?? true;
+                settings.navigation[`show${route.name}Button`] = route.visible ?? true;
+
+                navigation.push({
+                    path: route.path ?? "/dashboard",
+                    name: route.name ?? "Default",
+                    icon: route.icon ?? "fa-solid fa-circle-question",
+                    visible: settings[`show${route.name}Button`],
+                    props: () => {
+                        return {
+                            src: route.url
+                        };
+                    },
+                    component: () => import("./components/Iframe.vue")
+                });
+
+            });
+        }
+
+        resolve();
+
+    });
+}).then(() => {
     return new Promise(async (resolve, reject) => {
 
         // spashscreen status text
@@ -674,7 +735,10 @@ Promise.all([
     // init navbar visibility
     // not reactive, this happens in settings
     routes.forEach((route) => {
-        route.visible = settings[`show${route.name}Button`];
+        const key = `show${route.name}Button`;
+        if (settings.navigation[key] !== undefined) {
+            route.visible = settings.navigation[key];
+        }
     });
 
     // hide splashscreen
@@ -687,7 +751,7 @@ Promise.all([
         let timer = null
 
         document.body.addEventListener("click", () => {
-            if (!settings.showSettingsButton) {
+            if (!settings.navigation.showSettingsButton) {
 
                 clearTimeout(timer);
                 counter++;

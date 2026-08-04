@@ -120,7 +120,7 @@ export default {
       <ul class="navbar-nav w-100 row m-0">
         <!-- STATIC BACK BUTTON -->
         <!-- set class .fixed-nav-item for small button -->
-        <li class="nav-item col text-center p-0" v-if="settings.showBackButton">
+        <li class="nav-item col text-center p-0" v-if="settings.navigation.showBackButton">
           <a class="nav-link" @click="$router.go(-1)">
             <i class="d-block fa-solid fa-chevron-left"></i>
             <span>Back</span>
@@ -153,7 +153,7 @@ export default {
         <!-- DYNAMIC LINKS -->
 
         <!-- STATIC SETTNGS BUTTON -->
-        <li class="nav-item col text-center p-0" v-if="settings.showSettingsButton">
+        <li class="nav-item col text-center p-0" v-if="settings.navigation.showSettingsButton">
           <a class="nav-link" :class="{ active: subIsActive('/settings') }" @click="$router.push({ name: 'Settings' })">
             <i class="d-block fa fa-gear"></i>
             <span>Settings</span>
