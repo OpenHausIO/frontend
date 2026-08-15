@@ -1,4 +1,4 @@
-import { createApp } from "vue";
+import { createApp, ref } from "vue";
 import * as Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
@@ -23,12 +23,14 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register('/service-worker.js');
 }
 
-window.deferredPrompt = null;
+window.deferredPrompt = ref(null);
 
 window.addEventListener("beforeinstallprompt", (e) => {
 
+    console.error("Dereferred beforeinstallprompt")
+
     e.preventDefault();
-    window.deferredPrompt = e;
+    window.deferredPrompt.value = e;
 
 });
 

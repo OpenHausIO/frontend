@@ -1,6 +1,6 @@
 <script>
 import { defineComponent } from "vue";
-import { toggleFullscreen, request, openDatabase } from "../helper.js";
+import { toggleFullscreen, request, openDatabase, canInstallAsPwa, canUseFullscreen } from "../helper.js";
 import { version } from "../../package.json";
 import Widget, { widgetComponents } from "../components/Widget.vue";
 import router, { routes } from "../router/index.js";
@@ -27,7 +27,9 @@ export default defineComponent({
       widgets,
       common,
       user,
-      widgetComponents
+      widgetComponents,
+      canInstallAsPwa,
+      canUseFullscreen
     };
 
   },
@@ -46,7 +48,7 @@ export default defineComponent({
         "dd.mm.yyyy - HH:MM:ss",
         "dd.mm.yyyy - HH:MM:ss.l"
       ],
-      showInstallButton: false,
+      //showInstallButton: false,
       itemSizes: [
         { class: "col-6 col-md-3 col-xl-2", items: 6 },
         { class: "col-8 col-md-2 col-xl-4", items: 6 },
@@ -141,7 +143,11 @@ export default defineComponent({
     }
   },
   */
-
+  computed: {
+    showInstallButton() {
+      return !!window.deferredPrompt.value;
+    }
+  },
   methods: {
     toggleFullscreen,
     showSettingsButtonInfo() {
@@ -405,7 +411,7 @@ export default defineComponent({
     },
     async installApp() {
 
-      const prompt = window.deferredPrompt;
+      const prompt = window.deferredPrompt.value;
       if (!prompt) return;
 
       prompt.prompt();
@@ -420,7 +426,7 @@ export default defineComponent({
 
       } else {
 
-        window.deferredPrompt = null;
+        window.deferredPrompt.value = null;
         this.showInstallButton = false;
 
       }
@@ -823,7 +829,8 @@ export default defineComponent({
           </label>
         </div>
 
-        <button class="btn btn-outline-primary d-block w-100 mb-1" @click="toggleFullscreen()">
+        <button class="btn btn-outline-primary d-block w-100 mb-1" @click="toggleFullscreen()"
+          v-if="canUseFullscreen()">
           Toggle fullscreen
         </button>
 
@@ -863,9 +870,10 @@ export default defineComponent({
           </label>
         </div>
 
-        <hr />
+        <hr v-if="canInstallAsPwa()" />
 
-        <button class="btn btn-outline-primary d-block w-100 mb-1" @click="installApp()" :disabled="!showInstallButton">
+        <button class="btn btn-outline-primary d-block w-100 mb-1" @click="installApp()" :disabled="!showInstallButton"
+          v-if="canInstallAsPwa()">
           Install as PWA
         </button>
 
