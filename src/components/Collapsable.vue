@@ -57,32 +57,30 @@ export default defineComponent({
     <!-- HEADER -->
     <div class="row">
       <Card class="w-100" :style="styling">
-        <div class="row">
+
+        <div class="d-flex align-items-center justify-content-between">
 
           <!-- LEFT -->
-          <div class="col-9 col-sm-10">
-            <div class="d-inline-flex">
-              <slot name="title" id="title"></slot>
-            </div>
+          <div class="d-flex align-items-center flex-grow-1 min-width-0">
+            <slot name="title" id="title"></slot>
           </div>
           <!-- LEFT -->
 
           <!-- RIGHT -->
-          <div class="col-3 col-sm-2">
-            <div @click="open = !open">
-              <div v-if="!open" class="text-center">
-                <i class="fa-solid fa-chevron-up fa-2x d-block"></i>
-                Collapse
-              </div>
-              <div v-else class="text-center">
-                <i class="fa-solid fa-chevron-down fa-2x d-block"></i>
-                Expand
-              </div>
+          <div class="flex-shrink-0 ms-3 text-center" style="min-width: 4.5rem;" @click="open = !open">
+            <div v-if="!open" class="text-center">
+              <i class="fa-solid fa-chevron-up fa-2x d-block"></i>
+              Collapse
+            </div>
+            <div v-else class="text-center">
+              <i class="fa-solid fa-chevron-down fa-2x d-block"></i>
+              Expand
             </div>
           </div>
           <!-- RIGHT -->
 
         </div>
+
       </Card>
     </div>
     <!-- HEADER -->
