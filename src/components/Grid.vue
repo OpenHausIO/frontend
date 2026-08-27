@@ -80,8 +80,8 @@ export default defineComponent({
   width: 100%;
   max-height: 100%;
   display: grid;
-  grid-template-columns: repeat(var(--grid-cols), 1fr);
-  grid-template-rows: repeat(var(--grid-rows), 1fr);
+  grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--grid-rows), minmax(0, 1fr));
   gap: var(--grid-gap);
 }
 

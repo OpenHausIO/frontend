@@ -1,11 +1,14 @@
 <template>
-  <Grid :items="items" :cols="cols" :rows="rows" :showGrid="unlocked" ref="gridRef">
+  <!-- :style="{ 'padding': `${settings.layout.gap}px` }" greift unten nicht, bzw nicht bei 30px! bei allen anderen schon...-->
+  <!-- HACK: max gap/padding auf 25px gesetzt-->
+  <Grid :items="items" :cols="cols" :rows="rows" :showGrid="unlocked" ref="gridRef" :gap="Number(settings.layout.gap)"
+    :style="{ 'padding': `${settings.layout.gap}px` }">
     <template #item="data">
 
       <div class="draggable" :class="{ 'dashed-border': unlocked, 'is-draggable': unlocked }"
         @mousedown="unlocked ? startDrag($event, data.index) : null"
         @touchstart="unlocked ? startDrag($event, data.index) : null">
-        <Card class="h-100 w-100">
+        <Card class=" h-100 w-100">
 
           <slot name="item" :item="data.item" :index="data.index" v-bind="data">
             Draggable Item #{{ data.index + 1 }}
@@ -52,6 +55,13 @@ export default defineComponent({
       type: Boolean,
       default: false
     }
+  },
+  setup() {
+
+    return {
+      settings
+    };
+
   },
   data() {
     return {

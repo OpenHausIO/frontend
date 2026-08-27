@@ -17,7 +17,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2" :style="{ 'padding': `${settings.layout.gap}px` }">
+  <div class="">
     <div class="card bg-transparent h-100 w-100" :style="{ 'border-radius': `${settings.layout.borderRadius}px` }">
       <div class="card-body">
 
@@ -31,6 +31,14 @@ export default defineComponent({
 <style scoped>
 .card {
   border: 1px solid #000;
+  height: 100%;
+  width: 100%;
+  min-width: 0;
+}
+
+.card-body {
+  min-width: 0;
+  min-height: 0;
   height: 100%;
   width: 100%;
 }

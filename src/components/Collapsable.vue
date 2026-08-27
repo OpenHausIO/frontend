@@ -1,7 +1,7 @@
 <script>
 import { defineComponent } from "vue";
 import Card from "../components/Card.vue";
-import { useCollapsablesStore } from "../store.js";
+import { useCollapsablesStore, settingsStore } from "../store.js";
 
 export default defineComponent({
   name: "Collapsable",
@@ -21,9 +21,11 @@ export default defineComponent({
   setup() {
 
     const collapsablesStore = useCollapsablesStore();
+    const settings = settingsStore();
 
     return {
-      collapsablesStore
+      collapsablesStore,
+      settings
     };
 
   },
@@ -39,6 +41,12 @@ export default defineComponent({
         this.collapsablesStore.setOpen(this.name, value);
       },
     },
+    styling() {
+      return {
+        "padding": `0 ${this.settings.layout.gap}px`,
+        "margin-top": `${this.settings.layout.gap}px`
+      }
+    }
   },
 });
 </script>
@@ -48,7 +56,7 @@ export default defineComponent({
 
     <!-- HEADER -->
     <div class="row">
-      <Card class="w-100">
+      <Card class="w-100" :style="styling">
         <div class="row">
 
           <!-- LEFT -->

@@ -5,6 +5,7 @@ import { version } from "../../package.json";
 import Widget, { widgetComponents } from "../components/Widget.vue";
 import router, { routes } from "../router/index.js";
 import { settingsStore, widgetStore, commonStore, userStore } from "../store.js";
+import ResizableGrid from "../components/ResizableGrid.vue";
 
 import { addNotification } from "../components/Notifications.vue";
 import Panel from "../components/Panel.vue";
@@ -13,7 +14,8 @@ import Card from "../components/Card.vue";
 export default defineComponent({
   components: {
     Panel,
-    Card
+    Card,
+    ResizableGrid
   },
   setup() {
 
@@ -53,13 +55,34 @@ export default defineComponent({
         { class: "col-6 col-md-3 col-xl-2", items: 6 },
         { class: "col-8 col-md-2 col-xl-4", items: 6 },
       ],
+      itemWidth: 0,
+      columns: 0,
       imageUrl: null,
       pin: {
         show: false,
         showContent: false,
         values: ["", "", "", ""],
         isWrong: false
-      }
+      },
+      panels: [
+        "itemGrouping",
+        "navigation",
+        "widgets",
+        "lookAndFeel",
+        "miscellaneous",
+        "settings",
+        "permissions",
+        "layout",
+        "startpage",
+        "background",
+        "pin",
+        "screensaver"
+      ].map((slot) => {
+        return {
+          _id: slot,
+          slot
+        };
+      })
     };
   },
   beforeMount() {
@@ -71,6 +94,8 @@ export default defineComponent({
   async mounted() {
 
     this.showInstallButton = !!window.deferredPrompt;
+    this.itemWidth = this.settings.layout.itemSize;
+    this.columns = this.settings.layout.columns;
 
     window.addEventListener('appinstalled', () => {
 
@@ -146,6 +171,13 @@ export default defineComponent({
   computed: {
     showInstallButton() {
       return !!window.deferredPrompt.value;
+    },
+    paddingStyle() {
+      return {
+        "padding-top": `${this.settings.layout.gap}px`,
+        "padding-left": `${this.settings.layout.gap}px`,
+        "padding-right": `${this.settings.layout.gap}px`
+      }
     }
   },
   methods: {
@@ -436,7 +468,8 @@ export default defineComponent({
 
       console.log("Change event", target.value);
 
-      settings.layout.itemClasses = this.itemSizes[target.value];
+      //settings.layout.itemClasses = this.itemSizes[target.value];
+      settings.layout.itemSize = target.value;
 
     },
     async onFileChange(event) {
@@ -595,7 +628,7 @@ export default defineComponent({
 
     <!-- HEADER -->
     <div class="row">
-      <Card class="w-100">
+      <Card class="w-100" :style="paddingStyle">
 
         <h3 class="mb-0">Settings</h3>
         Version: v{{ version }}
@@ -605,126 +638,132 @@ export default defineComponent({
     <!-- HEADER -->
 
     <div class="row justify-content-start">
+      <ResizableGrid :items="panels">
 
-      <!-- ITEM GROUPING -->
-      <Panel title="Item Grouping">
+        <!-- ITEM GROUPING -->
+        <template #itemGrouping>
+          <Panel title="Item Grouping" class="w-100">
 
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="groupItemsCheckbox" v-model="settings.groupItems" />
-          <label class="form-check-label small" for="groupItemsCheckbox">
-            Group Items
-          </label>
-        </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="groupItemsCheckbox" v-model="settings.groupItems" />
+              <label class="form-check-label small" for="groupItemsCheckbox">
+                Group Items
+              </label>
+            </div>
 
-        <hr />
+            <hr />
 
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="groupItemsRoomCheckbox" v-model="settings.groupRoomItems"
-            :disabled="!settings.groupItems" />
-          <label class="form-check-label small" for="groupItemsRoomCheckbox">
-            Group Room Items
-          </label>
-        </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="groupItemsRoomCheckbox"
+                v-model="settings.groupRoomItems" :disabled="!settings.groupItems" />
+              <label class="form-check-label small" for="groupItemsRoomCheckbox">
+                Group Room Items
+              </label>
+            </div>
 
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="groupItemsEndpointCheckbox"
-            v-model="settings.groupEndpointItems" :disabled="!settings.groupItems" />
-          <label class="form-check-label small" for="groupItemsEndpointCheckbox">
-            Group Endpoint Items
-          </label>
-        </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="groupItemsEndpointCheckbox"
+                v-model="settings.groupEndpointItems" :disabled="!settings.groupItems" />
+              <label class="form-check-label small" for="groupItemsEndpointCheckbox">
+                Group Endpoint Items
+              </label>
+            </div>
 
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="groupItemsDeviceCheckbox"
-            v-model="settings.groupDeviceItems" :disabled="!settings.groupItems" />
-          <label class="form-check-label small" for="groupItemsDeviceCheckbox">
-            Group Device Items
-          </label>
-        </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="groupItemsDeviceCheckbox"
+                v-model="settings.groupDeviceItems" :disabled="!settings.groupItems" />
+              <label class="form-check-label small" for="groupItemsDeviceCheckbox">
+                Group Device Items
+              </label>
+            </div>
 
-      </Panel>
-      <!-- ITEM GROUPING -->
+          </Panel>
+        </template>
+        <!-- ITEM GROUPING -->
 
-      <!-- NAVIGATION -->
-      <Panel title="Navigation">
+        <!-- NAVIGATION -->
+        <template #navigation>
+          <Panel title="Navigation" class="w-100">
 
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="showSettingsButtonCheckbox"
-            v-on:click="showSettingsButtonInfo()" v-model="settings.navigation.showSettingsButton" />
-          <label class="form-check-label small" for="showSettingsButtonCheckbox">
-            Show Settings buttons
-          </label>
-        </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showSettingsButtonCheckbox"
+                v-on:click="showSettingsButtonInfo()" v-model="settings.navigation.showSettingsButton" />
+              <label class="form-check-label small" for="showSettingsButtonCheckbox">
+                Show Settings buttons
+              </label>
+            </div>
 
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="showBackButtonCheckbox"
-            v-model="settings.navigation.showBackButton" />
-          <label class="form-check-label small" for="showBackButtonCheckbox">
-            Show Back button
-          </label>
-        </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showBackButtonCheckbox"
+                v-model="settings.navigation.showBackButton" />
+              <label class="form-check-label small" for="showBackButtonCheckbox">
+                Show Back button
+              </label>
+            </div>
 
-        <hr />
+            <hr />
 
-        <div class="form-check form-switch" v-bind:key="route.path" v-for="route in routes">
-          <input class="form-check-input" type="checkbox" :id="'show' + route.name + 'ButtonCheck'"
-            v-model="settings.navigation['show' + route.name + 'Button']" />
-          <label class="form-check-label small" :for="'show' + route.name + 'ButtonCheck'">
-            Show {{ route.name }} button
-          </label>
-        </div>
+            <div class="form-check form-switch" v-bind:key="route.path" v-for="route in routes">
+              <input class="form-check-input" type="checkbox" :id="'show' + route.name + 'ButtonCheck'"
+                v-model="settings.navigation['show' + route.name + 'Button']" />
+              <label class="form-check-label small" :for="'show' + route.name + 'ButtonCheck'">
+                Show {{ route.name }} button
+              </label>
+            </div>
 
-      </Panel>
-      <!-- NAVIGATION -->
+          </Panel>
+        </template>
+        <!-- NAVIGATION -->
 
-      <!-- WIDGETS -->
-      <Panel title="Widgets">
+        <!-- WIDGETS -->
+        <template #widgets>
+          <Panel title="Widgets" class="w-100">
 
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="editDashboardWidgetsCheckbox"
-            v-model="settings.editDashboardWidgets" />
-          <label class="form-check-label small" for="editDashboardWidgetsCheckbox">
-            Unlock Dashboard widgets
-          </label>
-        </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="editDashboardWidgetsCheckbox"
+                v-model="settings.editDashboardWidgets" />
+              <label class="form-check-label small" for="editDashboardWidgetsCheckbox">
+                Unlock Dashboard widgets
+              </label>
+            </div>
 
-        <div class="form-check form-switch">
-          <label for="dashboardGridColsInput" class="form-label">Cols</label>
-          <input type="number" id="dashboardGridColsInput" class="form-control bg-dark text-white"
-            v-model="settings.dashboardGrid.cols" :disabled="!settings.editDashboardWidgets" />
-        </div>
+            <div class="form-check form-switch">
+              <label for="dashboardGridColsInput" class="form-label">Cols</label>
+              <input type="number" id="dashboardGridColsInput" class="form-control bg-dark text-white"
+                v-model="settings.dashboardGrid.cols" :disabled="!settings.editDashboardWidgets" />
+            </div>
 
-        <div class="form-check form-switch">
-          <label for="dashboardGridRowsInput" class="form-label">Rows</label>
-          <input type="number" id="dashboardGridRowsInput" class="form-control bg-dark text-white"
-            v-model="settings.dashboardGrid.rows" :disabled="!settings.editDashboardWidgets" />
-        </div>
+            <div class="form-check form-switch">
+              <label for="dashboardGridRowsInput" class="form-label">Rows</label>
+              <input type="number" id="dashboardGridRowsInput" class="form-control bg-dark text-white"
+                v-model="settings.dashboardGrid.rows" :disabled="!settings.editDashboardWidgets" />
+            </div>
 
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="showDashboardWidgetsCheckbox"
-            v-model="settings.showDashboardWidgets" />
-          <label class="form-check-label small" for="showDashboardWidgetsCheckbox">
-            Show Dashboard widgets
-          </label>
-        </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showDashboardWidgetsCheckbox"
+                v-model="settings.showDashboardWidgets" />
+              <label class="form-check-label small" for="showDashboardWidgetsCheckbox">
+                Show Dashboard widgets
+              </label>
+            </div>
 
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="transparentDashboardWidgetsCheckbox"
-            v-model="settings.transparentDashboardWidgets" />
-          <label class="form-check-label small" for="transparentDashboardWidgetsCheckbox">
-            Transparent Dashboard Widgets
-          </label>
-        </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="transparentDashboardWidgetsCheckbox"
+                v-model="settings.transparentDashboardWidgets" />
+              <label class="form-check-label small" for="transparentDashboardWidgetsCheckbox">
+                Transparent Dashboard Widgets
+              </label>
+            </div>
 
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="widgetsApplyLayoutGap"
-            v-model="settings.widgetsApplyLayoutStyling" />
-          <label class="form-check-label small" for="widgetsApplyLayoutGap">
-            Apply Layout Styling
-          </label>
-        </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="widgetsApplyLayoutGap"
+                v-model="settings.widgetsApplyLayoutStyling" />
+              <label class="form-check-label small" for="widgetsApplyLayoutGap">
+                Apply Layout Styling
+              </label>
+            </div>
 
-        <!--
+            <!--
             Does currently not work
             <div class="form-check form-switch">
               <input class="form-check-input" type="checkbox" id="showWidgetTitleBarCheckbox"
@@ -735,370 +774,406 @@ export default defineComponent({
             </div>
             -->
 
-        <hr />
+            <hr />
 
-        <div class="btn-group d-block">
-          <button type="button" class="btn btn-primary dropdown-toggle w-100" data-bs-toggle="dropdown"
-            aria-expanded="false" :disabled="!settings.editDashboardWidgets">
-            Add Widget
-          </button>
-          <ul class="dropdown-menu dropdown-menu-dark w-100">
-            <li v-bind:key="index" v-for="(widget, index) in widgetComponents">
-              <button class="dropdown-item d-flex gap-2 align-items-center" @click="addDashboardWidget(widget.name)">
-                {{ widget.name }}
+            <div class="btn-group d-block">
+              <button type="button" class="btn btn-primary dropdown-toggle w-100" data-bs-toggle="dropdown"
+                aria-expanded="false" :disabled="!settings.editDashboardWidgets">
+                Add Widget
               </button>
-            </li>
-          </ul>
-        </div>
-
-      </Panel>
-      <!-- WIDGETS -->
-
-      <!-- LOOK & FEEL -->
-      <Panel title="Look & Feel">
-
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="jumpToOnlyEndpointSetCheckbox"
-            v-model="settings.jumpToOnlyEndpointSet" />
-          <label class="form-check-label small" for="jumpToOnlyEndpointSetCheckbox">
-            Jump to only Endpoint set from Device
-          </label>
-        </div>
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="showParameterInCommandsCheckbox"
-            v-model="settings.showParameterInCommands" />
-          <label class="form-check-label small" for="showParameterInCommandsCheckbox">
-            Show/Handle command params in command box
-          </label>
-        </div>
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="showCommandStatesCounterCheckbox"
-            v-model="settings.showCommandStatesCounter" />
-          <label class="form-check-label small" for="showCommandStatesCounterCheckbox">
-            Show command/states counter
-          </label>
-        </div>
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="showOverlayForConnectionLost"
-            v-model="settings.showOverlayForConnectionLost" />
-          <label class="form-check-label small" for="showOverlayForConnectionLost">
-            Display Overlay when connection is lost
-          </label>
-        </div>
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="showUpdateTimestampInStates"
-            v-model="settings.showUpdateTimestampInStates" />
-          <label class="form-check-label small" for="showUpdateTimestampInStates">
-            Show formatted update timestamp in states
-          </label>
-        </div>
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="enableAnimationOnStateUpdate"
-            v-model="settings.enableAnimationOnStateUpdate" />
-          <label class="form-check-label small" for="enableAnimationOnStateUpdate">
-            Enable animation on state update
-          </label>
-        </div>
-
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="useRemoteLayoutPages"
-            v-model="settings.useRemoteLayoutPages" />
-          <label class="form-check-label small" for="useRemoteLayoutPages">
-            Use/Display command layout pages when available
-          </label>
-        </div>
-
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="repeatCommand" v-model="settings.repeatCommand" />
-          <label class="form-check-label small" for="repeatCommand">
-            Repeat command when hold pressed
-          </label>
-        </div>
-
-      </Panel>
-      <!-- LOOK & FEEL -->
-
-      <!-- MISCELLANEOUS -->
-      <Panel title="Miscellaneous">
-
-        <div class="form-check form-switch hide">
-          <input class="form-check-input" type="checkbox" id="showVueTourOnNextVisitCheckbox"
-            v-model="settings.showVueTourOnNextVisit" />
-          <label class="form-check-label small" for="showVueTourOnNextVisitCheckbox">
-            Enable Tour on next visit
-          </label>
-        </div>
-
-        <button class="btn btn-outline-primary d-block w-100 mb-1" @click="toggleFullscreen()"
-          v-if="canUseFullscreen()">
-          Toggle fullscreen
-        </button>
-
-        <button class="btn btn-outline-primary d-block w-100 mb-1" @click="userLogout()">
-          Logout
-        </button>
-
-        <a class="btn btn-outline-primary d-block w-100 mb-1" :href="settings.urls.adminUi" v-if="user.isAdmin"
-          target="_blank">
-          Administration
-        </a>
-
-        <hr>
-
-        Dateformat
-
-        <select class="form-select bg-transparent text-white border-primary" v-model="settings.dateformat">
-          <option v-for="format in dateformats">
-            {{ format }}
-          </option>
-        </select>
+              <ul class="dropdown-menu dropdown-menu-dark w-100">
+                <li v-bind:key="index" v-for="(widget, index) in widgetComponents">
+                  <button class="dropdown-item d-flex gap-2 align-items-center"
+                    @click="addDashboardWidget(widget.name)">
+                    {{ widget.name }}
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+          </Panel>
+        </template>
+        <!-- WIDGETS -->
+
+        <!-- LOOK & FEEL -->
+        <template #lookAndFeel>
+          <Panel title="Look & Feel" class="w-100">
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="jumpToOnlyEndpointSetCheckbox"
+                v-model="settings.jumpToOnlyEndpointSet" />
+              <label class="form-check-label small" for="jumpToOnlyEndpointSetCheckbox">
+                Jump to only Endpoint set from Device
+              </label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showParameterInCommandsCheckbox"
+                v-model="settings.showParameterInCommands" />
+              <label class="form-check-label small" for="showParameterInCommandsCheckbox">
+                Show/Handle command params in command box
+              </label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showCommandStatesCounterCheckbox"
+                v-model="settings.showCommandStatesCounter" />
+              <label class="form-check-label small" for="showCommandStatesCounterCheckbox">
+                Show command/states counter
+              </label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showOverlayForConnectionLost"
+                v-model="settings.showOverlayForConnectionLost" />
+              <label class="form-check-label small" for="showOverlayForConnectionLost">
+                Display Overlay when connection is lost
+              </label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showUpdateTimestampInStates"
+                v-model="settings.showUpdateTimestampInStates" />
+              <label class="form-check-label small" for="showUpdateTimestampInStates">
+                Show formatted update timestamp in states
+              </label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="enableAnimationOnStateUpdate"
+                v-model="settings.enableAnimationOnStateUpdate" />
+              <label class="form-check-label small" for="enableAnimationOnStateUpdate">
+                Enable animation on state update
+              </label>
+            </div>
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="useRemoteLayoutPages"
+                v-model="settings.useRemoteLayoutPages" />
+              <label class="form-check-label small" for="useRemoteLayoutPages">
+                Use/Display command layout pages when available
+              </label>
+            </div>
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="repeatCommand" v-model="settings.repeatCommand" />
+              <label class="form-check-label small" for="repeatCommand">
+                Repeat command when hold pressed
+              </label>
+            </div>
+
+          </Panel>
+        </template>
+        <!-- LOOK & FEEL -->
+
+        <!-- MISCELLANEOUS -->
+        <template #miscellaneous>
+          <Panel title="Miscellaneous" class="w-100">
+
+            <div class="form-check form-switch hide">
+              <input class="form-check-input" type="checkbox" id="showVueTourOnNextVisitCheckbox"
+                v-model="settings.showVueTourOnNextVisit" />
+              <label class="form-check-label small" for="showVueTourOnNextVisitCheckbox">
+                Enable Tour on next visit
+              </label>
+            </div>
+
+            <button class="btn btn-outline-primary d-block w-100 mb-1" @click="toggleFullscreen()"
+              v-if="canUseFullscreen()">
+              Toggle fullscreen
+            </button>
+
+            <button class="btn btn-outline-primary d-block w-100 mb-1" @click="userLogout()">
+              Logout
+            </button>
+
+            <a class="btn btn-outline-primary d-block w-100 mb-1" :href="settings.urls.adminUi" v-if="user.isAdmin"
+              target="_blank">
+              Administration
+            </a>
+
+            <hr>
 
-        <hr v-if="user.isAdmin" />
+            Dateformat
 
-        <div class="form-check form-switch" v-if="user.isAdmin">
-          <input class="form-check-input" type="checkbox" id="showNotifications" v-model="settings.showNotifications" />
-          <label class="form-check-label small" for="showNotifications">
-            Show System Notifications
-          </label>
-        </div>
+            <select class="form-select bg-transparent text-white border-primary" v-model="settings.dateformat">
+              <option v-for="format in dateformats">
+                {{ format }}
+              </option>
+            </select>
 
-        <div class="form-check form-switch" v-if="user.isAdmin">
-          <input class="form-check-input" type="checkbox" id="sendSystemNotifications"
-            v-model="settings.sendSystemNotifications" />
-          <label class="form-check-label small" for="sendSystemNotifications">
-            Send System Notifications
-          </label>
-        </div>
+            <hr v-if="user.isAdmin" class="hide" />
 
-        <hr v-if="canInstallAsPwa()" />
+            <div class="form-check form-switch hide" v-if="user.isAdmin">
+              <input class="form-check-input" type="checkbox" id="showNotifications"
+                v-model="settings.showNotifications" />
+              <label class="form-check-label small" for="showNotifications">
+                Show System Notifications
+              </label>
+            </div>
 
-        <button class="btn btn-outline-primary d-block w-100 mb-1" @click="installApp()" :disabled="!showInstallButton"
-          v-if="canInstallAsPwa()">
-          Install as PWA
-        </button>
+            <div class="form-check form-switch hide" v-if="user.isAdmin">
+              <input class="form-check-input" type="checkbox" id="sendSystemNotifications"
+                v-model="settings.sendSystemNotifications" />
+              <label class="form-check-label small" for="sendSystemNotifications">
+                Send System Notifications
+              </label>
+            </div>
 
-      </Panel>
-      <!-- MISCELLANEOUS -->
+            <hr v-if="canInstallAsPwa()" />
 
-      <!-- SETTINGS -->
-      <Panel title="Settings">
+            <button class="btn btn-outline-primary d-block w-100 mb-1" @click="installApp()"
+              :disabled="!showInstallButton" v-if="canInstallAsPwa()">
+              Install as PWA
+            </button>
 
-        <button class="btn btn-outline-primary d-block w-100 mb-1" @click="exportSettings()">
-          Export Settings
-        </button>
+          </Panel>
+        </template>
+        <!-- MISCELLANEOUS -->
 
-        <button class="btn btn-outline-primary d-block w-100 mb-1" @click="importSettings()">
-          Import Settings
-        </button>
+        <!-- SETTINGS -->
+        <template #settings>
+          <Panel title="Settings" class="w-100">
 
-        <button class="btn btn-outline-danger d-block w-100" @click="clearSettings()">
-          Clear Settings
-        </button>
+            <button class="btn btn-outline-primary d-block w-100 mb-1" @click="exportSettings()">
+              Export Settings
+            </button>
 
-      </Panel>
-      <!-- SETTINGS -->
+            <button class="btn btn-outline-primary d-block w-100 mb-1" @click="importSettings()">
+              Import Settings
+            </button>
 
-      <!-- PERMISSIONS -->
-      <Panel title="Permissions">
+            <button class="btn btn-outline-danger d-block w-100" @click="clearSettings()">
+              Clear Settings
+            </button>
 
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="permissionsNotifications"
-            v-model="settings.permissionsNotifications" v-on:change="askForPermission('notifications')" />
-          <label class="form-check-label small" for="permissionsNotifications">
-            Notifications
-          </label>
-        </div>
+          </Panel>
+        </template>
+        <!-- SETTINGS -->
 
-      </Panel>
-      <!-- PERMISSIONS -->
+        <!-- PERMISSIONS -->
+        <template #permissions>
+          <Panel title="Permissions" class="w-100">
 
-      <!-- LAYOUT -->
-      <Panel title="Layout">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="permissionsNotifications"
+                v-model="settings.permissionsNotifications" v-on:change="askForPermission('notifications')" />
+              <label class="form-check-label small" for="permissionsNotifications">
+                Notifications
+              </label>
+            </div>
 
-        <div class="mb-3">
-          <label class="form-label mb-0">Gap between items</label>
-          <input type="range" class="form-range" min="0" step="5" max="30" v-model="settings.layout.gap">
+          </Panel>
+        </template>
+        <!-- PERMISSIONS -->
 
-          <div class="d-flex justify-content-between px-1" style="margin-top: -10px;">
-            <span v-for="val in [0, 5, 10, 15, 20, 25, 30]" :key="val" style="font-size: 8px; color: #000">|</span>
-          </div>
+        <!-- LAYOUT -->
+        <template #layout>
+          <Panel title="Layout" class="w-100">
 
-          {{ settings.layout.gap }}px
-
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label mb-0">Item border radius</label>
-          <input type="range" class="form-range" min="0" step="5" max="30" v-model="settings.layout.borderRadius">
-
-          <div class="d-flex justify-content-between px-1" style="margin-top: -10px;">
-            <span v-for="val in [0, 5, 10, 15, 20, 25, 30]" :key="val" style="font-size: 8px; color: #000">|</span>
-          </div>
-
-          {{ settings.layout.borderRadius }}px
-
-        </div>
-
-        <div class="mb-3">
-
-          <label class="form-label mb-0">Item Transparancy</label>
-          <input type="range" class="form-range" min="0" step="1" max="100" v-model="settings.layout.itemTransparancy"
-            @input="changeItemTransparancy($event)">
-
-          {{ settings.layout.itemTransparancy }}%
-
-        </div>
-
-        <div class="mb-3 hide">
-          <label class="form-label mb-0">Item sizes ratio</label>
-          <input type="range" class="form-range" min="0" step="1" max="5" @change="changeItemSizeRatio($event)">
-
-          <div class="d-flex justify-content-between px-1" style="margin-top: -10px;">
-            <span v-for="val in [0, 1, 2, 3, 4]" :key="val" style="font-size: 8px; color: #000">|</span>
-          </div>
-
-          {{ settings.layout.borderRadius }}px
-
-        </div>
-
-      </Panel>
-      <!-- LAYOUT -->
-
-      <!-- STARTPAGE -->
-      <Panel title="Startpage">
-
-        <select class="form-select btn btn-outline-primary d-block w-100 mb-1" v-model="settings.startpage">
-          <option v-for="route in routes" :value="route.path">
-            {{ route.name }}
-          </option>
-        </select>
-
-        <button class="btn btn-outline-secondary w-100" @click="router.push(settings.startpage)">
-          Naviagte to page
-        </button>
-
-      </Panel>
-      <!-- STARTPAGE -->
-
-      <!-- BACKGROUND -->
-      <Panel title="Background">
-
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="showGradientBackgroundCheckbox"
-            v-model="settings.showGradientBackground" :disabled="this.imageUrl" />
-          <label class="form-check-label small" for="showGradientBackgroundCheckbox">
-            Enable Background gardient
-          </label>
-        </div>
-
-        <div class="mb-3 mt-3">
-          <label for="bgUpload" class="form-label hide">Hintergrundbild wählen</label>
-          <input type="file" id="bgUpload" class="form-control hide" accept="image/*" @change="onFileChange"
-            ref="bgUpload">
-          <button class="btn btn-outline-primary w-100" @click="$refs.bgUpload.click()"> Upload/Select </button>
-        </div>
-
-        <button v-if="imageUrl" class="btn btn-outline-secondary w-100" @click="resetImage()">
-          Reset/Delete
-        </button>
-
-      </Panel>
-      <!-- BACKGROUND -->
-
-      <!-- PIN -->
-      <Panel title="PIN">
-
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="enablePIN" v-model="settings.pin.enabled" />
-          <label class="form-check-label small" for="enablePIN">
-            Secure Settings page with PIN
-          </label>
-        </div>
-
-        <div class="d-flex justify-content-center mt-3">
-          <input :type="pin.show ? 'text' : 'password'" class="form-control bg-dark text-primary text-center"
-            placeholder="•" maxlength="1" ref="pin1" @input="pinInput($event, 1)" :disabled="!settings.pin.enabled"
-            pattern="\d{1}" v-model="pin.values[0]" @focus="$event.target.select()">
-          <span class="m-2">•</span>
-          <input :type="pin.show ? 'text' : 'password'" class="form-control bg-dark text-primary text-center"
-            placeholder="•" maxlength="1" ref="pin2" @input="pinInput($event, 2)" :disabled="!settings.pin.enabled"
-            pattern="\d{1}" v-model="pin.values[1]" @focus="$event.target.select()">
-          <span class="m-2">•</span>
-          <input :type="pin.show ? 'text' : 'password'" class="form-control bg-dark text-primary text-center"
-            placeholder="•" maxlength="1" ref="pin3" @input="pinInput($event, 3)" :disabled="!settings.pin.enabled"
-            pattern="\d{1}" v-model="pin.values[2]" @focus="$event.target.select()">
-          <span class="m-2">•</span>
-          <input :type="pin.show ? 'text' : 'password'" class="form-control bg-dark text-primary text-center"
-            placeholder="•" maxlength="1" ref="pin4" @input="pinInput($event, 4)" :disabled="!settings.pin.enabled"
-            pattern="\d{1}" v-model="pin.values[3]" @focus="$event.target.select()">
-        </div>
-
-        <button class="btn btn-outline-primary mt-3 w-100" @mousedown="pin.show = true" @mouseup="pin.show = false"
-          @mouseleave="pin.show = false" @touchstart="pin.show = true" @touchend="pin.show = false"
-          @touchcancel="pin.show = false">
-          <i class="fa-solid" :class="{ 'fa-eye': !pin.show, 'fa-eye-slash': pin.show }"></i> Show PIN
-        </button>
-
-        <button class="btn btn-outline-success mt-1 w-100" @click="savePin()">
-          Save
-        </button>
-
-        <button class="btn btn-outline-warning mt-1 w-100" @click="clearPin()">
-          Clear
-        </button>
-
-      </Panel>
-      <!-- PIN -->
-
-      <!-- SCREENSAVER -->
-      <Panel title="Screensaver">
-
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="enableScreenSaverOverlayCheckbox"
-            v-model="settings.screensaver.enabled" />
-          <label class="form-check-label small" for="enableScreenSaverOverlayCheckbox">
-            Enable Screensaver
-          </label>
-        </div>
-
-        <div class="form-check form-switch">
-          <label for="screenSaverOVerlayInput" class="form-label">
-            Timeout in Sec.
-          </label>
-          <input type="number" id="screenSaverOVerlayInput" class="form-control bg-dark text-white"
-            v-model="settings.screensaver.timeout" :disabled="!settings.screensaver.enabled" />
-        </div>
-
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="screensaveruseBlackBackground"
-            v-model="settings.screensaver.blackBackground" :disabled="!settings.screensaver.enabled" />
-          <label class="form-check-label small" for="screensaveruseBlackBackground">
-            Black Background
-          </label>
-        </div>
-
-      </Panel>
-      <!-- SCREENSAVER -->
-
-      <!-- INFORMATION -->
-      <Panel title="Information" class="hide">
-
-        <div clasS="d-block">
-          Backend: vX.X.X
-        </div>
-        <div class="d-block">
-          Frontend: vX.X.X
-        </div>
-        <div class="d-block">
-          Connector: vX.X.X
-        </div>
-        <div class="d-block">
-          Database: vX.X.X
-        </div>
-
-      </Panel>
-      <!-- INFORMATION -->
+            <div class="mb-3">
+              <label class="form-label mb-0">Gap between items</label>
+              <input type="range" class="form-range" min="0" step="5" max="25" v-model="settings.layout.gap">
 
+              <div class="d-flex justify-content-between px-1" style="margin-top: -10px;">
+                <span v-for="val in [0, 5, 10, 15, 20, 25]" :key="val" style="font-size: 8px; color: #000">|</span>
+              </div>
+
+              {{ settings.layout.gap }}px
+
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label mb-0">Item border radius</label>
+              <input type="range" class="form-range" min="0" step="5" max="30" v-model="settings.layout.borderRadius">
+
+              <div class="d-flex justify-content-between px-1" style="margin-top: -10px;">
+                <span v-for="val in [0, 5, 10, 15, 20, 25, 30]" :key="val" style="font-size: 8px; color: #000">|</span>
+              </div>
+
+              {{ settings.layout.borderRadius }}px
+
+            </div>
+
+            <div class="mb-3">
+
+              <label class="form-label mb-0">Item Opacity</label>
+              <input type="range" class="form-range" min="0" step="1" max="100"
+                v-model="settings.layout.itemTransparancy" @input="changeItemTransparancy($event)">
+
+              {{ settings.layout.itemTransparancy }}%
+
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label mb-0">Item min width</label>
+
+              <input type="range" class="form-range" min="100" step="10" max="1000" v-model="itemWidth"
+                @change="($event) => { settings.layout.itemSize = $event.target.value }">
+
+              {{ itemWidth }}px
+
+            </div>
+
+            <div>
+
+              <label class="form-label mb-0">Colums</label>
+              <input type="range" class="form-range" min="1" step="1" max="12" v-model="columns"
+                @change="($event) => { settings.layout.columns = $event.target.value }">
+
+              <div class="d-flex justify-content-between px-1" style="margin-top: -10px;">
+                <span v-for="val in Array.from({ length: 12 })" :key="val" style="font-size: 8px; color: #000">|</span>
+              </div>
+
+              {{ columns }}
+
+            </div>
+
+          </Panel>
+        </template>
+        <!-- LAYOUT -->
+
+        <!-- STARTPAGE -->
+        <template #startpage>
+          <Panel title="Startpage" class="w-100">
+
+            <select class="form-select btn btn-outline-primary d-block w-100 mb-1" v-model="settings.startpage">
+              <option v-for="route in routes" :value="route.path">
+                {{ route.name }}
+              </option>
+            </select>
+
+            <button class="btn btn-outline-secondary w-100" @click="router.push(settings.startpage)">
+              Naviagte to page
+            </button>
+
+          </Panel>
+        </template>
+        <!-- STARTPAGE -->
+
+        <!-- BACKGROUND -->
+        <template #background>
+          <Panel title="Background" class="w-100">
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showGradientBackgroundCheckbox"
+                v-model="settings.showGradientBackground" :disabled="this.imageUrl" />
+              <label class="form-check-label small" for="showGradientBackgroundCheckbox">
+                Enable Background gardient
+              </label>
+            </div>
+
+            <div class="mb-3 mt-3">
+              <label for="bgUpload" class="form-label hide">Hintergrundbild wählen</label>
+              <input type="file" id="bgUpload" class="form-control hide" accept="image/*" @change="onFileChange"
+                ref="bgUpload">
+              <button class="btn btn-outline-primary w-100" @click="$refs.bgUpload.click()"> Upload/Select </button>
+            </div>
+
+            <button v-if="imageUrl" class="btn btn-outline-secondary w-100" @click="resetImage()">
+              Reset/Delete
+            </button>
+
+          </Panel>
+        </template>
+        <!-- BACKGROUND -->
+
+        <!-- PIN -->
+        <template #pin>
+          <Panel title="PIN" class="w-100">
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="enablePIN" v-model="settings.pin.enabled" />
+              <label class="form-check-label small" for="enablePIN">
+                Secure Settings page with PIN
+              </label>
+            </div>
+
+            <div class="d-flex justify-content-center mt-3">
+              <input :type="pin.show ? 'text' : 'password'" class="form-control bg-dark text-primary text-center"
+                placeholder="•" maxlength="1" ref="pin1" @input="pinInput($event, 1)" :disabled="!settings.pin.enabled"
+                pattern="\d{1}" v-model="pin.values[0]" @focus="$event.target.select()">
+              <span class="m-2">•</span>
+              <input :type="pin.show ? 'text' : 'password'" class="form-control bg-dark text-primary text-center"
+                placeholder="•" maxlength="1" ref="pin2" @input="pinInput($event, 2)" :disabled="!settings.pin.enabled"
+                pattern="\d{1}" v-model="pin.values[1]" @focus="$event.target.select()">
+              <span class="m-2">•</span>
+              <input :type="pin.show ? 'text' : 'password'" class="form-control bg-dark text-primary text-center"
+                placeholder="•" maxlength="1" ref="pin3" @input="pinInput($event, 3)" :disabled="!settings.pin.enabled"
+                pattern="\d{1}" v-model="pin.values[2]" @focus="$event.target.select()">
+              <span class="m-2">•</span>
+              <input :type="pin.show ? 'text' : 'password'" class="form-control bg-dark text-primary text-center"
+                placeholder="•" maxlength="1" ref="pin4" @input="pinInput($event, 4)" :disabled="!settings.pin.enabled"
+                pattern="\d{1}" v-model="pin.values[3]" @focus="$event.target.select()">
+            </div>
+
+            <button class="btn btn-outline-primary mt-3 w-100" @mousedown="pin.show = true" @mouseup="pin.show = false"
+              @mouseleave="pin.show = false" @touchstart="pin.show = true" @touchend="pin.show = false"
+              @touchcancel="pin.show = false">
+              <i class="fa-solid" :class="{ 'fa-eye': !pin.show, 'fa-eye-slash': pin.show }"></i> Show PIN
+            </button>
+
+            <button class="btn btn-outline-success mt-1 w-100" @click="savePin()">
+              Save
+            </button>
+
+            <button class="btn btn-outline-warning mt-1 w-100" @click="clearPin()">
+              Clear
+            </button>
+
+          </Panel>
+        </template>
+        <!-- PIN -->
+
+        <!-- SCREENSAVER -->
+        <template #screensaver>
+          <Panel title="Screensaver" class="w-100">
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="enableScreenSaverOverlayCheckbox"
+                v-model="settings.screensaver.enabled" />
+              <label class="form-check-label small" for="enableScreenSaverOverlayCheckbox">
+                Enable Screensaver
+              </label>
+            </div>
+
+            <div class="form-check form-switch">
+              <label for="screenSaverOVerlayInput" class="form-label">
+                Timeout in Sec.
+              </label>
+              <input type="number" id="screenSaverOVerlayInput" class="form-control bg-dark text-white"
+                v-model="settings.screensaver.timeout" :disabled="!settings.screensaver.enabled" />
+            </div>
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="screensaveruseBlackBackground"
+                v-model="settings.screensaver.blackBackground" :disabled="!settings.screensaver.enabled" />
+              <label class="form-check-label small" for="screensaveruseBlackBackground">
+                Black Background
+              </label>
+            </div>
+
+          </Panel>
+        </template>
+        <!-- SCREENSAVER -->
+
+        <!-- INFORMATION -->
+        <template #information>
+          <Panel title="Information" class="hide w-100">
+
+            <div clasS="d-block">
+              Backend: vX.X.X
+            </div>
+            <div class="d-block">
+              Frontend: vX.X.X
+            </div>
+            <div class="d-block">
+              Connector: vX.X.X
+            </div>
+            <div class="d-block">
+              Database: vX.X.X
+            </div>
+
+          </Panel>
+        </template>
+        <!-- INFORMATION -->
+
+      </ResizableGrid>
     </div>
 
   </div>

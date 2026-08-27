@@ -70,8 +70,9 @@ export const settingsStore = defineStore("settings", {
             layout: {
                 gap: "10",
                 borderRadius: "5",
-                itemTransparancy: "20",
-                itemSize: "150"
+                itemTransparancy: "10",
+                itemSize: "200",
+                columns: 6
             },
             pin: {
                 enabled: false,

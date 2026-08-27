@@ -1,6 +1,7 @@
 <script setup>
 import Collapsable from "@/components/Collapsable.vue";
 import Tile from "@/components/Tile.vue";
+import ResizableGrid from "@/components/ResizableGrid.vue";
 import { request } from "@/helper";
 import { settingsStore } from "../store.js";
 const settings = settingsStore();
@@ -17,6 +18,7 @@ export default {
     CommandParameter,
     Collapsable,
     Tile,
+    ResizableGrid
   },
   data() {
     return {
@@ -59,10 +61,10 @@ export default {
 <template>
   <div class="container-fluid">
     <!-- COMMANDS/STATES/SCENES -->
-    <div class="row display-flex text-center" style="height: 100%">
-      <!-- COMMANDS -->
-      <div class="col-6 col-md-3 col-xl-2" v-bind:key="item._id" v-for="item in items"
-        :style="{ 'padding': `${settings.layout.gap}px` }">
+    <div class="row display-flex text-center h-100">
+      <ResizableGrid :items="items" v-slot="{ item }">
+
+        <!-- COMMANDS -->
         <Tile @click="item?.inputs?.length === 0 && trigger(item, $event)">
 
           <template #icon>
@@ -78,9 +80,9 @@ export default {
           </CommandParameter>
 
         </Tile>
-      </div>
-      <!-- COMMANDS -->
+        <!-- COMMANDS -->
 
+      </ResizableGrid>
     </div>
     <!-- COMMANDS/STATES/SCENES -->
   </div>
