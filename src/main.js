@@ -1,4 +1,4 @@
-import { createApp, ref } from "vue";
+import { createApp, ref, watch } from "vue";
 import * as Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
@@ -64,6 +64,19 @@ pinia.use(({ store, options }) => {
 pinia.use(({ store }) => {
     if (store.$id === "settings") {
 
+        watch(() => {
+            return store.navigation.showSettingsButton;
+        }, (newVal, oldVal) => {
+            if (newVal !== oldVal && newVal === false) {
+
+                addNotification("Tap 10x times quickly anywhere to go to the settings page again when the settings button is hidden.", {
+                    type: "primary",
+                    dismiss: false
+                });
+
+            }
+        });
+
         store.$subscribe((mutation, state) => {
 
             console.log("mutation", mutation);
@@ -83,12 +96,14 @@ pinia.use(({ store }) => {
                 document.getElementById("app").classList.remove("gardien-background");
             }
 
+            /*
             if (!state.navigation.showSettingsButton) {
                 addNotification("Tap 10x times on any empty space to go to this page again when the settings button is hidden.", {
                     type: "primary",
                     dismiss: 3000
                 });
             }
+            */
 
             // GEÄNDERT: liest jetzt aus state.navigation
             routes.forEach((route) => {
