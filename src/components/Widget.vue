@@ -19,6 +19,8 @@ const allowedWidgets = [
   "Todo",
   "WebView",
   //"Video"
+  "Notifications",
+  //"Battery"
 ];
 
 (async () => {
