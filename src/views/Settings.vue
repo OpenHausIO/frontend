@@ -755,7 +755,7 @@ export default defineComponent({
               </label>
             </div>
 
-            <div class="form-check form-switch">
+            <div class="form-check form-switch hide">
               <input class="form-check-input" type="checkbox" id="widgetsApplyLayoutGap"
                 v-model="settings.widgetsApplyLayoutStyling" />
               <label class="form-check-label small" for="widgetsApplyLayoutGap">
