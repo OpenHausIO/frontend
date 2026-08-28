@@ -85,10 +85,12 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="container-fluid">
-    <div class="row h-100">
+  <div class="login-page">
+    <div class="row h-100 g-0">
+
       <!-- LEFT -->
-      <div class="col-3 bg-dark border-end" style="border-color: #000 !important">
+      <div class="col-md-4 col-lg-3 d-none d-md-flex bg-dark border-end login-left"
+        style="border-color: #000 !important">
         <div class="login-main-text">
           <h2>OpenHaus</h2>
           <p>SmartHome/IoT solution</p>
@@ -105,97 +107,107 @@ export default defineComponent({
         </div>
       </div>
       <!-- LEFT -->
+
       <!-- RIGHT -->
-      <div class="col-9" style="background-color: #2e3236">
-        <div class="container">
-          <div class="row">
-            <div class="col-md-4 col-sm-12">
-              <div class="login-form">
-                <form @submit.prevent="login">
-                  <div class="mb-3">
-                    <label for="loginEmail" class="form-label">E-Mail address</label>
-                    <input type="email" class="form-control bg-dark text-white" style="border-color: #000" name="email"
-                      id="loginEmail" />
-                  </div>
-                  <div class="mb-3">
-                    <label for="loginPassword" class="form-label">Password</label>
-                    <input type="password" class="form-control bg-dark text-white" style="border-color: #000"
-                      name="password" id="loginPassword" />
-                  </div>
-                  <button type="submit" class="btn btn-outline-primary w-100 d-block">
-                    Submit
-                  </button>
-                </form>
-              </div>
+      <div class="col-12 col-md-8 col-lg-9 login-right" style="background-color: #2e3236">
+        <div class="login-form-wrapper">
+          <form @submit.prevent="login" class="login-form">
+            <div class="mb-3">
+              <label for="loginEmail" class="form-label">E-Mail address</label>
+              <input type="email" class="form-control bg-dark text-white" style="border-color: #000" name="email"
+                id="loginEmail" />
             </div>
+            <div class="mb-3">
+              <label for="loginPassword" class="form-label">Password</label>
+              <input type="password" class="form-control bg-dark text-white" style="border-color: #000" name="password"
+                id="loginPassword" />
+            </div>
+            <button type="submit" class="btn btn-outline-primary w-100 d-block">
+              Submit
+            </button>
+          </form>
+
+          <div class="d-md-none login-footer-text mt-5">
+            <p class="mb-1"><strong>OpenHaus</strong> <br />SmartHome/IoT solution</p>
+            <p class="mb-0">
+              <a href="https://open-haus.io" target="_blank">open-haus.io</a>
+              &middot;
+              <a href="https://github.com/OpenHausIO" target="_blank">GitHub</a>
+            </p>
           </div>
         </div>
       </div>
       <!-- RIGHT -->
+
     </div>
   </div>
 </template>
 
-<style scope>
-.main-head {
-  height: 150px;
-  background: #fff;
+<style scoped>
+.login-page {
+  min-height: 100vh;
 }
 
-.main {
-  padding: 0px 10px;
-}
-
-@media screen and (max-height: 450px) {
-  .sidenav {
-    padding-top: 15px;
-  }
-}
-
-@media screen and (max-width: 450px) {
-  .login-form {
-    margin-top: 10%;
-  }
-
-  .register-form {
-    margin-top: 10%;
-  }
-}
-
-@media screen and (min-width: 768px) {
-  .main {
-    margin-left: 40%;
-  }
-
-  .sidenav {
-    width: 40%;
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    left: 0;
-  }
-
-  .login-form {
-    margin-top: 80%;
-  }
-
-  .register-form {
-    margin-top: 20%;
-  }
+.login-left {
+  align-items: center;
+  overflow: hidden;
 }
 
 .login-main-text {
-  margin-top: 20%;
-  padding: 60px;
+  padding: clamp(20px, 6vw, 60px);
   color: #fff;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .login-main-text h2 {
   font-weight: 300;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  white-space: normal;
+}
+
+.login-main-text p {
+  font-size: clamp(0.85rem, 1.4vw, 1rem);
+}
+
+.login-right {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  min-height: 100vh;
+  padding: 30px 15px;
+  box-sizing: border-box;
+}
+
+@media screen and (max-width: 767.98px) {
+  .login-right {
+    justify-content: center;
+  }
+}
+
+.login-form-wrapper {
+  width: 100%;
+  max-width: 360px;
 }
 
 .btn-black {
   background-color: #000 !important;
   color: #fff;
+}
+
+input.form-control {
+  border: 1px solid #000;
+}
+
+.login-footer-text {
+  font-size: 0.8rem;
+  color: #aaa;
+  text-align: center;
+}
+
+.login-footer-text a {
+  color: #ccc;
 }
 </style>
