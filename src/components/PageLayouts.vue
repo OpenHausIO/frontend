@@ -162,7 +162,7 @@ export default defineComponent({
     <div class="h-100" ref="touchplace">
       <div class="h-100" v-if="page" :style="{ 'padding': `${settings.layout.gap}px` }">
 
-        <Grid :items="gridItems(page)" :cols="page.size.w" :rows="page.size.h" :gap="Number(settings.layout.gap * 2)">
+        <Grid :items="gridItems(page)" :cols="page.size.w" :rows="page.size.h" :gap="Number(settings.layout.gap)">
           <template #item="{ item, index, cmd }">
 
             <div v-if="item.type === 'command'"

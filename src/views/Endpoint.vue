@@ -177,8 +177,6 @@ export default {
   </div>
   <div v-else class="container-fluid">
 
-    {{ }}
-
     <!-- HEADER -->
     <div class="row">
       <div class="col-12" :style="paddingStyle">
