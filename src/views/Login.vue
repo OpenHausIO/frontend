@@ -92,7 +92,9 @@ export default defineComponent({
       <div class="col-md-4 col-lg-3 d-none d-md-flex bg-dark border-end login-left"
         style="border-color: #000 !important">
         <div class="login-main-text">
-          <h2>OpenHaus</h2>
+          <h2 class="splash-heading fw-bold">
+            OpenHaus
+          </h2>
           <p>SmartHome/IoT solution</p>
           <p>
             Website:
@@ -111,6 +113,13 @@ export default defineComponent({
       <!-- RIGHT -->
       <div class="col-12 col-md-8 col-lg-9 login-right" style="background-color: #2e3236">
         <div class="login-form-wrapper">
+
+          <div class="text-center mb-4 d-md-none">
+            <h1 class="splash-heading display-3 fw-bold">
+              OpenHaus
+            </h1>
+          </div>
+
           <form @submit.prevent="login" class="login-form">
             <div class="mb-3">
               <label for="loginEmail" class="form-label">E-Mail address</label>
@@ -209,5 +218,13 @@ input.form-control {
 
 .login-footer-text a {
   color: #ccc;
+}
+
+.splash-heading {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  color: var(--splash-text);
+  letter-spacing: 0.05em;
+  /*text-shadow: 0 0 40px rgba(56, 189, 248, 0.4);*/
 }
 </style>
