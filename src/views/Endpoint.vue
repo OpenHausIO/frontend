@@ -288,7 +288,7 @@ export default {
                 <i :class="item.icon || 'fa-regular fa-circle-question'"></i>
               </template>
               {{ item.name }}
-            </Tile>item
+            </Tile>
           </RouterLink>
 
           <Tile v-else @click="trigger(item._id)" v-repeat="{ handler: repeat, interval: 300, command: item }">
