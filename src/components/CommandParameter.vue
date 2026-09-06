@@ -181,9 +181,13 @@ input[type="range"].hue-fader {
   background-image: linear-gradient(to right, red, #ff8000, #ff0, #80ff00, lime, #00ff80, cyan, #007fff, blue, #7f00ff, #f0f, #ff0080, red) !important;
 }
 
-input[type="range"].hue-fader::-webkit-slider-thumb,
+input[type="range"].hue-fader::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  background-color: hsl(var(--hue, 0), 100%, 50%);
+}
+
 input[type="range"].hue-fader::-moz-range-thumb {
-  background-color: hsl(var(--hue), 100%, 50%);
+  background-color: hsl(var(--hue, 0), 100%, 50%);
 }
 
 input[type="range"].brightness-fader {
@@ -225,20 +229,23 @@ input[type="range"] {
   border-radius: 2px;
 }
 
-input[type=range]::-webkit-slider-runnable-track,
-input[type=range]::-moz-range-track {
-  height: 4px;
-}
 
-input[type=range]::-webkit-slider-thumb,
-input[type=range]::-moz-range-thumb {
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
   height: 18px;
   width: 18px;
-  /*this override bootstrap */
-  /*border: 2px solid #000;*/
-  /*this does not affect bootstrap styling */
   border-color: black;
   border-width: 0px;
   border-radius: 100%;
+  background-color: #fff;
+}
+
+input[type="range"]::-moz-range-thumb {
+  height: 18px;
+  width: 18px;
+  border-color: black;
+  border-width: 0px;
+  border-radius: 100%;
+  background-color: #fff;
 }
 </style>
