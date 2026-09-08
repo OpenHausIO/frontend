@@ -19,13 +19,16 @@ export default {
   <!-- 1) Remove h-100 to shrink tiles -->
   <div class="card h-100" :style="{ 'border-radius': `${settings.layout.borderRadius}px` }">
     <div class="card-body text-center">
-      <div style="padding: 10% 0">
+      <div style="padding: 2rem 0">
+
         <slot name="icon"></slot>
 
-        <h3 class="mt-2 d-block">
+        <h3 class="mt-2 d-block" :class="{ 'truncate': settings.layout.truncate }">
           <slot name="title"></slot>
         </h3>
+
         <slot></slot>
+
       </div>
     </div>
   </div>
@@ -35,9 +38,27 @@ export default {
 .card {
   border: 1px solid #000;
   /*background: rgba(255, 255, 255, 0.03);*/
-  background: transparent;
+  /*background: transparent;*/
+
 }
 
+/*
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, color-mix(in srgb, var(--bs-blue) 10%, transparent) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+
+.card-body {
+  /*background: url("/noise.png"), rgba(0, 0, 0, var(--item-alpha));*/
+/*backdrop-filter: blur(10px);*/
+/*backdrop-filter: contrast(90%);*
+}
+*/
 /*
 .card {
   opacity: 0.8;
@@ -53,4 +74,12 @@ export default {
   );
 }
 */
+
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
 </style>
