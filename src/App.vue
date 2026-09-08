@@ -77,6 +77,9 @@ export default {
         return visible;
       });
     },
+    hasNavItems() {
+      return this.routeEntrys?.length > 0;
+    }
   },
 };
 </script>
@@ -167,7 +170,8 @@ export default {
   <!-- NAVBAR -->
 
   <!-- VIEW -->
-  <RouterView v-slot="{ Component }" class="h-100" :class="{ 'force-max-height': !common.navbar }" id="view">
+  <RouterView v-slot="{ Component }" class="h-100" :class="{ 'force-max-height': !common.navbar || !hasNavItems }"
+    id="view">
     <component :is="Component" />
   </RouterView>
   <!-- VIEW -->
