@@ -178,6 +178,21 @@ export default defineComponent({
         "padding-left": `${this.settings.layout.gap}px`,
         "padding-right": `${this.settings.layout.gap}px`
       }
+    },
+    filterdWidgets() {
+
+      // hide "Welcome" widget in dropdown menu
+      // welcome is only loaded on first starup
+      return Object.keys(widgetComponents).filter((name) => {
+        return name != "Welcome";
+      }).reduce((obj, name) => {
+
+        obj[name] = widgetComponents[name];
+
+        return obj;
+
+      }, {});
+
     }
   },
   methods: {
@@ -529,9 +544,6 @@ export default defineComponent({
       });
 
     },
-    changeItemTransparancy({ target }) {
-      document.documentElement.style.setProperty("--item-alpha", target.value / 100);
-    },
     pinInput(event, index) {
       if (new RegExp('^[0-9]$').test(event.data) && event.inputType === "insertText") {
         // removed, because we dont jump from end, to start
@@ -782,7 +794,7 @@ export default defineComponent({
                 Add Widget
               </button>
               <ul class="dropdown-menu dropdown-menu-dark w-100">
-                <li v-bind:key="index" v-for="(widget, index) in widgetComponents">
+                <li v-bind:key="index" v-for="(widget, index) in filterdWidgets">
                   <button class="dropdown-item d-flex gap-2 align-items-center"
                     @click="addDashboardWidget(widget.name)">
                     {{ widget.name }}
@@ -994,7 +1006,7 @@ export default defineComponent({
 
               <label class="form-label mb-0">Item Opacity</label>
               <input type="range" class="form-range" min="0" step="1" max="100"
-                v-model="settings.layout.itemTransparancy" @input="changeItemTransparancy($event)">
+                v-model="settings.layout.itemTransparancy">
 
               {{ settings.layout.itemTransparancy }}%
 
@@ -1010,7 +1022,7 @@ export default defineComponent({
 
             </div>
 
-            <div>
+            <div class="mb-3">
 
               <label class="form-label mb-0">Colums</label>
               <input type="range" class="form-range" min="1" step="1" max="12" v-model="columns"
@@ -1023,6 +1035,32 @@ export default defineComponent({
               {{ columns }}
 
             </div>
+
+            <div class="">
+
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="truncateOverflow"
+                  v-model="settings.layout.truncate" />
+                <label class="form-check-label small" for="truncateOverflow">
+                  Truncate overflowing text
+                </label>
+              </div>
+
+            </div>
+
+            <!--
+            <div>
+
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="truncateOverflow"
+                  v-model="settings.layout.truncate" />
+                <label class="form-check-label small" for="truncateOverflow">
+                  Grow tiles 100% height
+                </label>
+              </div>
+
+            </div>
+            -->
 
           </Panel>
         </template>
