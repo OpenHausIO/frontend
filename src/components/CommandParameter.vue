@@ -237,7 +237,7 @@ input[type="range"]::-webkit-slider-thumb {
   border-color: black;
   border-width: 0px;
   border-radius: 100%;
-  background-color: #fff;
+  /*background-color: #fff;*/
 }
 
 input[type="range"]::-moz-range-thumb {
@@ -246,6 +246,48 @@ input[type="range"]::-moz-range-thumb {
   border-color: black;
   border-width: 0px;
   border-radius: 100%;
+  /*background-color: #fff;*/
+}
+
+input[type="range"].brightness-fader::-webkit-slider-thumb,
+input[type="range"].saturation-fader::-webkit-slider-thumb,
+input[type="range"][class*="fader-color-"]::-webkit-slider-thumb {
   background-color: #fff;
+}
+
+input[type="range"].brightness-fader::-moz-range-thumb,
+input[type="range"].saturation-fader::-moz-range-thumb,
+input[type="range"][class*="fader-color-"]::-moz-range-thumb {
+  background-color: #fff;
+}
+
+/* Chrome, Edge, Safari */
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  /* nötig, damit margin-top greift */
+  appearance: none;
+  margin-top: -6px;
+  /* (Thumb-Höhe - Track-Höhe) / 2, negativ, zum Zentrieren */
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+}
+
+input[type="range"]::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+}
+
+input[type="range"]::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  border: none;
+  /* Firefox setzt sonst einen Standard-Border */
 }
 </style>
