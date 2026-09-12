@@ -44,8 +44,6 @@ export default defineComponent({
     },
     startCounter() {
 
-      this.closeEdit();
-
       this.interval = setInterval(() => {
         this.counter += 10;
       }, 10);
