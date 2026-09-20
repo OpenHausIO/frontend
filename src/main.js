@@ -7,7 +7,7 @@ import { routes, navigation } from "./router";
 import { createPinia } from 'pinia';
 const pinia = createPinia();
 
-import { itemStore, settingsStore, commonStore, userStore } from "./store";
+import { itemStore, settingsStore, commonStore, userStore, widgetStore } from "./store";
 import { addNotification } from "./components/Notifications.vue";
 import { request, openDatabase } from "./helper.js";
 
@@ -95,6 +95,8 @@ pinia.use(({ store }) => {
                 document.getElementById("app").classList.add("bg-dark");
                 document.getElementById("app").classList.remove("gardien-background");
             }
+
+            document.documentElement.style.setProperty("--item-alpha", state.layout.itemTransparancy / 100);
 
             /*
             if (!state.navigation.showSettingsButton) {
@@ -673,7 +675,7 @@ Promise.all([
         if (document.readyState === "complete") {
 
             // splashscreen status text
-            statusText("Render items");
+            statusText("Finalizing");
 
             resolve();
 
@@ -719,6 +721,7 @@ Promise.all([
     //elem.style.backgroundPosition = "center";
     //elem.style.backgroundAttachment = "fixed";
 
+    const widgets = widgetStore();
     const db = await openDatabase();
 
     const file = await new Promise((resolve, reject) => {
@@ -792,6 +795,14 @@ Promise.all([
         }, true);
 
     })();
+
+
+    if (settings.firstrun && widgets.$state.length === 0) {
+        widgets.add("Welcome", {
+            w: settings.dashboardGrid.cols,
+            h: settings.dashboardGrid.rows,
+        });
+    }
 
 
 }).catch((err) => {

@@ -72,7 +72,8 @@ export const settingsStore = defineStore("settings", {
                 borderRadius: "5",
                 itemTransparancy: "10",
                 itemSize: "200",
-                columns: 6
+                columns: 6,
+                truncate: true
             },
             pin: {
                 enabled: false,
@@ -84,7 +85,9 @@ export const settingsStore = defineStore("settings", {
                 timeout: 10,
                 blackBackground: false,
                 glitching: true
-            }
+            },
+            firstrun: true,
+            debounce: 10
         }
     },
     persistent: true
