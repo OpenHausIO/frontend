@@ -92,7 +92,8 @@ pinia.use(({ store }) => {
                 document.getElementById("app").classList.remove("bg-dark");
                 document.getElementById("app").classList.add("gardien-background");
             } else {
-                document.getElementById("app").classList.add("bg-dark");
+                //document.getElementById("app").classList.add("bg-dark");
+                document.getElementById("app").classList.remove("bg-dark");
                 document.getElementById("app").classList.remove("gardien-background");
             }
 
@@ -116,10 +117,10 @@ pinia.use(({ store }) => {
 
         // initial background settings
         if (store.showGradientBackground) {
-            document.getElementById("app").classList.remove("bg-dark");
+            //document.getElementById("app").classList.remove("bg-dark");
             document.getElementById("app").classList.add("gardien-background");
         } else {
-            document.getElementById("app").classList.add("bg-dark");
+            //document.getElementById("app").classList.add("bg-dark");
             document.getElementById("app").classList.remove("gardien-background");
         }
 
@@ -797,12 +798,15 @@ Promise.all([
     })();
 
 
+    /*
+    // not finished yet
     if (settings.firstrun && widgets.$state.length === 0) {
         widgets.add("Welcome", {
             w: settings.dashboardGrid.cols,
             h: settings.dashboardGrid.rows,
         });
     }
+    */
 
 
 }).catch((err) => {

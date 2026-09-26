@@ -22,6 +22,7 @@ body {
     /*color: #efefef;*/
     color: rgb(230, 230, 230);
     overflow-y: scroll;
+    background-color: #1a2026 !important;
 }
 
 #app.gardien-background {
@@ -32,7 +33,8 @@ body {
     */
 
     /* Darker background, see #63 */
-    background-color: #101418;
+    /*background-color: #101418;*/
+    background-color: #1a2026;
     background-image: radial-gradient(circle, #23282e 0%, rgba(35, 40, 46, 0.5) 25%, #101418 95%), url("/noise.png");
 
 

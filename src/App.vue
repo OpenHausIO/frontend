@@ -117,8 +117,8 @@ export default {
 
   <!-- NAVBAR -->
   <!--       border-bottom border-secondary -->
-  <nav class="navbar navbar-expand navbar-dark bg-dark sticky-top p-0" style="border-bottom: 1px solid #000"
-    v-if="common.navbar">
+  <nav class="navbar navbar-expand navbar-dark bg-dark sticky-top p-0"
+    style="border-bottom: 1px solid #000; /*background-color: #1a2026 !important;*/" v-if="common.navbar">
     <div class="collapse navbar-collapse w-100">
       <ul class="navbar-nav w-100 row m-0">
         <!-- STATIC BACK BUTTON -->

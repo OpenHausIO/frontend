@@ -517,7 +517,7 @@ export default defineComponent({
 
 
       const elem = document.getElementById("app");
-      elem.classList.add("bg-dark")
+      //elem.classList.add("bg-dark")
 
       elem.style.backgroundImage = "";
       elem.style.backgroundSize = "";
