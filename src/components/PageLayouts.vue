@@ -40,18 +40,30 @@ export default defineComponent({
     },
     nextPage() {
 
+      /*
       if (this.active < this.carousel.length - 1) {
         this.active += 1;
       }
+      */
+
+      // from welcome widget
+      // this.currentSlide = (this.currentSlide + 1) % this.slides.length;
+      this.active = (this.active + 1) % this.carousel.length;
 
       this.setPage();
 
     },
     prevPage() {
 
+      /*
       if (this.active > 0) {
         this.active -= 1;
       }
+      */
+
+      // from welcome widget
+      // this.currentSlide = (this.currentSlide - 1 + this.slides.length) % this.slides.length;
+      this.active = (this.active - 1 + this.carousel.length) % this.carousel.length;
 
       this.setPage();
 
