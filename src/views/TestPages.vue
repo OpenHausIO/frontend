@@ -1,5 +1,5 @@
 <script setup>
-import { useSwipe, usePointerSwipe } from '@vueuse/core'
+//import { useSwipe, usePointerSwipe } from '@vueuse/core'
 import Tile from "../components/Tile.vue";
 </script>
 

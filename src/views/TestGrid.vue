@@ -1,5 +1,5 @@
 <script setup>
-import { useSwipe, usePointerSwipe } from '@vueuse/core'
+//import { useSwipe, usePointerSwipe } from '@vueuse/core'
 import Tile from "../components/Tile.vue";
 </script>
 
@@ -269,7 +269,7 @@ export default {
     </div>
     <div id="indicator">
       <ul class="flexible-list">
-        <li v-for="(page, index) in carousel " :key="index" :class="{ 'active': index === active }"
+        <li v-for="(page, index) in carousel" :key="index" :class="{ 'active': index === active }"
           :data-tooltip="page.title" @click="showPage(index)">
         </li>
       </ul>

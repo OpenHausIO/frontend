@@ -36,7 +36,18 @@ const navigation = reactive([{
     icon: "fa-solid fa-puzzle-piece",
     visible: true,
     component: () => import("../views/Plugins.vue")
-}*/]);
+}, {
+    path: "/media",
+    name: "Media",
+    icon: "fa-solid fa-photo-film",
+    visible: true,
+    props: (route) => {
+        return {
+            src: "http://mediaserver.lan"
+        };
+    },
+    component: () => import("../components/Iframe.vue")
+}*/ ]);
 
 export {
     navigation

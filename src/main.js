@@ -1,32 +1,44 @@
-import { createApp } from "vue";
+import { createApp, ref, watch } from "vue";
 import * as Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
-import { routes } from "./router";
+import { routes, navigation } from "./router";
 //import router from "./router";
 import { createPinia } from 'pinia';
 const pinia = createPinia();
 
-import { itemStore, settingsStore, commonStore, userStore } from "./store";
+import { itemStore, settingsStore, commonStore, userStore, widgetStore } from "./store";
+import { addNotification } from "./components/Notifications.vue";
+import { request, openDatabase } from "./helper.js";
+
+import { visibility, statusText } from "./components/Splashscreen.vue";
+
 
 // override console log when not on local machine
 if (!["localhost", "127.0.0.1"].includes(window.location.hostname)) {
     console.log = () => { };
 }
 
-import VueNotificationList from '@dafcoe/vue-notification';
-import GridLayout from 'vue3-drr-grid-layout'
-import 'vue3-drr-grid-layout/dist/style.css'
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register('/service-worker.js');
+}
 
+window.deferredPrompt = ref(null);
 
-import { request } from "./helper.js";
+window.addEventListener("beforeinstallprompt", (e) => {
 
-import { useNotificationStore } from "@dafcoe/vue-notification";
-const { setNotification } = useNotificationStore();
+    console.error("Dereferred beforeinstallprompt")
+
+    e.preventDefault();
+    window.deferredPrompt.value = e;
+
+});
 
 
 // monkey patch ws
 window.events = null;
+window.notifications = null;
+window.settings = {};
 
 // persistent handle
 // (in localStorage)
@@ -52,53 +64,63 @@ pinia.use(({ store, options }) => {
 pinia.use(({ store }) => {
     if (store.$id === "settings") {
 
-        // listen for changes
-        // `.watch()` in Settings.vue does not work.
-        // see #42
+        watch(() => {
+            return store.navigation.showSettingsButton;
+        }, (newVal, oldVal) => {
+            if (newVal !== oldVal && newVal === false) {
+
+                addNotification("Tap 10x times quickly anywhere to go to the settings page again when the settings button is hidden.", {
+                    type: "primary",
+                    dismiss: false
+                });
+
+            }
+        });
+
         store.$subscribe((mutation, state) => {
 
             console.log("mutation", mutation);
             console.log("state", state);
 
-            if (!store.groupItems) {
-                store.groupRoomItems = false;
-                store.groupEndpointItems = false;
-                store.groupDeviceItems = false;
+            if (!state.groupItems) {
+                state.groupRoomItems = false;
+                state.groupEndpointItems = false;
+                state.groupDeviceItems = false;
             }
 
-            if (store.showGradientBackground) {
+            if (state.showGradientBackground) {
                 document.getElementById("app").classList.remove("bg-dark");
                 document.getElementById("app").classList.add("gardien-background");
             } else {
-                document.getElementById("app").classList.add("bg-dark");
+                //document.getElementById("app").classList.add("bg-dark");
+                document.getElementById("app").classList.remove("bg-dark");
                 document.getElementById("app").classList.remove("gardien-background");
             }
 
-            if (!store.showSettingsButton) {
-                setNotification({
-                    message: "Tap 10x times on any empty space to go to this page again when the settings button is hidden.",
-                    type: "info",
-                    showIcon: false,
-                    dismiss: {
-                        manually: true,
-                        automatically: false,
-                    },
-                    appearance: "dark",
+            document.documentElement.style.setProperty("--item-alpha", state.layout.itemTransparancy / 100);
+
+            /*
+            if (!state.navigation.showSettingsButton) {
+                addNotification("Tap 10x times on any empty space to go to this page again when the settings button is hidden.", {
+                    type: "primary",
+                    dismiss: 3000
                 });
             }
+            */
 
+            // GEÄNDERT: liest jetzt aus state.navigation
             routes.forEach((route) => {
-                route.visible = store[`show${route.name}Button`];
+                route.visible = state.navigation[`show${route.name}Button`];
             });
 
         });
 
         // initial background settings
         if (store.showGradientBackground) {
-            document.getElementById("app").classList.remove("bg-dark");
+            //document.getElementById("app").classList.remove("bg-dark");
             document.getElementById("app").classList.add("gardien-background");
         } else {
-            document.getElementById("app").classList.add("bg-dark");
+            //document.getElementById("app").classList.add("bg-dark");
             document.getElementById("app").classList.remove("gardien-background");
         }
 
@@ -112,10 +134,9 @@ const app = createApp(App);
 app.config.globalProperties.window = window;
 app.config.globalProperties.console = console;
 
-app.use(VueNotificationList);
+//app.use(VueNotificationList);
 app.use(pinia);
 app.use(router);
-app.use(GridLayout);
 
 window.Vue = Vue;
 window.app = app;
@@ -184,6 +205,10 @@ app.directive("repeat", {
 
 function fetchData() {
     return new Promise((resolve, reject) => {
+
+        // spashscreen status text
+        statusText("Fetch component items");
+
         Promise.all([
             request("/api/rooms"),
             request("/api/endpoints"),
@@ -212,11 +237,14 @@ function fetchData() {
             reject(err);
 
         });
+
     });
 }
 
 function connectToEvents(options = { retry: 0 }) {
     return new Promise((resolve, reject) => {
+
+        statusText("Connect to WebSocket events");
 
         // fix #119, see:
         // https://github.com/OpenHausIO/backend/issues/403
@@ -242,10 +270,14 @@ function connectToEvents(options = { retry: 0 }) {
 
         ws.onclose = () => {
 
+            window.events = null;
+
             console.warn(`WebSocket connection ${ws.url} closed`);
 
             if (settings.showOverlayForConnectionLost) {
-                common.overlay = true;
+                //common.overlay = true;
+                visibility(true);
+                statusText("Connection to WebSocket lost, reconnect");
             }
 
             if (options.retry <= 3) {
@@ -257,18 +289,12 @@ function connectToEvents(options = { retry: 0 }) {
                     } catch (err) {
                         console.error(err);
                     }
-                }, 1000);
+                }, 3000);
             } else {
 
-                setNotification({
-                    message: "<h5>Initial Error:</h5>Could not connect to WebSocket",
-                    type: "alert",
-                    showIcon: false,
-                    dismiss: {
-                        manually: true,
-                        automatically: false,
-                    },
-                    appearance: "dark",
+                addNotification("<h5>Initial Error:</h5>Could not connect to WebSocket", {
+                    type: "danger",
+                    dismiss: false
                 });
 
                 throw new Error("Retry attempts exceede");
@@ -280,8 +306,14 @@ function connectToEvents(options = { retry: 0 }) {
 
         ws.onopen = () => {
             console.warn(`WebSocket connection ${ws.url} open`);
+
+            // otherwise the splashscreen is closed on init request
+            if (options.retry > 0) {
+                visibility(false);
+            }
+
             options.retry = 0;
-            common.overlay = false;
+            //common.overlay = false;
             resolve();
         };
 
@@ -325,6 +357,117 @@ function connectToEvents(options = { retry: 0 }) {
     })
 }
 
+function connectToNotifications(options = { retry: 0 }) {
+    return new Promise((resolve, reject) => {
+
+        // use needs admin rights
+        // notifications is protected by "/system" route
+        if (!user.isAdmin) {
+            return resolve();
+        }
+
+        // prevents race condition setting status text
+        // "notifications" are not so important
+        if (window.events) {
+            statusText("Connect to Notifications");
+        }
+
+        let proto = window.location.protocol === "https:" ? "wss://" : "ws://";
+        let ws = new WebSocket(`${proto}${window.location.host}/api/system/notifications?x-auth-token=${localStorage.getItem("x-auth-token")}`);
+
+        console.log("Try to connect:", ws.url);
+
+        ws.addEventListener("error", (err) => {
+            console.error(err);
+            reject(err);
+        });
+
+        ws.addEventListener("close", () => {
+
+            console.warn(`WebSocket connection ${ws.url} closed`);
+
+            if (options.retry <= 3) {
+                setTimeout(async () => {
+                    try {
+                        console.log("Retry connection to:", ws.url, options)
+                        options.retry += 1;
+                        await connectToNotifications(options);
+                    } catch (err) {
+                        console.error(err);
+                    }
+                }, 3000);
+            } else {
+
+                console.error(`Could not connect to Notifications WebSocket "${ws.url}"`);
+                throw new Error("Retry attempts exceede");
+
+            }
+
+        });
+
+        ws.addEventListener("open", () => {
+            console.warn(`WebSocket connection ${ws.url} open`);
+            options.retry = 0;
+            resolve();
+        });
+
+
+        ws.addEventListener("message", (msg) => {
+            if (settings.showNotifications) {
+                try {
+
+                    let data = JSON.parse(msg.data);
+
+                    let type = "info";
+
+                    switch (data.type) {
+                        case "info": type = "primary"; break;
+                        case "warn": type = "warning"; break;
+                        case "error": type = "danger"; break;
+                        case "success": type = "success"; break;
+                        default: type = "info"; break;
+                    }
+
+                    let obj = {
+                        message: `<b>${data.title}</b><br />${data.message}`,
+                        type,
+                        dismiss: false
+                    };
+
+                    if (settings.permissionsNotifications) {
+
+                        let notification = new Notification(`OpenHaus - ${data.title}`, {
+                            body: data.message,
+                            icon: "/favicon.png",
+                            requireInteraction: false,
+                            silent: false
+                        });
+
+                        notification.addEventListener("error", (err) => {
+
+                            console.error("❌ Notification error:", err);
+
+                            addNotification(obj.message, obj);
+
+                        });
+
+                    } else {
+
+                        addNotification(obj.message, obj);
+
+                    }
+
+                } catch (err) {
+                    console.error("Could not handle message", err);
+                }
+            }
+        });
+
+        window.notifications = ws;
+
+    });
+}
+
 
 Promise.all([
 
@@ -334,13 +477,79 @@ Promise.all([
 
             console.log("[pre] DOM Content ready");
 
+            app.mount("#app");
+
             resolve();
 
         });
     }),
 
+    // fetch settings.json
+    new Promise(async (resolve, reject) => {
+        try {
+
+            // spashscreen status text
+            statusText("Load settings.json");
+
+            const url = new URL("settings.json", window.location.href);
+            const res = await fetch(url, {
+                cache: "no-store"
+            });
+
+            if (res.status === 404) {
+                console.log("[pre] Keine settings.json gefunden, überspringe custom config");
+                resolve();
+            }
+
+            if (!res.ok) {
+                console.warn("[pre] settings.json konnte nicht geladen werden:", res.status, res.statusText);
+            }
+
+            window.settings = await res.json();
+
+            resolve();
+
+        } catch (err) {
+            console.warn("[pre] settings.json konnte nicht geladen/geparsed werden", err);
+            resolve();
+        }
+    }),
+
 ]).then(() => {
+    return new Promise((resolve) => {
+
+        statusText("Apply Server Settings");
+
+        if (window.settings?.navigation) {
+            window.settings.navigation.forEach((route) => {
+
+                //settings[`show${route.name}Button`] = route.visible ?? true;
+                settings.navigation[`show${route.name}Button`] = route.visible ?? true;
+
+                navigation.push({
+                    path: route.path ?? "/dashboard",
+                    name: route.name ?? "Default",
+                    icon: route.icon ?? "fa-solid fa-circle-question",
+                    visible: settings[`show${route.name}Button`],
+                    props: () => {
+                        return {
+                            src: route.url
+                        };
+                    },
+                    component: () => import("./components/Iframe.vue")
+                });
+
+            });
+        }
+
+        resolve();
+
+    });
+}).then(() => {
     return new Promise(async (resolve, reject) => {
+
+        // spashscreen status text
+        statusText("Check Authentication");
 
         await user.checkAuth();
 
@@ -356,6 +565,7 @@ Promise.all([
             // fetch stuff & show navbar
             await fetchData();
             await connectToEvents();
+            await connectToNotifications();
 
             common.navbar = true;
 
@@ -375,6 +585,7 @@ Promise.all([
 
                     await fetchData();
                     await connectToEvents();
+                    await connectToNotifications();
 
                     common.navbar = true;
 
@@ -390,6 +601,9 @@ Promise.all([
 
     return Promise.resolve();
 
+    // splashscreen status text
+    statusText("Fetch plugin manifests");
+
     // THIS LODS PLUGINS SCRIPTS DYNMACLIY FROM THE BACKEND
     // DO NOT ENABLE IN PRODUCTION!
     // THIS IS A DRAFT - AND NOT PRODUCTION READY
@@ -397,6 +611,9 @@ Promise.all([
 
         let prmoises = manifests.map(({ url, components }) => {
             return new Promise(async (resolve, reject) => {
+
+                // splashscreen status text
+                statusText(`Load plugin "${url}"`);
 
                 console.log("Load externe JS", url);
 
@@ -451,16 +668,103 @@ Promise.all([
 
 }).then(() => {
 
-    console.log("[pre] mount application");
+    const minDelay = new Promise((resolve) => {
+        setTimeout(resolve, 1000);
+    });
 
-    app.mount("#app");
+    const windowLoaded = new Promise((resolve) => {
+        if (document.readyState === "complete") {
+
+            // splashscreen status text
+            statusText("Finalizing");
+
+            resolve();
+
+        } else {
+
+            // splashscreen status text
+            statusText("Waiting for remaining network requests");
+
+            const observer = new PerformanceObserver((list) => {
+                list.getEntries().forEach((entry) => {
+
+                    const name = entry.name.split("/").pop().split("?")[0];
+                    statusText(`Waiting for remaining network requests "${name}"`);
+
+                });
+            });
+
+            observer.observe({
+                entryTypes: ["resource"]
+            });
+
+            window.addEventListener("load", () => {
+                observer.disconnect();
+                resolve();
+            }, {
+                once: true
+            });
+
+        }
+    });
+
+    return Promise.all([
+        document.fonts.ready,
+        windowLoaded,
+        minDelay
+    ]);
+
+}).then(async () => {
+
+    //const elem = document.getElementById("app");
+    //elem.style.backgroundImage = `url(${this.imageUrl})`;
+    //elem.style.backgroundSize = "cover";
+    //elem.style.backgroundPosition = "center";
+    //elem.style.backgroundAttachment = "fixed";
+
+    const widgets = widgetStore();
+    const db = await openDatabase();
+
+    const file = await new Promise((resolve, reject) => {
+
+        const tx = db.transaction("images", "readonly");
+        const store = tx.objectStore("images");
+
+        const request = store.get("background");
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+
+    });
+
+    if (file instanceof File) {
+
+        let imageUrl = URL.createObjectURL(file);
+        const elem = document.getElementById("app");
+
+        elem.style.backgroundImage = `url(${imageUrl})`;
+        elem.style.backgroundSize = "cover";
+        elem.style.backgroundPosition = "center";
+        elem.style.backgroundAttachment = "fixed";
+
+    }
+
+    // set tile background transparancy
+    document.documentElement.style.setProperty("--item-alpha", settings.layout.itemTransparancy / 100);
 
 
     // init navbar visibility
     // not reactive, this happens in settings
     routes.forEach((route) => {
-        route.visible = settings[`show${route.name}Button`];
+        const key = `show${route.name}Button`;
+        if (settings.navigation[key] !== undefined) {
+            route.visible = settings.navigation[key];
+        }
     });
+
+    // hide splashscreen
+    statusText(null);
+    visibility(false);
 
     (() => {
 
@@ -468,7 +772,7 @@ Promise.all([
         let timer = null
 
         document.body.addEventListener("click", () => {
-            if (!settings.showSettingsButton) {
+            if (!settings.navigation.showSettingsButton) {
 
                 clearTimeout(timer);
                 counter++;
@@ -493,6 +797,13 @@ Promise.all([
 
     })();
 
+
+    if (settings.firstrun && widgets.$state.length === 0) {
+        widgets.add("Welcome", {
+            w: settings.dashboardGrid.cols,
+            h: settings.dashboardGrid.rows,
+        });
+    }
 
 }).catch((err) => {
 

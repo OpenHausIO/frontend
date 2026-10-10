@@ -1,8 +1,8 @@
 <script>
-import { defineComponent, watch } from "vue";
+import { defineComponent, watch, defineAsyncComponent } from "vue";
 import dateFormat from "dateformat";
 
-export const menu = [];
+const Widget = defineAsyncComponent(() => import("../components/Widget.vue"));
 
 export default defineComponent({
   name: "Clock",
@@ -12,11 +12,18 @@ export default defineComponent({
       required: true,
     },
   },
+  components: {
+    Widget
+  },
   data() {
     return {
       timestamp: null,
       time: dateFormat(Date.now(), "HH:MM:ss"),
       interval: null,
+      menu: [/*{
+        title: "Settings",
+        method: "settings",
+      }*/]
     };
   },
   mounted() {
@@ -28,16 +35,24 @@ export default defineComponent({
   unmounted() {
     clearInterval(this.interval);
   },
-  menu: [],
+  methods: {
+    selectedMenu(menu) {
+      this[menu.method]();
+    },
+  }
 });
 </script>
 
 
 <template>
-  <div class="p-2 text-center" style="font-size: 5vw">
-    {{ time }}
-  </div>
-</template>
+  <Widget name="Clock" :menu="menu" @menu="selectedMenu" :uuid="uuid">
 
-<style scope>
-</style>
+    <div style="container-type: size; height: 100%;"
+      class="bg-transparent h-100 w-100 d-flex align-items-center justify-content-center">
+      <span style="font-size: 17cqw; white-space: nowrap; line-height: 1;">
+        {{ time }}
+      </span>
+    </div>
+
+  </Widget>
+</template>

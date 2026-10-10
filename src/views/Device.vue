@@ -1,6 +1,7 @@
 <script setup>
 import Tile from "@/components/Tile.vue";
 import Collapsable from "../components/Collapsable.vue";
+import ResizableGrid from "../components/ResizableGrid.vue";
 import { useRoute } from "vue-router";
 import router from "@/router";
 //import { store } from "../store";
@@ -16,6 +17,7 @@ export default {
   components: {
     Collapsable,
     Tile,
+    ResizableGrid
   },
   data() {
     return {
@@ -48,16 +50,13 @@ export default {
     }
 
     this.endpoints.push(...endpoints);
+
   },
   methods: {
     getRoomNameById(_id) {
       let room = Array.from(store.rooms).find((obj) => {
         return obj._id === _id;
       });
-
-      if (!room) {
-        return "Raum: nicht gesetzt";
-      }
 
       return room.name;
     },
@@ -68,26 +67,45 @@ export default {
 <template>
   <div class="container-fluid">
     <div class="h-100">
+
       <!-- DONT GROUP -->
       <div class="row h-100 display-flex text-center">
-        <RouterLink
-          v-bind:key="item._id"
-          v-for="item in endpoints"
-          custom
-          :to="{
+        <ResizableGrid :items="endpoints" v-slot="{ item }">
+
+          <RouterLink custom :to="{
             name: '/endpoints/:_id',
             params: {
               _id: item._id,
             },
-          }"
-          v-slot="{ href, navigate }"
-        >
-          <div class="p-0 col-6 col-md-3 col-xl-2">
-            <Tile
-              :href="href"
-              @click="navigate"
-              style="background: transparent; border: 1px solid #000"
-            >
+          }" v-slot="{ href, navigate }">
+
+            <Tile :href="href" @click="navigate" style="background: transparent; border: 1px solid #000">
+              <template #icon>
+                <i class="fa-2xl" :class="item.icon"></i>
+              </template>
+              <template #title>{{ item.name }} </template>
+              <span v-if="item.room" class="text-secondary fw-light"
+                style="position: absolute; bottom: 15px; left: 0; right: 0;">
+                {{ getRoomNameById(item.room) }}
+              </span>
+            </Tile>
+
+          </RouterLink>
+
+        </ResizableGrid>
+      </div>
+      <!-- DONT GROUP -->
+
+      <!-- DONT GROUP --
+      <div class="row h-100 display-flex text-center">
+        <RouterLink v-bind:key="item._id" v-for="item in endpoints" custom :to="{
+          name: '/endpoints/:_id',
+          params: {
+            _id: item._id,
+          },
+        }" v-slot="{ href, navigate }">
+          <div class="col-6 col-md-4 col-xl-2" :style="{ 'padding': `${settings.layout.gap}px` }">
+            <Tile :href="href" @click="navigate" style="background: transparent; border: 1px solid #000">
               <template #icon>
                 <i class="fa-2xl" :class="item.icon"></i>
               </template>
@@ -100,6 +118,7 @@ export default {
         </RouterLink>
       </div>
       <!-- DONT GROUP -->
+
     </div>
   </div>
 </template>

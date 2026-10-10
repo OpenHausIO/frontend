@@ -1,8 +1,7 @@
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, defineAsyncComponent } from "vue";
 
-import { useNotificationStore } from "@dafcoe/vue-notification";
-const { setNotification } = useNotificationStore();
+const Widget = defineAsyncComponent(() => import("../components/Widget.vue"));
 
 export default defineComponent({
   name: "Stopwatch",
@@ -12,14 +11,15 @@ export default defineComponent({
       required: true,
     },
   },
+  components: {
+    Widget
+  },
   data() {
     return {
-      title: "",
-      duration: 0,
       counter: 0,
-      showTitleTextbox: false,
       showDurationTextbox: false,
-      interval: null
+      interval: null,
+      menu: []
     };
   },
   mounted() {
@@ -38,86 +38,65 @@ export default defineComponent({
 
   },
   methods: {
-    editTitle() {
-      this.showTitleTextbox = true;
-    },
-    closeEdit() {
-
-      this.showTitleTextbox = false;
-      this.counter = 0;
-      this.save();
-
-    },
-    dispatchEvent(event) {
-      console.log("diuspatchEvent called in notes.vue", event);
-    },
-    save() {
-
-      let data = JSON.stringify({
-        title: this.title,
-        counter: this.counter
-      });
-
-      window.localStorage.setItem(`widget-${this.uuid}`, data);
-
-    },
     resetCounter() {
       this.counter = 0;
       clearInterval(this.interval);
     },
     startCounter() {
 
-      this.closeEdit();
-      this.resetCounter();
-
       this.interval = setInterval(() => {
-          this.counter += 1;
-      }, 1000);
+        this.counter += 10;
+      }, 10);
 
     },
     stopCounter() {
       clearInterval(this.interval);
+      this.resetCounter();
+      this.interval = null;
+    },
+    pauseCounter() {
+      clearInterval(this.interval);
+      this.interval = null;
+    },
+    selectedMenu(menu) {
+      this[menu.method]();
     }
   },
-  menu: [{
-    title: "Edit Title",
-    method: "editTitle",
-  }, {
-    title: "Done editing",
-    method: "closeEdit",
-  }],
+  computed: {
+    time() {
+
+      const ms = this.counter;
+
+      const hours = Math.floor(ms / 3600000);
+      const minutes = Math.floor((ms % 3600000) / 60000);
+      const seconds = Math.floor((ms % 60000) / 1000);
+      const milliseconds = Math.floor((ms % 1000) / 10);;
+
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
+
+    }
+  }
 });
 </script>
 
 
 <template>
-  <div class="p-2">
-    <h3>
-      Stopwatch: <input type="text" v-model="title" v-if="showTitleTextbox" />
-      <span v-else>
-        {{ title }}
-      </span>
-    </h3>
-    <div class="w-100">
-      <div class="container text-center">
-        <div class="row">
-          <div class="col h-100">
-            <button class="btn btn-outline-primary btn-block" @click="startCounter()">Start</button>
-          </div>
-          <div class="col">
-            <div class="container">
+  <Widget name="Stopwatch" :menu="menu" @menu="selectedMenu" :uuid="uuid">
+    <div class="p-2">
+      <div class="row align-items-center g-2">
+        <div class="col">
+          <button class="btn btn-outline-primary w-100" @click="pauseCounter()" v-if="interval">Pause</button>
+          <button class="btn btn-outline-primary w-100" @click="startCounter()" v-if="!interval">Start</button>
+        </div>
 
-              <div class="row" v-if="!showDurationTextbox">
-                <h3>{{ counter }}</h3>
-              </div>
+        <div class="col-auto text-center px-3">
+          <h3 class="mb-0" v-if="!showDurationTextbox">{{ time }}</h3>
+        </div>
 
-            </div>
-          </div>
-          <div class="col">
-            <button class="btn btn-outline-primary btn-block" @click="stopCounter()">Stop</button>
-          </div>
+        <div class="col">
+          <button class="btn btn-outline-primary w-100" @click="stopCounter()">Stop</button>
         </div>
       </div>
     </div>
-  </div>
+  </Widget>
 </template>

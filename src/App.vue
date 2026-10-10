@@ -3,11 +3,14 @@
 //import HelloWorld from "@/components/HelloWorld.vue";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
-import "@dafcoe/vue-notification/dist/vue-notification.css";
+
+import Notifications from "@/components/Notifications.vue";
 
 import { routes } from "./router";
 
 import { settingsStore } from "./store.js";
+import Splashscreen from "./components/Splashscreen.vue";
+import Screensaver from "./components/Screensaver.vue";
 const settings = settingsStore();
 
 import { commonStore } from "./store.js";
@@ -20,6 +23,11 @@ const common = commonStore();
 
 export default {
   name: "Frontend",
+  components: {
+    Notifications,
+    Splashscreen,
+    Screensaver
+  },
   data() {
     return {
       //overlay: false,
@@ -69,12 +77,16 @@ export default {
         return visible;
       });
     },
+    hasNavItems() {
+      return this.routeEntrys?.length > 0;
+    }
   },
 };
 </script>
 
 
 <template>
+
   <!-- OVERLAY -->
   <div v-if="common.overlay" id="overlay" class="text-center">
     <div id="inner">
@@ -91,21 +103,27 @@ export default {
   </div>
   <!-- OVERLAY -->
 
+  <!-- SCREENSAVER -->
+  <Screensaver />
+  <!-- SCREENSAVER -->
+
+  <!-- SPLASHSCREEN -->
+  <Splashscreen />
+  <!-- SPLASHSCREEN -->
+
   <!-- NOTIFICATIONS -->
-  <div id="notifications">
-    <vue-notification-list position="top-right"></vue-notification-list>
-  </div>
+  <Notifications />
   <!-- NOTIFICATIONS -->
 
   <!-- NAVBAR -->
   <!--       border-bottom border-secondary -->
-  <nav class="navbar navbar-expand navbar-dark bg-dark sticky-top p-0" style="border-bottom: 1px solid #000"
-    v-if="common.navbar">
+  <nav class="navbar navbar-expand navbar-dark bg-dark sticky-top p-0"
+    style="border-bottom: 1px solid #000; /*background-color: #1a2026 !important;*/" v-if="common.navbar">
     <div class="collapse navbar-collapse w-100">
       <ul class="navbar-nav w-100 row m-0">
         <!-- STATIC BACK BUTTON -->
         <!-- set class .fixed-nav-item for small button -->
-        <li class="nav-item col text-center p-0" v-if="settings.showBackButton">
+        <li class="nav-item col text-center p-0" v-if="settings.navigation.showBackButton">
           <a class="nav-link" @click="$router.go(-1)">
             <i class="d-block fa-solid fa-chevron-left"></i>
             <span>Back</span>
@@ -138,7 +156,7 @@ export default {
         <!-- DYNAMIC LINKS -->
 
         <!-- STATIC SETTNGS BUTTON -->
-        <li class="nav-item col text-center p-0" v-if="settings.showSettingsButton">
+        <li class="nav-item col text-center p-0" v-if="settings.navigation.showSettingsButton">
           <a class="nav-link" :class="{ active: subIsActive('/settings') }" @click="$router.push({ name: 'Settings' })">
             <i class="d-block fa fa-gear"></i>
             <span>Settings</span>
@@ -152,8 +170,12 @@ export default {
   <!-- NAVBAR -->
 
   <!-- VIEW -->
-  <RouterView class="h-100" :class="{ 'force-max-height': !common.navbar }" id="view" />
+  <RouterView v-slot="{ Component }" class="h-100" :class="{ 'force-max-height': !common.navbar || !hasNavItems }"
+    id="view">
+    <component :is="Component" />
+  </RouterView>
   <!-- VIEW -->
+
 </template>
 
 <style>

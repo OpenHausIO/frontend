@@ -1,30 +1,45 @@
-<script setup>
-import Tile from "@/components/Tile.vue";
-import CommandParameter from "@/components/CommandParameter.vue";
-import { useRoute, RouterLink } from "vue-router";
-//import { store } from "@/store";
-import { alert, request, debounce } from "@/helper";
-import { settingsStore } from "../store.js";
-const settings = settingsStore();
-import dateformat from "dateformat";
-</script>
-
 <script>
 import { reactive, watch } from "vue";
 import { mapActions } from "pinia";
 import { itemStore, settingsStore } from "../store.js";
-const store = itemStore();
-const settings = settingsStore();
+import GridDraggable from "../components/GridDraggable.vue";
+import Grid from "../components/GridDraggable.vue";
+import PageLayouts from "../components/PageLayouts.vue";
+import Tile from "@/components/Tile.vue";
+import CommandParameter from "@/components/CommandParameter.vue";
+import { useRoute, RouterLink } from "vue-router";
+import { alert, request, debounce } from "@/helper";
+import dateformat from "dateformat";
+import ResizableGrid from "../components/ResizableGrid.vue";
+
 
 export default {
   components: {
     Tile,
     RouterLink,
-    CommandParameter
+    CommandParameter,
+    GridDraggable,
+    Grid,
+    PageLayouts,
+    ResizableGrid
+  },
+  setup() {
+
+    const store = itemStore();
+    const settings = settingsStore();
+
+    return {
+      store,
+      settings,
+      dateformat
+    };
+
   },
   data() {
     return {
       data: {
+        commands: [],
+        states: []
       },
       animations: reactive({}),
       shareds: {}
@@ -33,7 +48,7 @@ export default {
   mounted() {
     let $route = useRoute();
 
-    this.data = Array.from(store.endpoints).find((item) => {
+    this.data = Array.from(this.store.endpoints).find((item) => {
       return item._id === $route.params._id;
     });
 
@@ -43,26 +58,23 @@ export default {
       this.shareds[_id] = {};
     });
 
+    this.data.states.forEach(({ _id }) => {
+      this.animations[_id] = false;
+    });
+
     watch(() => {
-      return this.data.states.map(item => item.value);
+      return this.data.states.map(({ _id, value }) => ({ _id, value }));
     }, (newValues, oldValues) => {
 
-      /*
-      console.group("Watcher");
-      console.log("Old Values:", oldValues);
-      console.log("New Values:", newValues);
-      */
+      const oldById = new Map(oldValues.map(item => [item._id, item.value]));
 
-      newValues.forEach((newValue, index) => {
-        if (newValue !== oldValues[index] && settings.enableAnimationOnStateUpdate) {
+      newValues.forEach(({ _id, value }) => {
+        const oldValue = oldById.get(_id);
 
-          //console.log(`Änderung erkannt bei Index ${index}: ${oldValues[index]} -> ${newValue}`);
-          this.animations[index] = true;
-
+        if (oldValue !== undefined && value !== oldValue && this.settings.enableAnimationOnStateUpdate) {
+          this.animations[_id] = true;
         }
       });
-
-      //console.groupEnd();
 
     }, {
       deep: false
@@ -75,8 +87,6 @@ export default {
     alert,
     trigger: debounce(function (_id) {
 
-      console.log("Aasdflaksdfleila")
-
       let command = this.data.commands.find((obj) => {
         return obj._id === _id;
       });
@@ -85,8 +95,6 @@ export default {
         console.warn("Could not find command with _id: ", _id);
         return;
       }
-
-      console.log("command.params", command.params)
 
       let body = [];
 
@@ -115,7 +123,7 @@ export default {
     },
     resetAnimation(index) {
       this.animations[index] = false;
-    }
+    },
   },
   computed: {
     commands() {
@@ -130,20 +138,96 @@ export default {
     scenes() {
       return Math.round(Math.random() * 10);
     },*/
+    items() {
+
+      let commands = this.data.commands.map((state) => {
+        state.type = "command";
+        return state;
+      });
+
+      let states = this.data.states.map((state) => {
+        state.type = "state";
+        return state;
+      });
+
+      return [...commands, ...states];
+
+    },
+    containerHeight() {
+      const settings = settingsStore();
+      const gap = Number(settings.layout.gap);
+      return { height: `calc(100% - ${94 + gap}px)` };
+    },
+    paddingStyle() {
+      return {
+        "padding-top": `${this.settings.layout.gap}px`,
+        "padding-left": `${this.settings.layout.gap}px`,
+        "padding-right": `${this.settings.layout.gap}px`
+      }
+    }
   }
 };
 </script>
 
 <template>
-  <div v-if="data?.pages?.length > 0 && settings.useRemoteLayoutPages">
+  <div v-if="data?.pages?.length > 0 && settings.useRemoteLayoutPages" class="h-100">
 
-    {{ data.pages }}
+    <PageLayouts :endpoint="data" @trigger="trigger" />
 
   </div>
   <div v-else class="container-fluid">
 
     <!-- HEADER -->
-    <div class="row py-4" style="border-top: 1px solid #000; border-bottom: 1px solid #000">
+    <div class="row">
+      <div class="col-12" :style="paddingStyle">
+        <div class="card bg-transparent w-100" :style="{ 'border-radius': `${settings.layout.borderRadius}px` }"
+          style="border: 1px solid #000">
+          <div class="card-body">
+
+            <div class="row align-items-start">
+
+              <!-- LEFT -->
+              <div class="col" style="min-width: 0;">
+                <div class="d-inline-flex" style="max-width: 100%;">
+                  <div class="me-2 pt-1">
+                    <i :class="data.icon || 'fa-solid fa-circle-question'" class="fa-3x"></i>
+                  </div>
+                  <div style="min-width: 0; overflow: hidden;">
+                    <h3 class="mb-0 text-truncate" :class="{ 'truncate': settings.layout.truncate }">
+                      {{ data.name }}
+                      <!--<sup class="text-secondary">•</sup>-->
+                    </h3>
+                    <span class="text-secondary fw-light d-block text-truncate">
+                      {{ getRoomNameById(data.room) }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <!-- LEFT -->
+
+              <!-- RIGHT -->
+              <div class="col-auto text-end flex-shrink-0" style="font-size: 14px"
+                v-if="settings.showCommandStatesCounter">
+                <span class="text-secondary fw-light d-block">
+                  <!--Commands: {{ Math.round(Math.random() * 10) }}-->
+                  Commands: {{ commands }}
+                </span>
+                <span class="text-secondary fw-light d-block">
+                  States: {{ states }}
+                </span>
+              </div>
+              <!-- RIGHT -->
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- HEADER -->
+
+    <!-- HEADER -->
+    <div class="row py-4 hide" style="border-top: 1px solid #000; border-bottom: 1px solid #000">
 
       <!-- LEFT -->
       <div class="col">
@@ -185,71 +269,80 @@ export default {
     <!-- HEADER -->
 
     <!-- COMMANDS/STATES/SCENES -->
-    <div class="row display-flex text-center" style="height: calc(100% - 109px)">
+    <div class="row display-flex text-center" :style="containerHeight">
+      <ResizableGrid :items="items" v-slot="{ item }">
+        <div v-if="item.type === 'command'">
 
-      <!-- COMMANDS -->
-      <div class="p-0 col-6 col-md-3 col-xl-2" v-bind:key="command._id" v-for="command in data.commands">
-        <RouterLink custom :to="{
-          name: '/endpoints/:_id/commands/:_command',
-          params: {
-            _id: $route.params._id,
-            _command: command._id,
-          },
-        }" v-slot="{ href, navigate }" v-if="command.params?.length > 0 && !settings.showParameterInCommands">
-          <Tile :href="href" @click="navigate">
+          <!-- COMMANDS -->
+          <RouterLink custom :to="{
+            name: '/endpoints/:_id/commands/:_command',
+            params: {
+              _id: $route.params._id,
+              _command: item._id,
+            },
+          }" v-slot="{ href, navigate }" v-if="item.params?.length > 0 && !settings.showParameterInCommands">
+            <Tile :href="href" @click="navigate">
+              <template #title>
+                <i :class="item.icon || 'fa-regular fa-circle-question'"></i>
+              </template>
+              {{ item.name }}
+            </Tile>
+          </RouterLink>
+
+          <Tile v-else @click="trigger(item._id)" v-repeat="{ handler: repeat, interval: 300, command: item }">
             <template #title>
-              <i :class="command.icon || 'fa-regular fa-circle-question'"></i>
+              <i :class="item.icon || 'fa-regular fa-circle-question'"></i>
             </template>
-            {{ command.name }}
+            <div>
+              {{ item.name }}
+            </div>
+
+            <CommandParameter :param="param" :command="item" :shared="shareds[item._id]" v-for="param in item.params"
+              @changed="trigger(item._id)" />
+
           </Tile>
-        </RouterLink>
-        <Tile v-else @click="trigger(command._id)" v-repeat="{ handler: repeat, interval: 300, command }">
-          <template #title>
-            <i :class="command.icon || 'fa-regular fa-circle-question'"></i>
-          </template>
-          <div>
-            {{ command.name }}
-          </div>
+          <!--COMMANDS -->
 
-          <CommandParameter :param="param" :command="command" :shared="shareds[command._id]"
-            v-for="param in command.params" @changed="trigger(command._id)" />
+        </div>
+        <div v-else-if="item.type === 'state'">
 
-        </Tile>
-      </div>
-      <!--COMMANDS -->
+          <!--STATES -->
+          <Tile>
 
-      <!--STATES -->
-      <div class=" p-0 col-6 col-md-3 col-xl-2" v-bind:key="state._id" v-for="(state, index) in data.states">
-        <Tile>
+            <!-- INFORMATION -->
+            <h3><i :class="item.icon || 'fa-regular fa-circle-question'"></i></h3>
+            <span>{{ item.name }}</span>
+            <p :class="{ 'update-indicator': animations[item._id] }" @animationend="resetAnimation(item._id)">
+              <span v-if="item.value === null" class="text-warning">
+                null
+              </span>
+              <span v-else>
+                {{ item.value }}
+              </span>
+            </p>
+            <!-- INFORMATION -->
 
-          <!-- INFORMATION -->
-          <h3><i :class="state.icon || 'fa-regular fa-circle-question'"></i></h3>
-          <span>{{ state.name }}</span>
-          <p :class="{ 'update-indicator': animations[index] }" @animationend="resetAnimation(index)">
-            <span v-if="state.value === null" class="text-warning">
-              null
-            </span>
-            <span v-else>
-              {{ state.value }}
-            </span>
-          </p>
-          <!-- INFORMATION -->
+            <!-- TIMESTAMP -->
+            <small v-if="settings.showUpdateTimestampInStates" class="text-secondary fw-light">
+              Updated:<br>
+              {{ dateformat(item.timestamps.updated, settings.dateformat) }}
+            </small>
+            <!-- TIMESTAMP -->
 
-          <!-- TIMESTAMP -->
-          <small v-if="settings.showUpdateTimestampInStates" class="text-secondary fw-light">
-            Updated:<br>
-            {{ dateformat(data.timestamps.updated, settings.dateformat) }}
-          </small>
-          <!-- TIMESTAMP -->
+            <!-- GRAPH/HISTORY -->
+            <!-- TODO, see <host>/#!/test/chart -->
+            <!-- GRAPH/HISTORY -->
 
-          <!-- GRAPH/HISTORY -->
-          <!-- TODO, see <host>/#!/test/chart -->
-          <!-- GRAPH/HISTORY -->
+          </Tile>
+          <!-- STATES -->
 
-        </Tile>
-      </div>
-      <!-- STATES -->
+        </div>
+        <div v-else>
 
+          Type {{ item.type }} not supported
+
+        </div>
+      </ResizableGrid>
     </div>
     <!-- COMMANDS/STATES/SCENES -->
 
@@ -290,5 +383,12 @@ small {
   /*animation: updateIndicatorAnimation 0.28s ease-out*/
   animation: updateIndicatorAnimation 0.8s ease-out;
   animation-iteration-count: 1;
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 </style>

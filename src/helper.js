@@ -257,3 +257,46 @@ export function useEventListener(target, event, callback) {
     });
 
 };
+
+
+export function openDatabase() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open("app", 1);
+
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+
+            if (!db.objectStoreNames.contains("images")) {
+                db.createObjectStore("images");
+            }
+        };
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+
+export function isEmbeddedApp() {
+
+    // running in android/ios wrapper?
+    // notifications shim 
+    if (window.AndroidNotifications) return true;
+
+    // running in fully kiosk 
+    if (window.fully) return true;
+
+    return false;
+
+}
+
+
+export function canInstallAsPwa() {
+    // window.deferredPrompt = ref(null)
+    return !isEmbeddedApp() && "serviceWorker" in navigator && !!window.deferredPrompt.value;
+}
+
+
+export function canUseFullscreen() {
+    return !isEmbeddedApp() && document.fullscreenEnabled;
+}
