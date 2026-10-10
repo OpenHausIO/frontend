@@ -37,23 +37,43 @@ export default defineComponent({
       currentSlide: 0,
       lightboxOpen: false,
       confettiFired: false,
+      // a better approach would be a seperate "subtitles" track
+      // https://claude.ai/chat/d9536ced-417e-4e84-b2d8-0fd198b63d90
+      // this has the benefit, that it could in fullscreen be shown in the video element
+      // and in portrait mode, under the video element
       slides: [{
         title: "Willkommen",
-        text: "bla bla bla — kurze Einführung in deine OpenHaus Installation.",
-        img: "img-1.png"
+        text: "Sie befinden sich im Dashboard, und erhalten eine kurze Einführung in OpenHaus.",
+        img: "dashboard.png"
       }, {
-        title: "Quick Intorducion",
-        text: "blab",
-        video: "Big_Buck_Bunny_1080_10s_1MB.mp4",
-        poster: "Big_Buck_Bunny_1080_10s_1MB-poster.jpg"
+        title: "Quick Introduction",
+        text: "",
+        video: "quick-start.mp4",
+        poster: "quick-start-poster.png"
       }, {
-        title: "Räume & Endpoints",
-        text: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam.",
-        img: "img-2.png"
+        title: "Räume",
+        text: "Räume gliedern Endpoints, und erlauben eine Räumliche trennung. So kann man schnell auf Endpoints in einem bestimmten Raum zugreifen.",
+        img: "rooms.png"
       }, {
-        title: "Geräte & Szenen",
-        text: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
-        img: "img-3.png"
+        title: "Endpoints",
+        text: "Endpoints sind dinge die man Steuern kann, und von Devices bereit gestellt werden. Ein Gerät kann mehrer Endpoints bereitstellen. Z.b. ein AV-Receiver mit Multizonen unterstützung.",
+        img: "endpoints.png"
+      }, {
+        title: "Devices",
+        text: "Devices stellen Endpoints bereit und schnitstellen zu denen OpenHaus sich verbinden kann. Z.b. Shelly Aktoren oder Gateways für Zigbee/Thread/Matter.",
+        img: "devices.png"
+      }, {
+        title: "Scenes",
+        text: "Scenes erlauben vordefinierte Kommands auszuführen, und so Lichtszenen, Heimkino oder Gaming Abende auf Knopfdruck auszurufen, ohne jedes Gerät einzeln steuern zu müssen.",
+        img: "scenes.png"
+      }, {
+        title: "External Sites/Music",
+        text: "In das Frontend lassen sich beliebeig externe Seiten einbinden, wie eine Musik steuerung für Multiroom-Audio.",
+        img: "external.png"
+      }, {
+        title: "Settings",
+        text: `Über die Settings seite können Sie das Erscheinungsbild anpassen, Einstellungen zurücksetzen oder die <a href="/admin">Administration</a>s-Oberfläche aufrufen über die Sie Plugins & Geräte hinzufügen können.`,
+        img: "settings.png"
       }],
       // Zoom/Pan-Status für die Lightbox
       zoomScale: 1,
@@ -65,13 +85,25 @@ export default defineComponent({
       _panStartOffset: { x: 0, y: 0 },
       _lastTapTime: 0,
       // video cues
-      currentCaption: "",
+      currentCaption: "Video Schnellstart",
       cues: [
         { time: 0, text: "Willkommen im Dashboard" },
         { time: 3, text: "Hier siehst du deine Räume" },
-        { time: 5, text: "Und hier die Endpoints im Detail" },
-        { time: 8, text: "Fertig!" },
-        { time: 10, text: "Viel Spaß mit OpenHaus!" }
+        { time: 9, text: "Mit einem Klick auf einen Raum, siehst du alle Endpoints darin" },
+        { time: 12, text: "Endpoints sind dinge, die man steuern kann" },
+        { time: 15, text: "Nach einem Klick auf einen Endpoint, sieht man alle Kommandos" },
+        { time: 22, text: "Durch den Klick in der Navigation, sieht man alle Endpoints.\nNicht nur die in einem Raum." },
+        { time: 37, text: "Auch hier gelangt man wieder durch einen Klick darauf zu den Kommands die man ausführen kann." },
+        { time: 44, text: "Geräte sind dinge zu denen eine Verbindung aufgebaut werden kann, und Endpoints bereit stellen" },
+        { time: 57, text: "Szenen bieten die möglichkeit Kommandos in abfolge auszuführen um so z.b. Lichtstimmungen zu definieren" },
+        { time: 62, text: `Über <a href="#/settings">Settings</a> kann man Einstellungen am Frontend vornehmen, wie z.b. das Erscheinungsbild anzupassen.` },
+        { time: 70, text: "Einstellungen sind reaktiv, und werden sofort angewendet." },
+        { time: 86, text: "Widgets sind nützlicher helfer auf dem Dashboard." },
+        { time: 100, text: "Sie lassen sich in Größe und position frei gestalten." },
+        { time: 140, text: "Wenn Widgets gelockt sind, lassen sie sich nicht verändern." },
+        { time: 146, text: "Manche Widgets haben spezielle optionen" },
+        { time: 160, text: "Widgets lasssen sich im unlockt zustand oben das Menu löschen." },
+        { time: 162, text: `Das war der Schnelleinstieg! <br />Viel Spaß mit Ihrer OpenHaus installation.` },
       ],
       layout: {
         gap: null,
@@ -279,12 +311,11 @@ export default defineComponent({
           </div>
           -->
           <div class="media-frame shadow">
-            <img :src="`/user/docs/${slides[currentSlide].img}`" class="shadow" v-if="slides[currentSlide].img"
-              @click="openLightbox">
+            <img :src="`/user/docs/${slides[currentSlide].img}`" v-if="slides[currentSlide].img" @click="openLightbox">
 
             <!-- Autoplay geht nicht -->
-            <video :src="`/user/docs/${slides[currentSlide].video}`" controls class="shadow" @timeupdate="onTimeUpdate"
-              v-if="slides[currentSlide].video" :poster="`/user/docs/${slides[currentSlide].poster}`"></video>
+            <video :src="`/user/docs/${slides[currentSlide].video}`" controls @timeupdate="onTimeUpdate"
+              v-if="slides[currentSlide].video" :poster="`/user/docs/${slides[currentSlide].poster}`" muted></video>
 
             <!-- Autoplay geht auf mobile
             <video autoplay="autoplay" loop="loop" muted defaultMuted playsinline controls oncontextmenu="return false;"
@@ -295,9 +326,7 @@ export default defineComponent({
 
           </div>
 
-          <p>
-            {{ slides[currentSlide].video ? currentCaption : slides[currentSlide].text }}
-          </p>
+          <p v-html="slides[currentSlide].video ? currentCaption : slides[currentSlide].text"> </p>
 
         </div>
       </div>
@@ -338,13 +367,13 @@ export default defineComponent({
 <style scoped>
 .media-frame {
   width: 100%;
-  aspect-ratio: 16 / 9;
+  /*aspect-ratio: 16 / 9;*/
   /* oder das Verhältnis, das zu deinen Screenshots passt */
   overflow: hidden;
   border: 1px solid #000;
   border-radius: 4px;
   margin-bottom: 12px;
-  background-color: #000
+  /*background-color: #000*/
 }
 
 .media-frame img,

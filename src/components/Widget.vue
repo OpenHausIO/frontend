@@ -21,7 +21,7 @@ const allowedWidgets = [
   //"Video"
   "Notifications",
   //"Battery"
-  //"Welcome" // not finished yet
+  "Welcome"
 ];
 
 (async () => {

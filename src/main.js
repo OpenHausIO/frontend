@@ -798,16 +798,12 @@ Promise.all([
     })();
 
 
-    /*
-    // not finished yet
     if (settings.firstrun && widgets.$state.length === 0) {
         widgets.add("Welcome", {
             w: settings.dashboardGrid.cols,
             h: settings.dashboardGrid.rows,
         });
     }
-    */
-
 
 }).catch((err) => {
 
