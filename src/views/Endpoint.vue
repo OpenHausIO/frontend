@@ -184,19 +184,20 @@ export default {
           style="border: 1px solid #000">
           <div class="card-body">
 
-            <div class="row">
+            <div class="row align-items-start">
+
               <!-- LEFT -->
-              <div class="col">
-                <div class="d-inline-flex">
+              <div class="col" style="min-width: 0;">
+                <div class="d-inline-flex" style="max-width: 100%;">
                   <div class="me-2 pt-1">
                     <i :class="data.icon || 'fa-solid fa-circle-question'" class="fa-3x"></i>
                   </div>
-                  <div class="">
-                    <h3 class="mb-0">
+                  <div style="min-width: 0; overflow: hidden;">
+                    <h3 class="mb-0 text-truncate" :class="{ 'truncate': settings.layout.truncate }">
                       {{ data.name }}
                       <!--<sup class="text-secondary">•</sup>-->
                     </h3>
-                    <span class="text-secondary fw-light d-block">
+                    <span class="text-secondary fw-light d-block text-truncate">
                       {{ getRoomNameById(data.room) }}
                     </span>
                   </div>
@@ -205,7 +206,8 @@ export default {
               <!-- LEFT -->
 
               <!-- RIGHT -->
-              <div class="col text-end" style="font-size: 14px" v-if="settings.showCommandStatesCounter">
+              <div class="col-auto text-end flex-shrink-0" style="font-size: 14px"
+                v-if="settings.showCommandStatesCounter">
                 <span class="text-secondary fw-light d-block">
                   <!--Commands: {{ Math.round(Math.random() * 10) }}-->
                   Commands: {{ commands }}
@@ -213,13 +215,9 @@ export default {
                 <span class="text-secondary fw-light d-block">
                   States: {{ states }}
                 </span>
-                <!--
-        <span class="text-secondary fw-light d-block">
-          Scenes: {{ scenes }}
-        </span>
-        -->
               </div>
               <!-- RIGHT -->
+
             </div>
 
           </div>
@@ -385,5 +383,12 @@ small {
   /*animation: updateIndicatorAnimation 0.28s ease-out*/
   animation: updateIndicatorAnimation 0.8s ease-out;
   animation-iteration-count: 1;
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 </style>
