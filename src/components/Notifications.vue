@@ -7,7 +7,14 @@
         :class="{ 'toast-no-bottom-border-radius': notification.actions.length > 0 }">
         <div class="toast-indicator" :style="{ 'animation-duration': `${notification.dismiss}ms` }"
           :class="'bg-' + notification.type"></div>
-        <div class="toast-body" v-html="notification.message"></div>
+        <div class="toast-body">
+          <div class="d-block font-bold" v-if="notification?.title">
+            {{ notification.title }}
+          </div>
+          <div style="white-space: pre-line">
+            {{ notification.message }}
+          </div>
+        </div>
       </div>
       <div class="btn-group d-flex">
         <button type="button" class="btn flex-fill" :class="'btn-outline-' + notification.type"
@@ -60,6 +67,7 @@ const addNotification = (message, opts) => {
 
   opts = reactive(Object.assign({
     message,
+    title: null,
     type: "primary",
     actions: [],
     dismiss: 3500,
