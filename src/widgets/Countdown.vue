@@ -1,8 +1,10 @@
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, defineAsyncComponent } from "vue";
+import { settingsStore } from "../store";
 
-import { useNotificationStore } from "@dafcoe/vue-notification";
-const { setNotification } = useNotificationStore();
+import { addNotification } from "../components/Notifications.vue";
+
+const Widget = defineAsyncComponent(() => import("../components/Widget.vue"));
 
 export default defineComponent({
   name: "Countdown",
@@ -12,83 +14,97 @@ export default defineComponent({
       required: true,
     },
   },
+  components: {
+    Widget
+  },
+  setup() {
+
+    const settings = settingsStore();
+
+    return {
+      settings
+    };
+
+  },
   data() {
     return {
-      title: "",
-      duration: 0,
+      data: {
+        duration: 0,
+      },
       counter: 0,
-      showTitleTextbox: false,
       showDurationTextbox: false,
-      interval: null
+      interval: null,
+      menu: [{
+        title: "Edit Countdown",
+        method: "editCountdown",
+      }, {
+        title: "Done editing",
+        method: "closeEdit",
+      }, {
+        title: "Reset Countdown",
+        method: "resetCounter"
+      }],
     };
   },
-  mounted() {
+  computed: {
+    startButton() {
 
-    let str = window.localStorage.getItem(`widget-${this.uuid}`);
+      if (this.counter === this.data.duration) {
+        return "Start";
+      }
 
-    if (!str) {
-      return;
+      if (this.interval || this.counter <= 0) {
+        return "Reset";
+      } else {
+        return "Start";
+      }
+
     }
-
-    let config = JSON.parse(str);
-
-    this.title = config.title;
-    this.duration = Number(config.duration || 0);
-    this.counter = this.duration;
-
   },
   methods: {
-    editTitle() {
-      this.showTitleTextbox = true;
-    },
     editCountdown() {
       this.showDurationTextbox = true;
     },
     closeEdit() {
 
-      if (!(new RegExp(/^\d+$/).test(this.duration))) {
-        setNotification({
-          message: `Invalid duration. Only numbers/integers are supported. No float numbers or other charachter!`,
-          type: "alert",
-          showIcon: false,
-          dismiss: {
-            manually: true,
-            automatically: false,
-          },
-          appearance: "dark",
+      if (!(new RegExp(/^\d+$/).test(this.data.duration))) {
+
+        addNotification("Invalid duration. Only numbers/integers are supported. No float numbers or other charachter!", {
+          type: "danger",
+          dismiss: false
         });
 
       }
 
-      this.showTitleTextbox = false;
       this.showDurationTextbox = false;
-      this.counter = this.duration;
-      this.save();
-
-    },
-    dispatchEvent(event) {
-      console.log("diuspatchEvent called in notes.vue", event);
-    },
-    save() {
-
-      let data = JSON.stringify({
-        title: this.title,
-        duration: this.duration
-      });
-
-      window.localStorage.setItem(`widget-${this.uuid}`, data);
+      this.counter = this.data.duration;
 
     },
     resetCounter() {
-      this.counter = this.duration;
       clearInterval(this.interval);
+      this.interval = null;
+      this.counter = this.data.duration;
     },
     startCounter() {
 
-      this.closeEdit();
+      if (this.interval || this.counter <= 0) {
+        this.resetCounter();
+        return;
+      }
+
+      let { title = "" } = this.$refs.widget;
+
+      this.showDurationTextbox = false;
+      this.counter -= 1;
 
       this.interval = setInterval(() => {
+
+        this.counter -= 1;
+
         if (this.counter <= 0) {
+
+          this.counter = 0;
+          clearInterval(this.interval);
 
           // NOTE: triger backend notification here?
           // if on mobile, its possible that no execution is paused
@@ -100,101 +116,82 @@ export default defineComponent({
           // - coundown "foo" reached 0!
           // - Your time is up!
           // - etc.
+          if ('vibrate' in navigator) {
+            navigator.vibrate(200);
+          }
 
-          setNotification({
-            message: `Countdown "${this.title}" reached 0!`,
-            type: "info",
-            showIcon: false,
-            dismiss: {
-              manually: true,
-              automatically: false,
-            },
-            appearance: "dark",
+          addNotification(`Countdown ${title ? `"${title}"` : ''} reached 0!`, {
+            type: "primary",
+            dismiss: false
           });
 
-          //alert("Countdown reached 0!");
+          /*
+          if (window?.notifications && this.settings.sendSystemNotifications) {
 
-          clearInterval(this.interval);
-          this.counter = 0;
+            let msg = JSON.stringify({
+              title: "<b>Countdown</b>",
+              message: `${this.title ? `"${this.title}"` : 'Countdown'} reached 0!`
+            });
 
-        } else {
+            window.notifications.send(msg);
 
-          this.counter -= 1;
+          }
+          */
 
         }
+
       }, 1000);
 
     },
     pauseCounter() {
-
-      this.closeEdit();
+      this.showDurationTextbox = false;
       clearInterval(this.interval);
-
+      this.interval = null;
     },
     increase() {
-      this.duration += 1;
+      this.data.duration += 1;
     },
     decrase() {
-      this.duration -= 1;
+      this.data.duration -= 1;
+    },
+    selectedMenu(menu) {
+      this[menu.method]();
+    },
+    loaded(data) {
+      Object.assign(this.data, data);
     }
   },
-  menu: [{
-    title: "Edit Title",
-    method: "editTitle",
-  }, {
-    title: "Edit Countdown",
-    method: "editCountdown",
-  }, {
-    title: "Done editing",
-    method: "closeEdit",
-  }, {
-    title: "Reset Counter",
-    method: "resetCounter"
-  }],
 });
 </script>
 
 
 <template>
-  <div class="p-2">
-    <h3>
-      Countdown: <input type="text" v-model="title" v-if="showTitleTextbox" />
-      <span v-else>
-        {{ title }}
-      </span>
-    </h3>
-    <div class="w-100">
-      <div class="container text-center">
-        <div class="row">
-          <div class="col h-100">
-            <button class="btn btn-outline-primary btn-block" @click="startCounter()">Start</button>
-          </div>
-          <div class="col">
-            <div class="container">
+  <Widget name="Countdown" :menu="menu" @menu="selectedMenu" :uuid="uuid" :data="data" @loaded="loaded" ref="widget">
+    <div class="p-2">
+      <div class="row align-items-center g-2">
 
-              <div class="row" v-if="!showDurationTextbox">
-                <h3>{{ counter }}</h3>
-              </div>
-
-              <div class="row" v-else>
-                <div class="col h-100">
-                  <button class="btn btn-outline-primary btn-block" @click="increase()">+</button>
-                </div>
-                <div class="col">
-                  <input type="text" v-model="duration" min="0" step="1" pattern="/[0-9]*./" />
-                </div>
-                <div class="col">
-                  <button class="btn btn-outline-primary btn-block" @click="decrase()">-</button>
-                </div>
-              </div>
-
-            </div>
-          </div>
-          <div class="col">
-            <button class="btn btn-outline-primary btn-block" @click="pauseCounter()">Pause</button>
-          </div>
+        <div class="col">
+          <button class="btn btn-outline-primary w-100" @click="startCounter()">{{ startButton }}</button>
         </div>
+
+        <div class="col-auto text-center px-3" style="min-width: 6rem;">
+
+          <h3 class="mb-0" v-if="!showDurationTextbox">{{ counter }}</h3>
+
+          <div class="d-flex align-items-center gap-2" v-else>
+            <button class="btn btn-outline-primary" @click="increase()">+</button>
+            <input type="text" class="form-control text-center" v-model="data.duration" min="0" step="1"
+              pattern="/[0-9]*./" style="width: 4rem" />
+            <button class="btn btn-outline-primary" @click="decrase()">-</button>
+          </div>
+
+        </div>
+
+        <div class="col">
+          <button class="btn btn-outline-primary w-100" @click="pauseCounter()">Pause</button>
+        </div>
+
       </div>
     </div>
-  </div>
+  </Widget>
 </template>

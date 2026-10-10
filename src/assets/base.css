@@ -1,3 +1,16 @@
+@font-face {
+    font-family: "Orbitron";
+    src: url("/webfonts/Orbitron-VariableFont_wght.ttf") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    --item-alpha: 0.5;
+    /*--bs-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);*/
+}
+
 body {
     /*
     background-color: #101418;
@@ -9,6 +22,7 @@ body {
     /*color: #efefef;*/
     color: rgb(230, 230, 230);
     overflow-y: scroll;
+    background-color: #1a2026 !important;
 }
 
 #app.gardien-background {
@@ -19,7 +33,8 @@ body {
     */
 
     /* Darker background, see #63 */
-    background-color: #101418;
+    /*background-color: #101418;*/
+    background-color: #1a2026;
     background-image: radial-gradient(circle, #23282e 0%, rgba(35, 40, 46, 0.5) 25%, #101418 95%), url("/noise.png");
 
 
@@ -49,8 +64,10 @@ body {
 
 :disabled {
     cursor: not-allowed !important;
+    pointer-events: auto !important;
 }
 
+/*
 .notification-list-item--alert .notification-list-item__tag[data-v-0730d53e] {
     background-color: var(--bs-red) !important;
 }
@@ -62,9 +79,36 @@ body {
 .notification-list-item--success .notification-list-item__tag[data-v-0730d53e] {
     background-color: var(--bs-green) !important;
 }
+    */
 
-hr{
+hr {
     background-color: rgba(0, 0, 0, 1) !important;
     height: 1px !important;
     opacity: 1;
+}
+
+
+/*
+BELOW STYLING FROM BOOTSTRAP v5.1.3
+*/
+
+.card {
+    color: #efefef;
+    background-color: rgba(0, 0, 0, var(--item-alpha)) !important
+}
+
+.form-control::placeholder {
+    color: #6c757d;
+    opacity: 1;
+}
+
+
+/*
+Without this, in the dashboard widgetes are everywhere scrollbars/overflow
+https://claude.ai/chat/cb6ad1e9-5bc3-41cb-9bc6-1d3362456110
+*/
+.grid-item,
+.card,
+.card-body {
+    min-height: 0;
 }

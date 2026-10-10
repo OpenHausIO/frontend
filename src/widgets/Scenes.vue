@@ -1,89 +1,83 @@
 <template>
+  <Widget name="Scenes" :menu="menu" @menu="selectedMenu" :uuid="uuid" ref="widget" :data="data" @loaded="loaded">
 
-  <Modal :visible="isModalVisible" @close="onCloseModal" @confirm="onModalConfirm" title="Select scenes to display">
-    <template #body>
-      <div class="row">
-        <div class="col">
+    <Modal :visible="isModalVisible" @close="onCloseModal" @confirm="onModalConfirm" title="Select scenes to display">
+      <template #body>
+        <div class="row">
+          <div class="col">
 
-          <ul v-if="scenes.length > 0">
-            <li v-for="(scene, i) in scenes" :key="i">
+            <ul v-if="scenes.length > 0">
+              <li v-for="(scene, i) in scenes" :key="scene._id">
 
-              <div class="form-check form-switch">
-                <label>
+                <div class="form-check form-switch">
+                  <label>
 
-                  <input class="form-check-input" type="checkbox" role="switch" :value="scene._id"
-                    v-model="wantedScenes">
-                  {{ scene.name }}
+                    <input class="form-check-input" type="checkbox" role="switch" :value="scene._id"
+                      v-model="data.wantedScenes">
+                    {{ scene.name }}
 
-                </label>
-              </div>
+                  </label>
+                </div>
 
-            </li>
-          </ul>
-          <span v-else>
-            <i class="text-secondary fw-light">no scenes</i>
-          </span>
+              </li>
+            </ul>
+            <span v-else>
+              <i class="text-secondary fw-light">no scenes</i>
+            </span>
 
+          </div>
         </div>
-      </div>
-    </template>
-  </Modal>
+      </template>
+    </Modal>
 
-  <div class="p-2 h-100">
+    <!--
+    <WidgetGrid :items="data.wantedScenes">
+      <template #default="{ item: _id }">
+        <Frame @click="trigger(getScenesById(_id), $event)" style="cursor: pointer;" class="h-100">
 
-    <h3>
-      Scenes: <input type="text" v-model="title" v-if="showTitleTextbox" />
-      <span v-else>
-        {{ title }}
-      </span>
-    </h3>
-
-    <div class="container-fluid p-0">
-      <div class="h-100">
-        <div class="row h-100 display-flex text-center">
-
-          <div class="p-0 col" v-for="_id in wantedScenes">
-            <Tile @click="trigger(getScenesById(_id), $event)" style="cursor: pointer;">
-              <template #icon>
-                <i class="fa-2xl" :class="getScenesById(_id)?.icon || 'fa-regular fa-circle-question'"></i>
-              </template>
-              <template #title>
-                {{ getScenesById(_id)?.name || "undefined" }}
-              </template>
-              <!--
-              <template #default>
-
-                {{ getScenesById(_id).timestamps }}
-                {{ getScenesById(_id).states }}
-
-              </template>
-              -->
-            </Tile>
+          <div class="d-flex flex-column align-items-center justify-content-center h-100">
+            <i class="d-block" :class="getScenesById(_id)?.icon || 'fa-regular fa-circle-question'"
+              style="font-size: 25px"></i>
+            {{ getScenesById(_id)?.name || "undefined" }}
           </div>
 
+        </Frame>
+      </template>
+    </WidgetGrid>
+  -->
 
-        </div>
-      </div>
-    </div>
+    <WidgetGrid :items="wantedSceneItems">
+      <template #default="{ item: scene }">
+        <Item :icon="scene.icon || 'fa-regular fa-circle-question'" :title="scene.name || 'undefined'"
+          @click="trigger(scene, $event)" />
+      </template>
+    </WidgetGrid>
 
-  </div>
+  </Widget>
 </template>
 
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, defineAsyncComponent } from "vue";
 import Modal from "../components/Modal.vue";
 import Tile from "../components/Tile.vue";
+import Frame from "../components/Frame.vue";
 import { request } from "@/helper";
-import { itemStore } from "../store.js";
+import { itemStore, settingsStore } from "../store.js";
+import WidgetGrid from "../components/WidgetGrid.vue";
+import Item from "../components/Item.vue";
+
+const Widget = defineAsyncComponent(() => import("../components/Widget.vue"));
 
 export default defineComponent({
   name: "Scenes",
   setup() {
 
     const items = itemStore();
+    const settings = settingsStore();
 
     return {
-      items
+      items,
+      settings
     };
 
   },
@@ -95,15 +89,22 @@ export default defineComponent({
   },
   components: {
     Modal,
-    Tile
+    Tile,
+    Widget,
+    Frame,
+    WidgetGrid,
+    Item
   },
   data() {
     return {
-      title: "",
       isModalVisible: false,
-      showTitleTextbox: false,
-      endpoint: "",
-      wantedScenes: []
+      data: {
+        wantedScenes: [],
+      },
+      menu: [{
+        title: "Select scenes",
+        method: "selectScenes",
+      }]
     };
   },
   computed: {
@@ -115,10 +116,12 @@ export default defineComponent({
     },
     scenes() {
       return this.items.scenes;
+    },
+    wantedSceneItems() {
+      return this.data.wantedScenes.map((_id) => {
+        return this.getScenesById(_id);
+      }).filter(Boolean);
     }
-  },
-  mounted() {
-    this.loadLocalStorage();
   },
   methods: {
     selectScenes() {
@@ -128,10 +131,7 @@ export default defineComponent({
       this.isModalVisible = false;
     },
     onModalConfirm() {
-
       this.isModalVisible = false;
-      this.saveLocalStorage();
-
     },
     dispatchEvent(event) {
       console.log("Dispatch event in child called", event);
@@ -161,56 +161,32 @@ export default defineComponent({
     },
     closeEdit() {
       this.showTitleTextbox = false;
-      this.saveLocalStorage();
     },
-    saveLocalStorage() {
-
-      let str = JSON.stringify({
-        title: this.title,
-        wantedScenes: this.wantedScenes
-      });
-
-      window.localStorage.setItem(`widget-${this.uuid}`, str);
-
+    selectedMenu(menu) {
+      this[menu.method]();
     },
-    loadLocalStorage() {
-
-      let str = window.localStorage.getItem(`widget-${this.uuid}`);
-
-      if (!str) {
-        return;
-      }
-
-      let data = JSON.parse(str);
-
-      this.title = data.title;
-      this.wantedScenes = data.wantedScenes;
-
+    loaded(data) {
+      Object.assign(this.data, data);
     }
-  },
-  menu: [{
-    title: "Select scenes",
-    method: "selectScenes",
-  }, {
-    title: "Edit title",
-    method: "editTitle",
-  }, {
-    title: "Done editing",
-    method: "closeEdit",
-  }]
+  }
 });
 </script>
 
 <style scoped>
-.row.display-flex {
-  display: flex;
-  flex-wrap: wrap;
+.dashboard-widget {
+  height: 100%;
 }
 
-.row.display-flex>[class*="col-"] {
-  flex-grow: 0;
-  /* 1) set max-height to shrink tiles */
-  /*max-height: 300px;*/
+.scene-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  /*gap: 0.5rem;*/
+  height: 100%;
+  text-align: center;
+}
+
+.scene-item {
+  min-height: 100px;
 }
 
 small {

@@ -1,5 +1,7 @@
 <script>
-import { defineComponent, watch } from "vue";
+import { defineComponent, defineAsyncComponent } from "vue";
+
+const Widget = defineAsyncComponent(() => import("../components/Widget.vue"));
 
 export default defineComponent({
   name: "Todo",
@@ -9,158 +11,85 @@ export default defineComponent({
       required: true,
     },
   },
+  components: {
+    Widget
+  },
   data() {
     return {
-      title: "Hausarbeit",
-      jobs: [
-        {
-          done: false,
-          desc: "Staubsaugen",
-        },
-        {
-          done: true,
-          desc: "Bügeln",
-        },
-        {
-          done: false,
-          desc: "Betten neu beziehen",
-        },
-        {
-          done: false,
-          desc: "Abwaschen",
-        },
-        {
-          done: true,
-          desc: "Fenster putzen",
-        },
-        {
-          done: true,
-          desc: "Klamotten sortieren",
-        },
-        {
-          done: false,
-          desc: "Müll raus bringen",
-        },
-        {
-          done: false,
-          desc: "Einkaufen gehens",
-        },
-      ],
-      showTextbox: false
+      data: {
+        jobs: []
+      },
+      menu: [{
+        title: "Add Job",
+        method: "addJob"
+      }, {
+        title: "Edit Jobs",
+        method: "editJobs"
+      }, {
+        title: "Done editing",
+        method: "closeEdit"
+      }, {
+        title: "Delete Jobs",
+        method: "deleteJobs"
+      }]
     };
   },
-  mounted() {
-    let str = window.localStorage.getItem(`widget-${this.uuid}`);
-
-    if (!str) {
-      str = JSON.stringify({
-        title: "",
-        jobs: [],
-      });
-
-      window.localStorage.setItem(`widget-${this.uuid}`, str);
-    }
-
-    let config = JSON.parse(str);
-
-    this.title = config.title;
-    this.jobs = config.jobs || [];
-  },
-  created() { },
   methods: {
     toggleDone(job) {
+
       if (job.edit) {
         return;
       }
 
       job.done = !job.done;
 
-      window.localStorage.setItem(
-        `widget-${this.uuid}`,
-        JSON.stringify({
-          title: this.title,
-          jobs: this.jobs,
-        })
-      );
     },
     addJob() {
-      this.jobs.push({
+
+      this.data.jobs.push({
         done: false,
         desc: "",
         edit: true,
       });
+
+      this.$nextTick(() => {
+        const inputs = this.$refs.jobInputs;
+        const lastInput = Array.isArray(inputs) ? inputs[inputs.length - 1] : inputs;
+        lastInput?.focus();
+      });
+
     },
     closeEdit() {
-
-      this.showTextbox = false;
-
-      this.jobs.forEach((job) => {
+      this.data.jobs.forEach((job) => {
         job.edit = false;
       });
-
-      window.localStorage.setItem(
-        `widget-${this.uuid}`,
-        JSON.stringify({
-          title: this.title,
-          jobs: this.jobs,
-        })
-      );
-
     },
     deleteJobs() {
-      this.jobs = this.jobs.filter(({ done }) => {
+      this.data.jobs = this.data.jobs.filter(({ done }) => {
         return !done;
       });
-
-      window.localStorage.setItem(
-        `widget-${this.uuid}`,
-        JSON.stringify({
-          title: this.title,
-          jobs: this.jobs,
-        })
-      );
     },
     editJobs() {
-      this.jobs.forEach((job) => {
+      this.data.jobs.forEach((job) => {
         job.edit = true;
       });
     },
-    dispatchEvent(event) {
-      console.log("Dispatch event in child called", event);
+    selectedMenu(menu) {
+      this[menu.method]();
     },
-    editTitle() {
-      this.showTextbox = true;
-    },
+    loaded(data) {
+      Object.assign(this.data, data);
+    }
   },
-  menu: [{
-    title: "Add Job",
-    method: "addJob"
-  }, {
-    title: "Edit Jobs",
-    method: "editJobs"
-  }, {
-    title: "Edit title",
-    method: "editTitle"
-  }, {
-    title: "Done editing",
-    method: "closeEdit"
-  }, {
-    title: "Delete Jobs",
-    method: "deleteJobs"
-  }],
 });
 </script>
 
 
 <template>
-  <div class="p-2">
-    <h3>Todo's: <input type="text" v-model="title" v-if="showTextbox" />
-      <span v-else>
-        {{ title }}
-      </span>
-    </h3>
-    <ul v-if="jobs.length > 0">
-      <li v-bind:key="index" v-for="(job, index) in jobs">
+  <Widget name="Todo's" :menu="menu" @menu="selectedMenu" :uuid="uuid" :data="data" @loaded="loaded">
+
+    <ul v-if="data.jobs.length > 0">
+      <li v-bind:key="index" v-for="(job, index) in data.jobs">
         <label @click="toggleDone(job)" class="w-100">
           <div class="d-flex">
             <div>
@@ -170,7 +99,7 @@ export default defineComponent({
             &nbsp;
             <div class="flex-fill">
               <div class="d-inline flex-fill" v-if="job.edit">
-                <input type="text" class="w-100" v-model="job.desc" />
+                <input type="text" class="w-100" v-model="job.desc" ref="jobInputs" />
               </div>
               <div class="d-inline" v-else>
                 <del v-if="job.done">{{ job.desc }}</del>
@@ -197,20 +126,23 @@ export default defineComponent({
       Nothing todo!<br />
       Add some jobs or relax.
     </div>
-    <!--
-    <button class="btn btn-outline-primary" @click="addJob()">Add</button>
-    <button class="btn btn-outline-primary" @click="closeEdit()">Done</button>
-    -->
-  </div>
+
+  </Widget>
 </template>
 
+<!-- 
+TYPO!!!! Should be "scoped"
+But, input/password fields look better with styling applied below.
+Same in "Widget.vue"
+-->
 <style scope>
 ul {
   list-style: none;
   padding: 0;
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="password"] {
   border: 0;
   border-bottom: 1px solid #000;
   color: #fff;

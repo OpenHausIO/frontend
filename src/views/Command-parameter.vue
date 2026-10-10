@@ -1,15 +1,24 @@
-<script setup>
+<script>
 import CommandParameter from "@/components/CommandParameter.vue";
 import { useRoute } from "vue-router";
 import { debounce, request } from "../helper";
-</script>
-
-<script>
+import { defineComponent } from "vue";
 import { mapActions } from "pinia";
-import { itemStore } from "../store.js";
-const items = itemStore();
+import { itemStore, settingsStore } from "../store.js";
 
-export default {
+export default defineComponent({
+  name: "Command-Parameter",
+  setup() {
+
+    const items = itemStore();
+    const settings = settingsStore();
+
+    return {
+      items,
+      settings
+    };
+
+  },
   components: {
     CommandParameter
   },
@@ -17,13 +26,14 @@ export default {
     return {
       data: {},
       endpoint: null,
-      shared: {}
+      shared: {},
+      _debounceTimer: null
     };
   },
   mounted() {
     let $route = useRoute();
 
-    let endpoint = Array.from(items.endpoints).find((item) => {
+    let endpoint = Array.from(this.items.endpoints).find((item) => {
       return item._id === $route.params._id;
     });
 
@@ -51,33 +61,50 @@ export default {
   },
   methods: {
     ...mapActions(itemStore, ["getRoomNameById", "getDeviceNameById"]),
-    trigger: debounce(function (param) {
+    command() {
 
-      console.log("Aasdflaksdfleila", JSON.stringify([{
-        key: param.key,
-        value: param.value
-      }]))
+      let body = this.data.params.map((param) => {
+        return {
+          key: param.key,
+          value: param.value
+        }
+      });
 
       request(`/api/endpoints/${this.endpoint._id}/commands/${this.data._id}`, {
         method: "POST",
         headers: {
           "content-type": "application/json"
         },
-        body: JSON.stringify([{
-          key: param.key,
-          value: param.value
-        }])
+        body: JSON.stringify(body)
       }, (err, result) => {
+
         console.log(err, result);
+
       });
 
-    }, 10)
+    },
+    trigger() {
+      if (this.settings?.debounce === 0) {
+
+        return this.command();
+
+      } else {
+
+        clearTimeout(this._debounceTimer);
+
+        this._debounceTimer = setTimeout(() => {
+          this.command();
+          this._debounceTimer = null;
+        }, this.settings.debounce);
+
+      }
+    }
   },
-};
+});
 </script>
 
 <template>
-  <div class="container-fluid">
+  <div class="container-fluid" @click="trigger()">
 
     <!-- HEADER -->
     <div class="row py-4" style="border-top: 1px solid #000; border-bottom: 1px solid #000">
@@ -107,12 +134,9 @@ export default {
 
     <!-- COMMAND PARAMETERS -->
     <div class="row display-flex text-center" v-bind:key="index" v-for="(param, index) in data.params">
-      <!--<div class="px-4 col-6 col-md-3 col-xl-2">-->
-      <div>
 
-        <CommandParameter :param="param" :command="data" :shared="shared" @changed="trigger(param)" />
+      <CommandParameter :param="param" :command="data" :shared="shared" @changed="trigger()" />
 
-      </div>
     </div>
     <!-- COMMAND PARAMETERS -->
 

@@ -20,13 +20,24 @@ export const settingsStore = defineStore("settings", {
             groupRoomItems: false,
             groupEndpointItems: false,
             groupDeviceItems: false,
-            showSettingsButton: true,
-            showBackButton: true,
-            showDashboardButton: true,
-            showRoomsButton: true,
-            showEndpointsButton: true,
-            showDevicesButton: true,
-            showScenesButton: true,
+            //showSettingsButton: true,
+            //showBackButton: true,
+            //showDashboardButton: true,
+            //showRoomsButton: true,
+            //showEndpointsButton: true,
+            //showDevicesButton: true,
+            //showScenesButton: true,
+            navigation: {
+                showSettingsButton: true,
+                showBackButton: true,
+                showDashboardButton: true,
+                showRoomsButton: true,
+                showEndpointsButton: true,
+                showDevicesButton: true,
+                showScenesButton: true
+                // dynamische Buttons (z.B. showMusicButton) kommen künftig
+                // einfach hier zur Laufzeit dazu - reaktiv, ohne Timing-Risiko
+            },
             showVueTourOnNextVisit: true,
             showGradientBackground: true,
             editDashboardWidgets: false,
@@ -52,7 +63,31 @@ export const settingsStore = defineStore("settings", {
             startpage: "/dashboard",
             showUpdateTimestampInStates: true,
             enableAnimationOnStateUpdate: true,
-            dateformat: "yyyy.mm.dd - HH:MM:ss"
+            dateformat: "yyyy.mm.dd - HH:MM:ss",
+            showWidgetTitleBar: true,
+            showNotifications: true,
+            sendSystemNotifications: false,
+            layout: {
+                gap: "10",
+                borderRadius: "5",
+                itemTransparancy: "10",
+                itemSize: "200",
+                columns: 6,
+                truncate: true
+            },
+            pin: {
+                enabled: false,
+                value: ""
+            },
+            widgetsApplyLayoutStyling: true,
+            screensaver: {
+                enabled: false,
+                timeout: 10,
+                blackBackground: false,
+                glitching: true
+            },
+            firstrun: true,
+            debounce: 10
         }
     },
     persistent: true
@@ -214,25 +249,12 @@ export const widgetStore = defineStore("widgets", {
     actions: {
         add(widget, options) {
 
-            let i = ((start) => {
-                this.$state.every((a) => {
-                    if (start === a) {
-                        start = a + 1;
-                        return true;
-                    }
-                });
-                return start;
-            })(this.$state.length + 1);
-
             let obj = Object.assign({
-                x: 0,
-                y: 0,
-                z: 0,
-                w: 4,
-                h: 4,
-                i,
+                x: 1,
+                y: 1,
+                w: 2,
+                h: 2,
                 widget,
-                moved: false,
                 uuid: uuid()
             }, options);
 
@@ -417,9 +439,21 @@ export const userStore = defineStore('user', () => {
         login,
         logout
     }
-})
+});
 
 
+export const useCollapsablesStore = defineStore("collapsables", {
+    state: () => ({ states: {} }),
+    actions: {
+        setOpen(key, value) {
+            this.states[key] = value;
+        },
+        getOpen(key, fallback = false) {
+            return key in this.states ? this.states[key] : fallback;
+        },
+    },
+    persistent: true
+});
 
 /*
 const store = reactive({

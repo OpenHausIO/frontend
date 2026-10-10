@@ -1,4 +1,5 @@
 import viewSettings from "../views/Settings.vue";
+import { settingsStore } from "../store.js";
 
 const nested = [{
     path: "/rooms/:_id",
@@ -28,7 +29,11 @@ const nested = [{
 }, {
     path: "/:pathMatch(.*)*",
     name: "NotFound",
-    redirect: "/dashboard"
+    //redirect: "/dashboard"
+    redirect: () => {
+        const settings = settingsStore();
+        return settings.startpage;
+    }
 }];
 
 export {

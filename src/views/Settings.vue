@@ -1,15 +1,22 @@
 <script>
 import { defineComponent } from "vue";
-import { toggleFullscreen, request } from "../helper.js";
-import { useNotificationStore } from "@dafcoe/vue-notification";
+import { toggleFullscreen, request, openDatabase, canInstallAsPwa, canUseFullscreen } from "../helper.js";
 import { version } from "../../package.json";
-import Widget from "../components/Widget.vue";
+import Widget, { widgetComponents } from "../components/Widget.vue";
 import router, { routes } from "../router/index.js";
 import { settingsStore, widgetStore, commonStore, userStore } from "../store.js";
+import ResizableGrid from "../components/ResizableGrid.vue";
 
-const { setNotification } = useNotificationStore();
+import { addNotification } from "../components/Notifications.vue";
+import Panel from "../components/Panel.vue";
+import Card from "../components/Card.vue";
 
 export default defineComponent({
+  components: {
+    Panel,
+    Card,
+    ResizableGrid
+  },
   setup() {
 
     const settings = settingsStore();
@@ -21,7 +28,10 @@ export default defineComponent({
       settings,
       widgets,
       common,
-      user
+      user,
+      widgetComponents,
+      canInstallAsPwa,
+      canUseFullscreen
     };
 
   },
@@ -31,6 +41,7 @@ export default defineComponent({
       Widget,
       version,
       routes,
+      router,
       dateformats: [
         "yyyy.mm.dd - HH:MM",
         "yyyy.mm.dd - HH:MM:ss",
@@ -39,10 +50,88 @@ export default defineComponent({
         "dd.mm.yyyy - HH:MM:ss",
         "dd.mm.yyyy - HH:MM:ss.l"
       ],
+      //showInstallButton: false,
+      itemSizes: [
+        { class: "col-6 col-md-3 col-xl-2", items: 6 },
+        { class: "col-8 col-md-2 col-xl-4", items: 6 },
+      ],
+      itemWidth: 0,
+      columns: 0,
+      imageUrl: null,
+      pin: {
+        show: false,
+        showContent: false,
+        values: ["", "", "", ""],
+        isWrong: false
+      },
+      panels: [
+        "itemGrouping",
+        "navigation",
+        "widgets",
+        "lookAndFeel",
+        "miscellaneous",
+        "settings",
+        "permissions",
+        "layout",
+        "startpage",
+        "background",
+        "pin",
+        "screensaver"
+      ].map((slot) => {
+        return {
+          _id: slot,
+          slot
+        };
+      })
     };
   },
-  mounted() {
-    console.log("Mounted, watch settings");
+  beforeMount() {
+    // moved from mounted hook, here into "beforeMount"
+    // otherwise its visible that there is "something" flickering/durchblitzen
+    // the enter pin section is visible for a very short time
+    this.pin.showContent = !this.settings.pin.enabled || this.settings.pin.value == "";
+  },
+  async mounted() {
+
+    this.showInstallButton = !!window.deferredPrompt;
+    this.itemWidth = this.settings.layout.itemSize;
+    this.columns = this.settings.layout.columns;
+
+    window.addEventListener('appinstalled', () => {
+
+      this.showInstallButton = false;
+
+      addNotification("<b>OpenHaus as PWA installed</b>", {
+        type: "primary",
+        dismiss: false
+      });
+
+
+    });
+
+    const db = await openDatabase();
+
+    const file = await new Promise((resolve, reject) => {
+
+      const tx = db.transaction("images", "readonly");
+      const store = tx.objectStore("images");
+
+      const request = store.get("background");
+
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+
+    });
+
+    if (file) {
+      if (this.imageUrl) URL.revokeObjectURL(this.imageUrl)
+      this.imageUrl = URL.createObjectURL(file)
+    }
+
+    if (this.settings.pin.value != "") {
+      this.pin.values = this.settings.pin.value.split("");
+      this.$refs?.pin5?.focus();
+    }
 
     // save changes that are made
     /*
@@ -51,7 +140,7 @@ export default defineComponent({
       if (!this.settings.groupItems) {
         this.settings.groupRoomItems = false;
         this.settings.groupEndpointItems = false;
-        this.settings.groupDeviceItems = false;
+        this.settings.groupDeviceItems = false;installApp
       }
 
       if (this.settings.showGradientBackground) {
@@ -69,13 +158,50 @@ export default defineComponent({
     */
   },
 
+  /*
+  computed: {
+    bgStyle() {
+      return {
+        backgroundImage: this.imageUrl ? `url(${this.imageUrl})` : 'none',
+        backgroundColor: this.imageUrl ? 'transparent' : '#e9ecef'
+      }
+    }
+  },
+  */
+  computed: {
+    showInstallButton() {
+      return !!window.deferredPrompt.value;
+    },
+    paddingStyle() {
+      return {
+        "padding-top": `${this.settings.layout.gap}px`,
+        "padding-left": `${this.settings.layout.gap}px`,
+        "padding-right": `${this.settings.layout.gap}px`
+      }
+    },
+    filterdWidgets() {
+
+      // hide "Welcome" widget in dropdown menu
+      // welcome is only loaded on first starup
+      return Object.keys(widgetComponents).filter((name) => {
+        return name != "Welcome";
+      }).reduce((obj, name) => {
+
+        obj[name] = widgetComponents[name];
+
+        return obj;
+
+      }, {});
+
+    }
+  },
   methods: {
     toggleFullscreen,
     showSettingsButtonInfo() {
       /*
       nextTick(() => {
         if (this.settings.showSettingsButton) {
-          setNotification({
+          addNotification({
             message:
               "Tap 10x times on any empty space to go to this page again when the settings button is hidden.",
             type: "info",
@@ -120,16 +246,11 @@ export default defineComponent({
 
       this.widgets.add(widget);
 
-      setNotification({
-        message: `Widget "${widget}" added to Dashboard`,
-        type: "success",
-        showIcon: false,
-        dismiss: {
-          manually: true,
-          automatically: true,
-        },
-        appearance: "dark",
+      addNotification(`Widget "${widget}" added to Dashboard`, {
+        type: "primary",
+        dismiss: 3000
       });
+
     },
     async clearSettings() {
       // works, but not for widgets
@@ -146,15 +267,9 @@ export default defineComponent({
       window.localStorage.clear();
       window.sessionStorage.clear();
 
-      setNotification({
-        message: "Local storage has been cleaned",
-        type: "success",
-        showIcon: false,
-        dismiss: {
-          manually: true,
-          automatically: true,
-        },
-        appearance: "dark",
+      addNotification("Local storage has been cleaned", {
+        type: "primary",
+        dismiss: 3000
       });
 
       this.user.logout();
@@ -164,6 +279,7 @@ export default defineComponent({
           path: "/auth/login",
         });
       }, 3000);
+
     },
     exportSettings() {
 
@@ -180,15 +296,9 @@ export default defineComponent({
       link.click();
       link.remove();
 
-      setNotification({
-        message: `Settings have been downloaded as "settings.json"`,
-        type: "success",
-        showIcon: false,
-        dismiss: {
-          manually: true,
-          automatically: true,
-        },
-        appearance: "dark",
+      addNotification(`Settings have been downloaded as "settings.json"`, {
+        type: "primary",
+        dismiss: 3000
       });
 
     },
@@ -212,16 +322,11 @@ export default defineComponent({
         Object.assign(this.settings.$state, JSON.parse(data.settings));
         Object.assign(this.widgets.$state, JSON.parse(data.widgets));
 
-        setNotification({
-          message: "Settings have been restored.",
-          type: "success",
-          showIcon: false,
-          dismiss: {
-            manually: true,
-            automatically: true,
-          },
-          appearance: "dark",
+        addNotification("Settings have been restored.", {
+          type: "primary",
+          dismiss: 3000
         });
+
       });
 
       input.setAttribute("type", "file");
@@ -237,15 +342,9 @@ export default defineComponent({
 
       if (await this.user.logout()) {
 
-        setNotification({
-          message: "You haven been logged out",
-          type: "success",
-          showIcon: false,
-          dismiss: {
-            manually: true,
-            automatically: true,
-          },
-          appearance: "dark",
+        addNotification("You haven been logged out", {
+          type: "primary",
+          dismiss: 3000
         });
 
         setTimeout(() => {
@@ -260,15 +359,9 @@ export default defineComponent({
 
       } else {
 
-        setNotification({
-          message: "Could not logout!",
+        addNotification("Could not logout!", {
           type: "danger",
-          showIcon: false,
-          dismiss: {
-            manually: true,
-            automatically: true,
-          },
-          appearance: "dark",
+          dismiss: false
         });
 
       }
@@ -289,9 +382,55 @@ export default defineComponent({
 
             this.settings.permissionsNotifications = granted === "granted";
 
+            console.log("Show nativ Notification", this.settings.permissionsNotifications)
+
+            let obj = {
+              type: "primary",
+              dismiss: false
+            };
+
+            addNotification("This is a Test", obj);
+
             if (this.settings.permissionsNotifications) {
-              new Notification("Hi there!");
+
+              let notification = new Notification("OpenHaus", {
+                body: "This is a Test",
+                icon: "/favicon.png",
+                requireInteraction: false,
+                silent: false
+              });
+
+              notification.addEventListener("show", () => {
+                console.log("✅ Notification shown");
+              });
+
+              notification.addEventListener("error", (err) => {
+
+                console.error("❌ Notification error:", err);
+
+                addNotification(`Permission granted, but a error occurd. <br />Cant use native Notifications! <br />Fallback to in App notifications, disabled!`, {
+                  ...obj,
+                  type: "danger"
+                });
+
+                // disable permissions on error
+                // to fallback to in app notifications
+                setTimeout(() => {
+                  this.settings.permissionsNotifications = false;
+                }, 10);
+
+              });
+
+            } else {
+
+              addNotification("Permission not granted, use in app fallback!", {
+                ...obj,
+                type: "warning"
+              });
+
             }
+
+            console.log("Permission for Notifications", granted);
 
           }).catch((err) => {
             console.error("Could not get notifications premission!", err);
@@ -316,27 +455,206 @@ export default defineComponent({
         }
       }*/
 
+    },
+    async installApp() {
+
+      const prompt = window.deferredPrompt.value;
+      if (!prompt) return;
+
+      prompt.prompt();
+      const { outcome } = await prompt.userChoice;
+
+      if (outcome === "dismissed") {
+
+        addNotification('<b>OpenHaus not as PWA installed</b><br />You need to click "Install"', {
+          type: "warning",
+          dismiss: false
+        });
+
+      } else {
+
+        window.deferredPrompt.value = null;
+        this.showInstallButton = false;
+
+      }
+
+    },
+    changeItemSizeRatio({ target }) {
+
+      console.log("Change event", target.value);
+
+      //settings.layout.itemClasses = this.itemSizes[target.value];
+      settings.layout.itemSize = target.value;
+
+    },
+    async onFileChange(event) {
+
+      const file = event.target.files[0];
+      if (!file) return;
+      if (this.imageUrl) URL.revokeObjectURL(this.imageUrl);
+      this.imageUrl = URL.createObjectURL(file);
+
+      const elem = document.getElementById("app");
+
+      elem.style.backgroundImage = `url(${this.imageUrl})`;
+      elem.style.backgroundSize = "cover";
+      elem.style.backgroundPosition = "center";
+      elem.style.backgroundAttachment = "fixed";
+
+      this.settings.showGradientBackground = false;
+
+      // save background image in IndexDB
+      const db = await openDatabase();
+      const tx = db.transaction("images", "readwrite");
+      const store = tx.objectStore("images");
+      return await store.put(file, "background");
+
+    },
+    async resetImage() {
+
+      if (this.imageUrl) URL.revokeObjectURL(this.imageUrl)
+      this.imageUrl = null;
+
+
+      const elem = document.getElementById("app");
+      //elem.classList.add("bg-dark")
+
+      elem.style.backgroundImage = "";
+      elem.style.backgroundSize = "";
+      elem.style.backgroundPosition = "";
+      elem.style.backgroundAttachment = "";
+
+      this.settings.showGradientBackground = true;
+      this.settings.layout.itemTransparancy = 0;
+
+      document.documentElement.style.setProperty("--item-alpha", 0);
+
+      const db = await openDatabase();
+
+      await new Promise((resolve, reject) => {
+
+        const tx = db.transaction("images", "readwrite");
+        const store = tx.objectStore("images");
+
+        store.delete("background");
+
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+
+      });
+
+    },
+    pinInput(event, index) {
+      if (new RegExp('^[0-9]$').test(event.data) && event.inputType === "insertText") {
+        // removed, because we dont jump from end, to start
+        // so this function can be resused, for setting pin
+        // and confimration when settings page is visit 
+        // with ref's "pin5", "pin6", "ping7", "pin8"
+        //if (index < this.pin.values.length) {
+
+        // set focus on next input field
+        this.$refs[`pin${index + 1}`].focus();
+
+        //}
+      } else {
+
+        // clear input, not a valid number/integer
+        this.$refs[`pin${index}`].value = "";
+
+      }
+    },
+    savePin() {
+
+      if (this.pin.values.some((v) => v === "")) {
+        return addNotification("<h6>Please enter PIN!</h6>Enter your pin below to secure the settings page!", {
+          type: "danger",
+          dismiss: false
+        });
+      }
+
+      addNotification(`<h6>PIN saved!</h6>Next "Settings" page visit, you need to enter the PIN!`, {
+        type: "success",
+        dismiss: false
+      });
+
+      this.settings.pin.value = [
+        this.$refs.pin1.value,
+        this.$refs.pin2.value,
+        this.$refs.pin3.value,
+        this.$refs.pin4.value,
+      ].join("");
+
+    },
+    clearPin() {
+
+      addNotification("<h6>PIN cleard!</h6>No PIN needed anymore!", {
+        type: "success",
+        dismiss: false
+      });
+
+      this.settings.pin.value = "";
+      this.settings.pin.enabled = false;
+      this.pin.values = ["", "", "", ""];
+
+    },
+    checkPinInput() {
+
+      let fields = [
+        this.$refs.pin5,
+        this.$refs.pin6,
+        this.$refs.pin7,
+        this.$refs.pin8
+      ];
+
+      if (fields.map(el => el.value).join("") == this.settings.pin.value) {
+
+        // pin correct, show secret content
+        this.pin.showContent = true;
+
+      } else {
+
+        this.$refs.pin5.focus();
+        this.pin.isWrong = true;
+
+        setTimeout(() => {
+          this.pin.isWrong = false;
+        }, 500);
+
+        fields.forEach((el) => {
+          el.value = "";
+        });
+
+
+      }
+
     }
   },
+  beforeUnmount() {
+    if (this.imageUrl) URL.revokeObjectURL(this.imageUrl)
+  }
 });
 </script>
 
 <template>
-  <div class="container-fluid">
+  <div class="container-fluid" v-if="pin.showContent">
+
     <!-- HEADER -->
-    <div class="row py-4" style="border-top: 1px solid #000; border-bottom: 1px solid #000">
-      <div class="col">
+    <div class="row">
+      <Card class="w-100" :style="paddingStyle">
+
         <h3 class="mb-0">Settings</h3>
         Version: v{{ version }}
-      </div>
+
+      </Card>
     </div>
     <!-- HEADER -->
+
     <div class="row justify-content-start">
-      <!-- ITEM GROUPING -->
-      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 p-0">
-        <div class="card bg-transparent">
-          <div class="card-body">
-            <h5 class="card-title">Item Grouping</h5>
+      <ResizableGrid :items="panels">
+
+        <!-- ITEM GROUPING -->
+        <template #itemGrouping>
+          <Panel title="Item Grouping" class="w-100">
 
             <div class="form-check form-switch">
               <input class="form-check-input" type="checkbox" id="groupItemsCheckbox" v-model="settings.groupItems" />
@@ -370,19 +688,18 @@ export default defineComponent({
                 Group Device Items
               </label>
             </div>
-          </div>
-        </div>
-      </div>
-      <!-- ITEM GROUPING -->
 
-      <!-- NAVIGATION -->
-      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 p-0">
-        <div class="card bg-transparent">
-          <div class="card-body">
-            <h5 class="card-title">Navigation</h5>
+          </Panel>
+        </template>
+        <!-- ITEM GROUPING -->
+
+        <!-- NAVIGATION -->
+        <template #navigation>
+          <Panel title="Navigation" class="w-100">
+
             <div class="form-check form-switch">
               <input class="form-check-input" type="checkbox" id="showSettingsButtonCheckbox"
-                v-on:click="showSettingsButtonInfo()" v-model="settings.showSettingsButton" />
+                v-on:click="showSettingsButtonInfo()" v-model="settings.navigation.showSettingsButton" />
               <label class="form-check-label small" for="showSettingsButtonCheckbox">
                 Show Settings buttons
               </label>
@@ -390,7 +707,7 @@ export default defineComponent({
 
             <div class="form-check form-switch">
               <input class="form-check-input" type="checkbox" id="showBackButtonCheckbox"
-                v-model="settings.showBackButton" />
+                v-model="settings.navigation.showBackButton" />
               <label class="form-check-label small" for="showBackButtonCheckbox">
                 Show Back button
               </label>
@@ -400,23 +717,20 @@ export default defineComponent({
 
             <div class="form-check form-switch" v-bind:key="route.path" v-for="route in routes">
               <input class="form-check-input" type="checkbox" :id="'show' + route.name + 'ButtonCheck'"
-                v-model="settings['show' + route.name + 'Button']" />
+                v-model="settings.navigation['show' + route.name + 'Button']" />
               <label class="form-check-label small" :for="'show' + route.name + 'ButtonCheck'">
                 Show {{ route.name }} button
               </label>
             </div>
-          </div>
-        </div>
-      </div>
-      <!-- NAVIGATION -->
 
-      <!-- WIDGETS -->
-      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 p-0">
-        <div class="card bg-transparent">
-          <div class="card-body">
-            <h5 class="card-title">Widgets</h5>
+          </Panel>
+        </template>
+        <!-- NAVIGATION -->
 
-            <!-- CARD CONTENT -->
+        <!-- WIDGETS -->
+        <template #widgets>
+          <Panel title="Widgets" class="w-100">
+
             <div class="form-check form-switch">
               <input class="form-check-input" type="checkbox" id="editDashboardWidgetsCheckbox"
                 v-model="settings.editDashboardWidgets" />
@@ -439,11 +753,38 @@ export default defineComponent({
 
             <div class="form-check form-switch">
               <input class="form-check-input" type="checkbox" id="showDashboardWidgetsCheckbox"
-                v-model="settings.showDashboardWidgets" :disabled="!settings.editDashboardWidgets" />
+                v-model="settings.showDashboardWidgets" />
               <label class="form-check-label small" for="showDashboardWidgetsCheckbox">
                 Show Dashboard widgets
               </label>
             </div>
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="transparentDashboardWidgetsCheckbox"
+                v-model="settings.transparentDashboardWidgets" />
+              <label class="form-check-label small" for="transparentDashboardWidgetsCheckbox">
+                Transparent Dashboard Widgets
+              </label>
+            </div>
+
+            <div class="form-check form-switch hide">
+              <input class="form-check-input" type="checkbox" id="widgetsApplyLayoutGap"
+                v-model="settings.widgetsApplyLayoutStyling" />
+              <label class="form-check-label small" for="widgetsApplyLayoutGap">
+                Apply Layout Styling
+              </label>
+            </div>
+
+            <!--
+            Does currently not work
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showWidgetTitleBarCheckbox"
+                v-model="settings.showWidgetTitleBar" :disabled="!settings.showWidgetTitleBar" />
+              <label class="form-check-label small" for="showWidgetTitleBarCheckbox">
+                Display Widget Title Bar
+              </label>
+            </div>
+            -->
 
             <hr />
 
@@ -452,8 +793,8 @@ export default defineComponent({
                 aria-expanded="false" :disabled="!settings.editDashboardWidgets">
                 Add Widget
               </button>
-              <ul class="dropdown-menu dropdown-menu-dark">
-                <li v-bind:key="index" v-for="(widget, index) in Widget.components">
+              <ul class="dropdown-menu dropdown-menu-dark w-100">
+                <li v-bind:key="index" v-for="(widget, index) in filterdWidgets">
                   <button class="dropdown-item d-flex gap-2 align-items-center"
                     @click="addDashboardWidget(widget.name)">
                     {{ widget.name }}
@@ -461,62 +802,15 @@ export default defineComponent({
                 </li>
               </ul>
             </div>
-            <!-- CARD CONTENT -->
-          </div>
-        </div>
-      </div>
-      <!-- WIDGETS -->
 
-      <!-- SCREENSAVER -->
-      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 p-0 hide">
-        <div class="card bg-transparent">
-          <div class="card-body">
-            <h5 class="card-title">Screensaver</h5>
-            <!-- CONTENT -->
-            <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" id="enableScreenSaverOverlayCheckbox"
-                v-model="settings.enableScreenSaverOverlay" />
-              <label class="form-check-label small" for="enableScreenSaverOverlayCheckbox">
-                Screensaver overlay
-              </label>
-            </div>
+          </Panel>
+        </template>
+        <!-- WIDGETS -->
 
-            <div class="form-check form-switch">
-              <label for="screenSaverOVerlayInput" class="form-label">
-                Timeout in Sec.
-              </label>
-              <input type="number" id="screenSaverOVerlayInput" class="form-control bg-dark text-white"
-                v-model="settings.screensaverOverlayDelay" :disabled="!settings.enableScreenSaverOverlay" />
-              <input type="range" class="form-range" v-model="settings.screensaverOverlayDelay" min="10" max="60"
-                step="10" :disabled="!settings.enableScreenSaverOverlay" />
-            </div>
+        <!-- LOOK & FEEL -->
+        <template #lookAndFeel>
+          <Panel title="Look & Feel" class="w-100">
 
-            <!-- CONTENT -->
-          </div>
-        </div>
-      </div>
-      <!-- SCREENSAVER -->
-
-      <!-- LOOK & FEEL -->
-      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 p-0">
-        <div class="card bg-transparent">
-          <div class="card-body">
-            <h5 class="card-title">Look & Feel</h5>
-            <!-- CONTENT -->
-            <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" id="showGradientBackgroundCheckbox"
-                v-model="settings.showGradientBackground" />
-              <label class="form-check-label small" for="showGradientBackgroundCheckbox">
-                Enable Background gardient
-              </label>
-            </div>
-            <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" id="transparentDashboardWidgetsCheckbox"
-                v-model="settings.transparentDashboardWidgets" />
-              <label class="form-check-label small" for="transparentDashboardWidgetsCheckbox">
-                Transparent Dashboard Widgets
-              </label>
-            </div>
             <div class="form-check form-switch">
               <input class="form-check-input" type="checkbox" id="jumpToOnlyEndpointSetCheckbox"
                 v-model="settings.jumpToOnlyEndpointSet" />
@@ -575,18 +869,13 @@ export default defineComponent({
               </label>
             </div>
 
-            <!-- CONTENT -->
-          </div>
-        </div>
-      </div>
-      <!-- LOOK & FEEL -->
+          </Panel>
+        </template>
+        <!-- LOOK & FEEL -->
 
-      <!-- MISCELLANEOUS -->
-      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 p-0">
-        <div class="card bg-transparent">
-          <div class="card-body">
-            <h5 class="card-title">Miscellaneous</h5>
-            <!-- CONTENT -->
+        <!-- MISCELLANEOUS -->
+        <template #miscellaneous>
+          <Panel title="Miscellaneous" class="w-100">
 
             <div class="form-check form-switch hide">
               <input class="form-check-input" type="checkbox" id="showVueTourOnNextVisitCheckbox"
@@ -596,7 +885,8 @@ export default defineComponent({
               </label>
             </div>
 
-            <button class="btn btn-outline-primary d-block w-100 mb-1" @click="toggleFullscreen()">
+            <button class="btn btn-outline-primary d-block w-100 mb-1" @click="toggleFullscreen()"
+              v-if="canUseFullscreen()">
               Toggle fullscreen
             </button>
 
@@ -604,7 +894,8 @@ export default defineComponent({
               Logout
             </button>
 
-            <a class="btn btn-outline-primary d-block w-100 mb-1" :href="settings.urls.adminUi" v-if="user.isAdmin">
+            <a class="btn btn-outline-primary d-block w-100 mb-1" :href="settings.urls.adminUi" v-if="user.isAdmin"
+              target="_blank">
               Administration
             </a>
 
@@ -618,18 +909,38 @@ export default defineComponent({
               </option>
             </select>
 
-            <!-- CONTENT -->
-          </div>
-        </div>
-      </div>
-      <!-- MISCELLANEOUS -->
+            <hr v-if="user.isAdmin" class="hide" />
 
-      <!-- SETTINGS -->
-      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 p-0">
-        <div class="card bg-transparent">
-          <div class="card-body">
-            <h5 class="card-title">Settings</h5>
-            <!-- CONTENT -->
+            <div class="form-check form-switch hide" v-if="user.isAdmin">
+              <input class="form-check-input" type="checkbox" id="showNotifications"
+                v-model="settings.showNotifications" />
+              <label class="form-check-label small" for="showNotifications">
+                Show System Notifications
+              </label>
+            </div>
+
+            <div class="form-check form-switch hide" v-if="user.isAdmin">
+              <input class="form-check-input" type="checkbox" id="sendSystemNotifications"
+                v-model="settings.sendSystemNotifications" />
+              <label class="form-check-label small" for="sendSystemNotifications">
+                Send System Notifications
+              </label>
+            </div>
+
+            <hr v-if="canInstallAsPwa()" />
+
+            <button class="btn btn-outline-primary d-block w-100 mb-1" @click="installApp()"
+              :disabled="!showInstallButton" v-if="canInstallAsPwa()">
+              Install as PWA
+            </button>
+
+          </Panel>
+        </template>
+        <!-- MISCELLANEOUS -->
+
+        <!-- SETTINGS -->
+        <template #settings>
+          <Panel title="Settings" class="w-100">
 
             <button class="btn btn-outline-primary d-block w-100 mb-1" @click="exportSettings()">
               Export Settings
@@ -639,22 +950,17 @@ export default defineComponent({
               Import Settings
             </button>
 
-            <button class="btn btn-outline-primary d-block w-100" @click="clearSettings()">
+            <button class="btn btn-outline-danger d-block w-100" @click="clearSettings()">
               Clear Settings
             </button>
 
-            <!-- CONTENT -->
-          </div>
-        </div>
-      </div>
-      <!-- SETTINGS -->
+          </Panel>
+        </template>
+        <!-- SETTINGS -->
 
-      <!-- PERMISSIONS -->
-      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 p-0 hide">
-        <div class="card bg-transparent">
-          <div class="card-body">
-            <h5 class="card-title">Permissions</h5>
-            <!-- CONTENT -->
+        <!-- PERMISSIONS -->
+        <template #permissions>
+          <Panel title="Permissions" class="w-100">
 
             <div class="form-check form-switch">
               <input class="form-check-input" type="checkbox" id="permissionsNotifications"
@@ -664,36 +970,229 @@ export default defineComponent({
               </label>
             </div>
 
-            <!--
-            <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" id="permissionsPushNotifications"
-                v-model="settings.permissionsPushNotifications" v-on:change="askForPermission('pushNotifications')" />
-              <label class="form-check-label small" for="permissionsPushNotifications">
-                Push Notification
-              </label>
+          </Panel>
+        </template>
+        <!-- PERMISSIONS -->
+
+        <!-- LAYOUT -->
+        <template #layout>
+          <Panel title="Layout" class="w-100">
+
+            <div class="mb-3">
+              <label class="form-label mb-0">Gap between items</label>
+              <input type="range" class="form-range" min="0" step="5" max="25" v-model="settings.layout.gap">
+
+              <div class="d-flex justify-content-between px-1" style="margin-top: -10px;">
+                <span v-for="val in [0, 5, 10, 15, 20, 25]" :key="val" style="font-size: 8px; color: #000">|</span>
+              </div>
+
+              {{ settings.layout.gap }}px
+
             </div>
-            
-            <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" id="permissionsCamera" v-model="settings.permissionsCamera"
-                v-on:change="askForPermission('camera')" />
-              <label class="form-check-label small" for="permissionsCamera">
-                Camera
-              </label>
+
+            <div class="mb-3">
+              <label class="form-label mb-0">Item border radius</label>
+              <input type="range" class="form-range" min="0" step="5" max="30" v-model="settings.layout.borderRadius">
+
+              <div class="d-flex justify-content-between px-1" style="margin-top: -10px;">
+                <span v-for="val in [0, 5, 10, 15, 20, 25, 30]" :key="val" style="font-size: 8px; color: #000">|</span>
+              </div>
+
+              {{ settings.layout.borderRadius }}px
+
+            </div>
+
+            <div class="mb-3">
+
+              <label class="form-label mb-0">Item Opacity</label>
+              <input type="range" class="form-range" min="0" step="1" max="100"
+                v-model="settings.layout.itemTransparancy">
+
+              {{ settings.layout.itemTransparancy }}%
+
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label mb-0">Item min width</label>
+
+              <input type="range" class="form-range" min="100" step="10" max="1000" v-model="itemWidth"
+                @change="($event) => { settings.layout.itemSize = $event.target.value }">
+
+              {{ itemWidth }}px
+
+            </div>
+
+            <div class="mb-3">
+
+              <label class="form-label mb-0">Colums</label>
+              <input type="range" class="form-range" min="1" step="1" max="12" v-model="columns"
+                @change="($event) => { settings.layout.columns = $event.target.value }">
+
+              <div class="d-flex justify-content-between px-1" style="margin-top: -10px;">
+                <span v-for="val in Array.from({ length: 12 })" :key="val" style="font-size: 8px; color: #000">|</span>
+              </div>
+
+              {{ columns }}
+
+            </div>
+
+            <div class="">
+
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="truncateOverflow"
+                  v-model="settings.layout.truncate" />
+                <label class="form-check-label small" for="truncateOverflow">
+                  Truncate overflowing text
+                </label>
+              </div>
+
+            </div>
+
+            <!--
+            <div>
+
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="truncateOverflow"
+                  v-model="settings.layout.truncate" />
+                <label class="form-check-label small" for="truncateOverflow">
+                  Grow tiles 100% height
+                </label>
+              </div>
+
             </div>
             -->
 
-            <!-- CONTENT -->
-          </div>
-        </div>
-      </div>
-      <!-- PERMISSIONS -->
+          </Panel>
+        </template>
+        <!-- LAYOUT -->
 
-      <!-- INFORMATION -->
-      <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 p-0 hide">
-        <div class="card bg-transparent">
-          <div class="card-body">
-            <h5 class="card-title">Information</h5>
-            <!-- CONTENT -->
+        <!-- STARTPAGE -->
+        <template #startpage>
+          <Panel title="Startpage" class="w-100">
+
+            <select class="form-select btn btn-outline-primary d-block w-100 mb-1" v-model="settings.startpage">
+              <option v-for="route in routes" :value="route.path">
+                {{ route.name }}
+              </option>
+            </select>
+
+            <button class="btn btn-outline-secondary w-100" @click="router.push(settings.startpage)">
+              Naviagte to page
+            </button>
+
+          </Panel>
+        </template>
+        <!-- STARTPAGE -->
+
+        <!-- BACKGROUND -->
+        <template #background>
+          <Panel title="Background" class="w-100">
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showGradientBackgroundCheckbox"
+                v-model="settings.showGradientBackground" :disabled="this.imageUrl" />
+              <label class="form-check-label small" for="showGradientBackgroundCheckbox">
+                Enable Background gardient
+              </label>
+            </div>
+
+            <div class="mb-3 mt-3">
+              <label for="bgUpload" class="form-label hide">Hintergrundbild wählen</label>
+              <input type="file" id="bgUpload" class="form-control hide" accept="image/*" @change="onFileChange"
+                ref="bgUpload">
+              <button class="btn btn-outline-primary w-100" @click="$refs.bgUpload.click()"> Upload/Select </button>
+            </div>
+
+            <button v-if="imageUrl" class="btn btn-outline-secondary w-100" @click="resetImage()">
+              Reset/Delete
+            </button>
+
+          </Panel>
+        </template>
+        <!-- BACKGROUND -->
+
+        <!-- PIN -->
+        <template #pin>
+          <Panel title="PIN" class="w-100">
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="enablePIN" v-model="settings.pin.enabled" />
+              <label class="form-check-label small" for="enablePIN">
+                Secure Settings page with PIN
+              </label>
+            </div>
+
+            <div class="d-flex justify-content-center mt-3">
+              <input :type="pin.show ? 'text' : 'password'" class="form-control bg-dark text-primary text-center"
+                placeholder="•" maxlength="1" ref="pin1" @input="pinInput($event, 1)" :disabled="!settings.pin.enabled"
+                pattern="\d{1}" v-model="pin.values[0]" @focus="$event.target.select()">
+              <span class="m-2">•</span>
+              <input :type="pin.show ? 'text' : 'password'" class="form-control bg-dark text-primary text-center"
+                placeholder="•" maxlength="1" ref="pin2" @input="pinInput($event, 2)" :disabled="!settings.pin.enabled"
+                pattern="\d{1}" v-model="pin.values[1]" @focus="$event.target.select()">
+              <span class="m-2">•</span>
+              <input :type="pin.show ? 'text' : 'password'" class="form-control bg-dark text-primary text-center"
+                placeholder="•" maxlength="1" ref="pin3" @input="pinInput($event, 3)" :disabled="!settings.pin.enabled"
+                pattern="\d{1}" v-model="pin.values[2]" @focus="$event.target.select()">
+              <span class="m-2">•</span>
+              <input :type="pin.show ? 'text' : 'password'" class="form-control bg-dark text-primary text-center"
+                placeholder="•" maxlength="1" ref="pin4" @input="pinInput($event, 4)" :disabled="!settings.pin.enabled"
+                pattern="\d{1}" v-model="pin.values[3]" @focus="$event.target.select()">
+            </div>
+
+            <button class="btn btn-outline-primary mt-3 w-100" @mousedown="pin.show = true" @mouseup="pin.show = false"
+              @mouseleave="pin.show = false" @touchstart="pin.show = true" @touchend="pin.show = false"
+              @touchcancel="pin.show = false">
+              <i class="fa-solid" :class="{ 'fa-eye': !pin.show, 'fa-eye-slash': pin.show }"></i> Show PIN
+            </button>
+
+            <button class="btn btn-outline-success mt-1 w-100" @click="savePin()">
+              Save
+            </button>
+
+            <button class="btn btn-outline-warning mt-1 w-100" @click="clearPin()">
+              Clear
+            </button>
+
+          </Panel>
+        </template>
+        <!-- PIN -->
+
+        <!-- SCREENSAVER -->
+        <template #screensaver>
+          <Panel title="Screensaver" class="w-100">
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="enableScreenSaverOverlayCheckbox"
+                v-model="settings.screensaver.enabled" />
+              <label class="form-check-label small" for="enableScreenSaverOverlayCheckbox">
+                Enable Screensaver
+              </label>
+            </div>
+
+            <div class="form-check form-switch">
+              <label for="screenSaverOVerlayInput" class="form-label">
+                Timeout in Sec.
+              </label>
+              <input type="number" id="screenSaverOVerlayInput" class="form-control bg-dark text-white"
+                v-model="settings.screensaver.timeout" :disabled="!settings.screensaver.enabled" />
+            </div>
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="screensaveruseBlackBackground"
+                v-model="settings.screensaver.blackBackground" :disabled="!settings.screensaver.enabled" />
+              <label class="form-check-label small" for="screensaveruseBlackBackground">
+                Black Background
+              </label>
+            </div>
+
+          </Panel>
+        </template>
+        <!-- SCREENSAVER -->
+
+        <!-- INFORMATION -->
+        <template #information>
+          <Panel title="Information" class="hide w-100">
 
             <div clasS="d-block">
               Backend: vX.X.X
@@ -708,31 +1207,73 @@ export default defineComponent({
               Database: vX.X.X
             </div>
 
-            <!-- CONTENT -->
-          </div>
-        </div>
-      </div>
-      <!-- INFORMATION -->
+          </Panel>
+        </template>
+        <!-- INFORMATION -->
 
+      </ResizableGrid>
     </div>
+
+  </div>
+  <div class="container d-flex flex-column align-items-center justify-content-center min-vh-100" v-else>
+
+    <h3>Please enter pin.</h3>
+    <h5>Settings page is secured!</h5>
+
+    <div class="d-flex justify-content-center" :class="{ shake: pin.isWrong }">
+      <input type="password" class="form-control bg-dark text-primary text-center input-pin" placeholder="•"
+        maxlength="1" ref="pin5" @input="pinInput($event, 5)" @focus="$event.target.select()"
+        style="font-size:40px; width:60px;">
+      <span style="font-size: 40px" class="m-2">•</span>
+      <input type="password" class="form-control bg-dark text-primary text-center input-pin" placeholder="•"
+        maxlength="1" ref="pin6" @input="pinInput($event, 6)" @focus="$event.target.select()"
+        style="font-size:40px; width:60px;">
+      <span style="font-size: 40px" class="m-2">•</span>
+      <input type="password" class="form-control bg-dark text-primary text-center input-pin" placeholder="•"
+        maxlength="1" ref="pin7" @input="pinInput($event, 7)" @focus="$event.target.select()"
+        style="font-size:40px; width:60px;">
+      <span style="font-size: 40px" class="m-2">•</span>
+      <input type="password" class="form-control bg-dark text-primary text-center input-pin" placeholder="•"
+        maxlength="1" ref="pin8" @input="checkPinInput()" @focus="$event.target.select()"
+        style="font-size:40px; width:60px;">
+    </div>
+
   </div>
 </template>
 
 <style scoped>
-.col-2 {
-  margin-bottom: var(--bs-gutter-x);
+@keyframes shake {
+
+  10%,
+  90% {
+    transform: translateX(-1px);
+  }
+
+  20%,
+  80% {
+    transform: translateX(2px);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translateX(-4px);
+  }
+
+  40%,
+  60% {
+    transform: translateX(4px);
+  }
 }
 
-div.card {
-  min-height: 100%;
+.shake {
+  animation: shake 0.5s ease-in-out;
+  border-color: #dc3545 !important;
 }
 
-.card {
-  border-color: #000;
-}
-
-.card-body,
-.card {
-  border-radius: 0;
+.input-pin {
+  border-left: 1px solid #000;
+  border-right: 1px solid #000;
+  border-top: 1px solid #000;
 }
 </style>

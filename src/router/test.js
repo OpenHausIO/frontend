@@ -42,6 +42,10 @@ const test = [{
     path: "/test/pages",
     name: "/test/pages",
     component: () => import("../views/TestPages.vue")
+}, {
+    path: "/test/grid4",
+    name: "/test/grid4",
+    component: () => import("../views/TestGrid4.vue")
 }];
 
 export {
